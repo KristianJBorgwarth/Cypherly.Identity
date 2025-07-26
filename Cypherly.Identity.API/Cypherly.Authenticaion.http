@@ -1,0 +1,6 @@
+@Cypherly.Authenticaion_HostAddress = http://localhost:5226
+
+GET {{Cypherly.Authenticaion_HostAddress}}/weatherforecast/
+Accept: application/json
+
+###

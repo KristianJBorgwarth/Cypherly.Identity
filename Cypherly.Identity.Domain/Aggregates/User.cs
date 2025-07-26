@@ -1,0 +1,144 @@
+﻿using System.Diagnostics.CodeAnalysis;
+using Cypherly.Domain.Common;
+using Cypherly.Identity.Domain.Abstractions;
+using Cypherly.Identity.Domain.Common;
+using Cypherly.Identity.Domain.Entities;
+using Cypherly.Identity.Domain.Enums;
+using Cypherly.Identity.Domain.Events.User;
+using Cypherly.Identity.Domain.ValueObjects;
+
+namespace Cypherly.Identity.Domain.Aggregates;
+
+[SuppressMessage("ReSharper", "ClassWithVirtualMembersNeverInherited.Global")]
+public class User : AggregateRoot
+{
+    public Email Email { get; init; } = null!;
+    public Password Password { get; private set; } = null!;
+    public bool IsVerified { get; private set; }
+    private readonly List<UserVerificationCode> _verificationCodes = [];
+    private readonly List<Device> _devices = [];
+    public virtual IReadOnlyCollection<Device> Devices => _devices;
+    public virtual IReadOnlyCollection<UserVerificationCode> VerificationCodes => _verificationCodes;
+    public User() : base(Guid.Empty) { } // For EF Core
+
+    public User(Guid id, Email email, Password password, bool isVerified) : base(id)
+    {
+        Email = email;
+        Password = password;
+        IsVerified = isVerified;
+    }
+
+    /// <summary>
+    /// Adds a verification code to the user for the specified code type.
+    /// <para>
+    /// Marks any existing codes of the same type as used.
+    /// </para>
+    /// </summary>
+    /// <param name="codeType"><see cref="UserVerificationCodeType"/></param>
+    public void AddVerificationCode(UserVerificationCodeType codeType)
+    {
+        var existingCodes = VerificationCodes.Where(vc => vc.CodeType == codeType && !vc.Code.IsUsed);
+
+        foreach (var vc in existingCodes)
+        {
+            vc.Code.Use();
+        }
+
+        _verificationCodes.Add(new(Guid.NewGuid(), userId: Id, codeType));
+    }
+
+    /// <summary>
+    /// Returns the most recent active verification code of the specified type.
+    /// <para>
+    /// Returns null if no active codes are found.
+    /// </para>
+    /// </summary>
+    /// <param name="codeType"><see cref="UserVerificationCodeType"/></param>
+    /// <returns></returns>
+    public UserVerificationCode? GetActiveVerificationCode(UserVerificationCodeType codeType)
+    {
+        return VerificationCodes.Where(vc => vc.CodeType == codeType && !vc.Code.IsUsed && vc.Code.ExpirationDate > DateTime.UtcNow).MaxBy(vc => vc.Code.ExpirationDate);
+    }
+
+    /// <summary>
+    /// Verifies the user account with the provided verification code.
+    /// </summary>
+    /// <param name="verificationCode">Value representing the VerificationCode.Code <see cref="UserVerificationCode.Code"/></param>
+    /// <returns>Result representing the verification result</returns>
+    /// <exception cref="InvalidOperationException"></exception>
+    public Result VerifyAccount(string verificationCode)
+    {
+        if (VerificationCodes.Count == 0)
+            throw new InvalidOperationException("This chat user does not have a verification code");
+
+        if (IsVerified)
+            throw new InvalidOperationException("This chat user is already verified");
+
+        var userVerificationCode = VerificationCodes.FirstOrDefault(uvc => uvc.Code.Value == verificationCode);
+        if (userVerificationCode is null) return Result.Fail(Errors.General.UnspecifiedError("Invalid verification code"));
+
+        var verificationResult = userVerificationCode.Code.Verify(verificationCode);
+
+        if (verificationResult.Success is false)
+            return verificationResult;
+
+        userVerificationCode.Code.Use();
+        IsVerified = true;
+        AddDomainEvent(new UserVerifiedEvent(Id));
+        return Result.Ok();
+    }
+
+
+    /// <summary>
+    /// Verifies the login with the provided verification code.
+    /// </summary>
+    /// <param name="loginVerificationCode">Value representing the VerificationCode.Code <see cref="UserVerificationCode.Code"/></param>
+    /// <returns></returns>
+    /// <exception cref="InvalidOperationException"></exception>
+    public Result VerifyLogin(string loginVerificationCode)
+    {
+        if (VerificationCodes.Count == 0)
+            throw new InvalidOperationException("This chat user does not have a verification code");
+
+        var userVerificationCode = VerificationCodes.FirstOrDefault(uvc => uvc.Code.Value == loginVerificationCode && uvc.CodeType == UserVerificationCodeType.Login);
+        if (userVerificationCode is null) return Result.Fail(Errors.General.UnspecifiedError("Invalid verification code"));
+
+        var verificationResult = userVerificationCode.Code.Verify(loginVerificationCode);
+
+        if (verificationResult.Success is false)
+            return verificationResult;
+
+        userVerificationCode.Code.Use();
+        return Result.Ok();
+    }
+
+    /// <summary>
+    /// Add a device to the user.
+    /// </summary>
+    /// <param name="device"></param>
+    public void AddDevice(Device device)
+    {
+        _devices.Add(device);
+    }
+
+    /// <summary>
+    /// Returns list of all active devices.
+    /// Devices where DeletedAt value is null <see cref="Device.DeletedAt"/>
+    /// </summary>
+    /// <returns></returns>
+    public List<Device> GetDevices()
+    {
+        return Devices.Where(x => x.DeletedAt is null).ToList();
+    }
+
+    /// <summary>
+    /// Returns the device with the specified deviceId.
+    /// </summary>
+    /// <param name="deviceId">The ID of the device to retreive</param>
+    /// <returns></returns>
+    /// <exception cref="InvalidOperationException">Exception thrown if the device is marked as Deleted</exception>
+    public Device GetDevice(Guid deviceId)
+    {
+        return Devices.FirstOrDefault(d => d.Id == deviceId && d.DeletedAt is null) ?? throw new InvalidOperationException("Device not found");
+    }
+}

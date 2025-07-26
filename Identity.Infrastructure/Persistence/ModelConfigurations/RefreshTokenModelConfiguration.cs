@@ -8,7 +8,7 @@ public class RefreshTokenModelConfiguration : IEntityTypeConfiguration<RefreshTo
 {
     public void Configure(EntityTypeBuilder<RefreshToken> builder)
     {
-        builder.ToTable("RefreshToken");
+        builder.ToTable("refresh_token");
 
         builder.HasKey(rt => rt.Id);
 

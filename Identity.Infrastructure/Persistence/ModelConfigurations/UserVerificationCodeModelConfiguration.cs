@@ -9,7 +9,7 @@ public class UserVerificationCodeModelConfiguration : IEntityTypeConfiguration<U
 {
     public void Configure(EntityTypeBuilder<UserVerificationCode> builder)
     {
-        builder.ToTable("UserVerificationCode");
+        builder.ToTable("user_verification_code");
 
         builder.HasKey(vc => vc.Id);
 

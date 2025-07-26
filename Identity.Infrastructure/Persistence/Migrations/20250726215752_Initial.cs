@@ -38,9 +38,9 @@ namespace Identity.Infrastructure.Persistence.Migrations
                     email = table.Column<string>(type: "citext", maxLength: 255, nullable: false),
                     password = table.Column<string>(type: "character varying(255)", maxLength: 255, nullable: false),
                     is_verified = table.Column<bool>(type: "boolean", nullable: false),
-                    Updated = table.Column<DateTime>(type: "timestamp with time zone", nullable: false),
-                    Created = table.Column<DateTime>(type: "timestamp with time zone", nullable: false),
-                    Deleted = table.Column<DateTime>(type: "timestamp with time zone", nullable: true)
+                    updated = table.Column<DateTime>(type: "timestamp with time zone", nullable: false),
+                    created = table.Column<DateTime>(type: "timestamp with time zone", nullable: false),
+                    deleted = table.Column<DateTime>(type: "timestamp with time zone", nullable: true)
                 },
                 constraints: table =>
                 {
@@ -60,9 +60,9 @@ namespace Identity.Infrastructure.Persistence.Migrations
                     platform = table.Column<string>(type: "text", nullable: false),
                     app_version = table.Column<string>(type: "text", nullable: false),
                     UserId = table.Column<Guid>(type: "uuid", nullable: false),
-                    Updated = table.Column<DateTime>(type: "timestamp with time zone", nullable: false),
-                    Created = table.Column<DateTime>(type: "timestamp with time zone", nullable: false),
-                    Deleted = table.Column<DateTime>(type: "timestamp with time zone", nullable: true)
+                    updated = table.Column<DateTime>(type: "timestamp with time zone", nullable: false),
+                    created = table.Column<DateTime>(type: "timestamp with time zone", nullable: false),
+                    deleted = table.Column<DateTime>(type: "timestamp with time zone", nullable: true)
                 },
                 constraints: table =>
                 {
@@ -76,7 +76,7 @@ namespace Identity.Infrastructure.Persistence.Migrations
                 });
 
             migrationBuilder.CreateTable(
-                name: "UserVerificationCode",
+                name: "user_verification_code",
                 columns: table => new
                 {
                     id = table.Column<Guid>(type: "uuid", nullable: false),
@@ -85,15 +85,15 @@ namespace Identity.Infrastructure.Persistence.Migrations
                     is_used = table.Column<bool>(type: "boolean", nullable: false),
                     expiration_date = table.Column<DateTime>(type: "timestamp with time zone", nullable: false),
                     code_type = table.Column<string>(type: "text", nullable: false),
-                    Updated = table.Column<DateTime>(type: "timestamp with time zone", nullable: false),
-                    Created = table.Column<DateTime>(type: "timestamp with time zone", nullable: false),
-                    Deleted = table.Column<DateTime>(type: "timestamp with time zone", nullable: true)
+                    updated = table.Column<DateTime>(type: "timestamp with time zone", nullable: false),
+                    created = table.Column<DateTime>(type: "timestamp with time zone", nullable: false),
+                    deleted = table.Column<DateTime>(type: "timestamp with time zone", nullable: true)
                 },
                 constraints: table =>
                 {
-                    table.PrimaryKey("PK_UserVerificationCode", x => x.id);
+                    table.PrimaryKey("PK_user_verification_code", x => x.id);
                     table.ForeignKey(
-                        name: "FK_UserVerificationCode_user_UserId",
+                        name: "FK_user_verification_code_user_UserId",
                         column: x => x.UserId,
                         principalTable: "user",
                         principalColumn: "id",
@@ -101,7 +101,7 @@ namespace Identity.Infrastructure.Persistence.Migrations
                 });
 
             migrationBuilder.CreateTable(
-                name: "RefreshToken",
+                name: "refresh_token",
                 columns: table => new
                 {
                     id = table.Column<Guid>(type: "uuid", nullable: false),
@@ -109,15 +109,15 @@ namespace Identity.Infrastructure.Persistence.Migrations
                     expires = table.Column<DateTime>(type: "timestamp with time zone", nullable: false),
                     revoked = table.Column<DateTime>(type: "timestamp with time zone", nullable: true),
                     device_id = table.Column<Guid>(type: "uuid", nullable: false),
-                    Updated = table.Column<DateTime>(type: "timestamp with time zone", nullable: false),
-                    Created = table.Column<DateTime>(type: "timestamp with time zone", nullable: false),
-                    Deleted = table.Column<DateTime>(type: "timestamp with time zone", nullable: true)
+                    updated = table.Column<DateTime>(type: "timestamp with time zone", nullable: false),
+                    created = table.Column<DateTime>(type: "timestamp with time zone", nullable: false),
+                    deleted = table.Column<DateTime>(type: "timestamp with time zone", nullable: true)
                 },
                 constraints: table =>
                 {
-                    table.PrimaryKey("PK_RefreshToken", x => x.id);
+                    table.PrimaryKey("PK_refresh_token", x => x.id);
                     table.ForeignKey(
-                        name: "FK_RefreshToken_device_device_id",
+                        name: "FK_refresh_token_device_device_id",
                         column: x => x.device_id,
                         principalTable: "device",
                         principalColumn: "id",
@@ -131,13 +131,13 @@ namespace Identity.Infrastructure.Persistence.Migrations
 
             migrationBuilder.CreateIndex(
                 name: "idx_token",
-                table: "RefreshToken",
+                table: "refresh_token",
                 column: "token",
                 unique: true);
 
             migrationBuilder.CreateIndex(
-                name: "IX_RefreshToken_device_id",
-                table: "RefreshToken",
+                name: "IX_refresh_token_device_id",
+                table: "refresh_token",
                 column: "device_id");
 
             migrationBuilder.CreateIndex(
@@ -148,17 +148,17 @@ namespace Identity.Infrastructure.Persistence.Migrations
 
             migrationBuilder.CreateIndex(
                 name: "idx_expiration_date",
-                table: "UserVerificationCode",
+                table: "user_verification_code",
                 column: "expiration_date");
 
             migrationBuilder.CreateIndex(
                 name: "idx_user_id",
-                table: "UserVerificationCode",
+                table: "user_verification_code",
                 column: "UserId");
 
             migrationBuilder.CreateIndex(
-                name: "IX_UserVerificationCode_code",
-                table: "UserVerificationCode",
+                name: "IX_user_verification_code_code",
+                table: "user_verification_code",
                 column: "code");
         }
 
@@ -169,10 +169,10 @@ namespace Identity.Infrastructure.Persistence.Migrations
                 name: "outbox_message");
 
             migrationBuilder.DropTable(
-                name: "RefreshToken");
+                name: "refresh_token");
 
             migrationBuilder.DropTable(
-                name: "UserVerificationCode");
+                name: "user_verification_code");
 
             migrationBuilder.DropTable(
                 name: "device");

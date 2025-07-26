@@ -12,7 +12,7 @@ using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 namespace Identity.Infrastructure.Persistence.Migrations
 {
     [DbContext(typeof(IdentityDbContext))]
-    [Migration("20250726201335_Initial")]
+    [Migration("20250726215752_Initial")]
     partial class Initial
     {
         /// <inheritdoc />
@@ -34,17 +34,20 @@ namespace Identity.Infrastructure.Persistence.Migrations
                         .HasColumnName("id");
 
                     b.Property<DateTime>("Created")
-                        .HasColumnType("timestamp with time zone");
+                        .HasColumnType("timestamp with time zone")
+                        .HasColumnName("created");
 
                     b.Property<DateTime?>("Deleted")
-                        .HasColumnType("timestamp with time zone");
+                        .HasColumnType("timestamp with time zone")
+                        .HasColumnName("deleted");
 
                     b.Property<bool>("IsVerified")
                         .HasColumnType("boolean")
                         .HasColumnName("is_verified");
 
                     b.Property<DateTime>("Updated")
-                        .HasColumnType("timestamp with time zone");
+                        .HasColumnType("timestamp with time zone")
+                        .HasColumnName("updated");
 
                     b.HasKey("Id");
 
@@ -67,10 +70,12 @@ namespace Identity.Infrastructure.Persistence.Migrations
                         .HasColumnName("connection_id");
 
                     b.Property<DateTime>("Created")
-                        .HasColumnType("timestamp with time zone");
+                        .HasColumnType("timestamp with time zone")
+                        .HasColumnName("created");
 
                     b.Property<DateTime?>("Deleted")
-                        .HasColumnType("timestamp with time zone");
+                        .HasColumnType("timestamp with time zone")
+                        .HasColumnName("deleted");
 
                     b.Property<DateTime?>("LastSeen")
                         .HasColumnType("timestamp with time zone");
@@ -96,7 +101,8 @@ namespace Identity.Infrastructure.Persistence.Migrations
                         .HasColumnName("type");
 
                     b.Property<DateTime>("Updated")
-                        .HasColumnType("timestamp with time zone");
+                        .HasColumnType("timestamp with time zone")
+                        .HasColumnName("updated");
 
                     b.Property<Guid>("UserId")
                         .HasColumnType("uuid");
@@ -116,10 +122,12 @@ namespace Identity.Infrastructure.Persistence.Migrations
                         .HasColumnName("id");
 
                     b.Property<DateTime>("Created")
-                        .HasColumnType("timestamp with time zone");
+                        .HasColumnType("timestamp with time zone")
+                        .HasColumnName("created");
 
                     b.Property<DateTime?>("Deleted")
-                        .HasColumnType("timestamp with time zone");
+                        .HasColumnType("timestamp with time zone")
+                        .HasColumnName("deleted");
 
                     b.Property<Guid>("DeviceId")
                         .HasColumnType("uuid")
@@ -140,7 +148,8 @@ namespace Identity.Infrastructure.Persistence.Migrations
                         .HasColumnName("token");
 
                     b.Property<DateTime>("Updated")
-                        .HasColumnType("timestamp with time zone");
+                        .HasColumnType("timestamp with time zone")
+                        .HasColumnName("updated");
 
                     b.HasKey("Id");
 
@@ -150,7 +159,7 @@ namespace Identity.Infrastructure.Persistence.Migrations
                         .IsUnique()
                         .HasDatabaseName("idx_token");
 
-                    b.ToTable("RefreshToken", (string)null);
+                    b.ToTable("refresh_token", (string)null);
                 });
 
             modelBuilder.Entity("Identity.Domain.Entities.UserVerificationCode", b =>
@@ -165,13 +174,16 @@ namespace Identity.Infrastructure.Persistence.Migrations
                         .HasColumnName("code_type");
 
                     b.Property<DateTime>("Created")
-                        .HasColumnType("timestamp with time zone");
+                        .HasColumnType("timestamp with time zone")
+                        .HasColumnName("created");
 
                     b.Property<DateTime?>("Deleted")
-                        .HasColumnType("timestamp with time zone");
+                        .HasColumnType("timestamp with time zone")
+                        .HasColumnName("deleted");
 
                     b.Property<DateTime>("Updated")
-                        .HasColumnType("timestamp with time zone");
+                        .HasColumnType("timestamp with time zone")
+                        .HasColumnName("updated");
 
                     b.Property<Guid>("UserId")
                         .HasColumnType("uuid");
@@ -181,7 +193,7 @@ namespace Identity.Infrastructure.Persistence.Migrations
                     b.HasIndex("UserId")
                         .HasDatabaseName("idx_user_id");
 
-                    b.ToTable("UserVerificationCode", (string)null);
+                    b.ToTable("user_verification_code", (string)null);
                 });
 
             modelBuilder.Entity("Identity.Infrastructure.Persistence.Outbox.OutboxMessage", b =>
@@ -323,7 +335,7 @@ namespace Identity.Infrastructure.Persistence.Migrations
 
                             b1.HasIndex("Value");
 
-                            b1.ToTable("UserVerificationCode");
+                            b1.ToTable("user_verification_code");
 
                             b1.WithOwner()
                                 .HasForeignKey("UserVerificationCodeId");

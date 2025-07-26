@@ -1,0 +1,25 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "placeholder", "placeholder\placeholder.csproj", "{3F310BEC-DC51-40AC-AB17-92A9DB119EF9}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "SolutionItems", "SolutionItems", "{62C991D6-E923-4451-BC43-A72AD8DDD495}"
+	ProjectSection(SolutionItems) = preProject
+		.gitignore = .gitignore
+	EndProjectSection
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "src", "src", "{0969E7EE-D0B9-4A6F-94EE-1FB3597A1F2A}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Test", "Test", "{E793673D-FDAE-475E-9B2A-3D6CCB1ED523}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{3F310BEC-DC51-40AC-AB17-92A9DB119EF9}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{3F310BEC-DC51-40AC-AB17-92A9DB119EF9}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{3F310BEC-DC51-40AC-AB17-92A9DB119EF9}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{3F310BEC-DC51-40AC-AB17-92A9DB119EF9}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+EndGlobal

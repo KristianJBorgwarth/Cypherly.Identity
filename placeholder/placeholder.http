@@ -1,0 +1,6 @@
+@placeholder_HostAddress = http://localhost:5261
+
+GET {{placeholder_HostAddress}}/weatherforecast/
+Accept: application/json
+
+###

@@ -4,9 +4,9 @@ using Microsoft.EntityFrameworkCore.Metadata.Builders;
 
 namespace Identity.Infrastructure.Persistence.ModelConfigurations;
 
-public class DeviceModelConfiguration : IEntityTypeConfiguration<Device>
+public class DeviceModelConfiguration : BaseModelConfiguration<Device>
 {
-    public void Configure(EntityTypeBuilder<Device> builder)
+    public override void Configure(EntityTypeBuilder<Device> builder)
     {
         builder.ToTable("device");
 
@@ -45,5 +45,7 @@ public class DeviceModelConfiguration : IEntityTypeConfiguration<Device>
 
         builder.HasIndex(d => d.UserId)
             .HasDatabaseName("idx_device_user_id");
+        
+        base.Configure(builder);
     }
 }

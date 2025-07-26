@@ -4,9 +4,9 @@ using Microsoft.EntityFrameworkCore.Metadata.Builders;
 
 namespace Identity.Infrastructure.Persistence.ModelConfigurations;
 
-public class UserModelConfiguration : IEntityTypeConfiguration<User>
+public class UserModelConfiguration : BaseModelConfiguration<User>
 {
-    public void Configure(EntityTypeBuilder<User> builder)
+    public override void Configure(EntityTypeBuilder<User> builder)
     {
         builder.ToTable("user");
         
@@ -48,5 +48,7 @@ public class UserModelConfiguration : IEntityTypeConfiguration<User>
             .WithOne()
             .HasForeignKey(d => d.UserId)
             .OnDelete(DeleteBehavior.Cascade);
+        
+        base.Configure(builder);
     }
 }

@@ -11,7 +11,7 @@ namespace Identity.Infrastructure.Persistence.ModelConfigurations;
 /// <see cref="Entity.Deleted"/> 
 /// </summary>
 /// <typeparam name="TModel"></typeparam>
-public abstract class BaseEntityTypeConfiguration<TModel> : IEntityTypeConfiguration<TModel> where TModel : Entity 
+public abstract class BaseModelConfiguration<TModel> : IEntityTypeConfiguration<TModel> where TModel : Entity 
 {
     public virtual void Configure(EntityTypeBuilder<TModel> builder)
     {

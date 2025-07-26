@@ -5,9 +5,9 @@ using Microsoft.EntityFrameworkCore.Metadata.Builders;
 
 namespace Identity.Infrastructure.Persistence.ModelConfigurations;
 
-public class UserVerificationCodeModelConfiguration : IEntityTypeConfiguration<UserVerificationCode>
+public class UserVerificationCodeModelConfiguration : BaseModelConfiguration<UserVerificationCode>
 {
-    public void Configure(EntityTypeBuilder<UserVerificationCode> builder)
+    public override void Configure(EntityTypeBuilder<UserVerificationCode> builder)
     {
         builder.ToTable("user_verification_code");
 
@@ -48,6 +48,8 @@ public class UserVerificationCodeModelConfiguration : IEntityTypeConfiguration<U
             .HasForeignKey(vc => vc.UserId);
 
         builder.HasIndex(vc => vc.UserId)
-            .HasDatabaseName("idx_user_id");;
+            .HasDatabaseName("idx_user_id");
+        
+        base.Configure(builder);
     }
 }

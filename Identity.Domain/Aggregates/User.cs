@@ -123,12 +123,12 @@ public class User : AggregateRoot
 
     /// <summary>
     /// Returns list of all active devices.
-    /// Devices where DeletedAt value is null <see cref="Device.DeletedAt"/>
+    /// Devices where DeletedAt value is null <see cref="Entity.Deleted"/>
     /// </summary>
     /// <returns></returns>
     public List<Device> GetDevices()
     {
-        return Devices.Where(x => x.DeletedAt is null).ToList();
+        return Devices.Where(x => x.Deleted is null).ToList();
     }
 
     /// <summary>
@@ -139,6 +139,6 @@ public class User : AggregateRoot
     /// <exception cref="InvalidOperationException">Exception thrown if the device is marked as Deleted</exception>
     public Device GetDevice(Guid deviceId)
     {
-        return Devices.FirstOrDefault(d => d.Id == deviceId && d.DeletedAt is null) ?? throw new InvalidOperationException("Device not found");
+        return Devices.FirstOrDefault(d => d.Id == deviceId && d.Deleted is null) ?? throw new InvalidOperationException("Device not found");
     }
 }

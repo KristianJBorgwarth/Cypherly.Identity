@@ -8,28 +8,37 @@ public class UserModelConfiguration : IEntityTypeConfiguration<User>
 {
     public void Configure(EntityTypeBuilder<User> builder)
     {
-        builder.ToTable("User");
+        builder.ToTable("user");
+        
         builder.HasKey(u => u.Id);
+
+        builder.Property(rt => rt.Id)
+            .HasColumnName("id");
+        
         builder.OwnsOne(u => u.Email, email =>
         {
             email.Property(e => e.Address)
-                .HasColumnName("Email")
+                .HasColumnName("email")
                 .IsRequired()
                 .HasColumnType("citext") // Ensure case-insensitive to prevent duplicate emails
                 .HasMaxLength(255);
 
-            email.HasIndex(e => e.Address).IsUnique();
+            email.HasIndex(e => e.Address)
+                .HasDatabaseName("idx_email")
+                .IsUnique();
         });
         builder.OwnsOne(u => u.Password, pw =>
         {
             pw.Property(p => p.HashedPassword)
-                .HasColumnName("Password")
+                .HasColumnName("password")
                 .IsRequired()
                 .HasMaxLength(255);
         });
-        builder.Property(u => u.IsVerified).IsRequired();
-
-
+        
+        builder.Property(u => u.IsVerified)
+            .HasColumnName("is_verified")
+            .IsRequired();
+        
         builder.HasMany(u => u.VerificationCodes)
             .WithOne()
             .HasForeignKey(vc => vc.UserId)

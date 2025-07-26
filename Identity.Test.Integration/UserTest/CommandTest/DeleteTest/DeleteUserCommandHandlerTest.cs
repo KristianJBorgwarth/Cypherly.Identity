@@ -46,7 +46,7 @@ public class DeleteUserCommandHandlerTest : IntegrationTestBase
         // Assert
         result.Success.Should().BeTrue();
         var deletedUser = await Db.User.AsNoTracking().FirstOrDefaultAsync(x => x.Id == user.Id);
-        deletedUser.DeletedAt.Should().NotBeNull();
+        deletedUser.Deleted.Should().NotBeNull();
     }
 
     [Fact]

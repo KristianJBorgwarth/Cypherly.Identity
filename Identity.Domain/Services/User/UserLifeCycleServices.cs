@@ -46,6 +46,6 @@ public class UserLifeCycleServices : IUserLifeCycleServices
 
     public bool IsUserDeleted(Identity.Domain.Aggregates.User user)
     {
-        return user.DeletedAt.HasValue;
+        return user.Deleted.HasValue;
     }
 }

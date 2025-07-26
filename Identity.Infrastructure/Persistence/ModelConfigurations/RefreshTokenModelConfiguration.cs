@@ -13,21 +13,27 @@ public class RefreshTokenModelConfiguration : IEntityTypeConfiguration<RefreshTo
         builder.HasKey(rt => rt.Id);
 
         builder.Property(rt => rt.Id)
+            .HasColumnName("id")
             .ValueGeneratedNever();
 
         builder.Property(rt => rt.Token)
             .HasMaxLength(128)
+            .HasColumnName("token")
             .IsRequired();
 
         builder.Property(rt => rt.Expires)
+            .HasColumnName("expires")
             .IsRequired();
 
-        builder.Property(rt => rt.Revoked);
+        builder.Property(rt => rt.Revoked)
+            .HasColumnName("revoked");
 
         builder.Property(rt => rt.DeviceId)
+            .HasColumnName("device_id")
             .IsRequired();
 
         builder.HasIndex(rt => rt.Token)
+            .HasDatabaseName("idx_token")
             .IsUnique();
     }
 }

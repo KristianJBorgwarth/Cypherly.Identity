@@ -4,9 +4,9 @@ using Microsoft.EntityFrameworkCore.Metadata.Builders;
 
 namespace Identity.Infrastructure.Persistence.ModelConfigurations;
 
-public class RefreshTokenModelConfiguration : IEntityTypeConfiguration<RefreshToken>
+public class RefreshTokenModelConfiguration : BaseModelConfiguration<RefreshToken>
 {
-    public void Configure(EntityTypeBuilder<RefreshToken> builder)
+    public override void Configure(EntityTypeBuilder<RefreshToken> builder)
     {
         builder.ToTable("refresh_token");
 
@@ -35,5 +35,7 @@ public class RefreshTokenModelConfiguration : IEntityTypeConfiguration<RefreshTo
         builder.HasIndex(rt => rt.Token)
             .HasDatabaseName("idx_token")
             .IsUnique();
+        
+        base.Configure(builder);
     }
 }

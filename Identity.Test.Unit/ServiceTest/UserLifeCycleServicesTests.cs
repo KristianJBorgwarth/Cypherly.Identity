@@ -92,7 +92,7 @@ namespace Cypherly.Authentication.Test.Unit.ServiceTest
             _userLifeCycleServices.SoftDelete(user);
 
             // Assert
-            user.DeletedAt.Should().NotBeNull();
+            user.Deleted.Should().NotBeNull();
             user.DomainEvents.Should().ContainSingle(e => e is UserDeletedEvent);
         }
 
@@ -109,7 +109,7 @@ namespace Cypherly.Authentication.Test.Unit.ServiceTest
             _userLifeCycleServices.RevertSoftDelete(user);
 
             // Assert
-            user.DeletedAt.Should().BeNull();
+            user.Deleted.Should().BeNull();
         }
 
         [Fact]

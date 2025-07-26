@@ -8,7 +8,7 @@ using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 
 #nullable disable
 
-namespace Cypherly.Identity.Infrastructure.Persistence.Migrations
+namespace Identity.Infrastructure.Persistence.Migrations
 {
     [DbContext(typeof(IdentityDbContext))]
     partial class IdentityDbContextModelSnapshot : ModelSnapshot
@@ -27,44 +27,46 @@ namespace Cypherly.Identity.Infrastructure.Persistence.Migrations
                 {
                     b.Property<Guid>("Id")
                         .ValueGeneratedOnAdd()
-                        .HasColumnType("uuid");
+                        .HasColumnType("uuid")
+                        .HasColumnName("id");
 
                     b.Property<DateTime>("Created")
                         .HasColumnType("timestamp with time zone");
 
-                    b.Property<DateTime?>("DeletedAt")
+                    b.Property<DateTime?>("Deleted")
                         .HasColumnType("timestamp with time zone");
 
                     b.Property<bool>("IsVerified")
-                        .HasColumnType("boolean");
+                        .HasColumnType("boolean")
+                        .HasColumnName("is_verified");
 
-                    b.Property<DateTime>("LastModified")
+                    b.Property<DateTime>("Updated")
                         .HasColumnType("timestamp with time zone");
 
                     b.HasKey("Id");
 
-                    b.ToTable("User", (string)null);
+                    b.ToTable("user", (string)null);
                 });
 
             modelBuilder.Entity("Identity.Domain.Entities.Device", b =>
                 {
                     b.Property<Guid>("Id")
-                        .HasColumnType("uuid");
+                        .HasColumnType("uuid")
+                        .HasColumnName("id");
 
                     b.Property<string>("AppVersion")
                         .IsRequired()
-                        .HasColumnType("text");
+                        .HasColumnType("text")
+                        .HasColumnName("app_version");
 
                     b.Property<Guid>("ConnectionId")
-                        .HasColumnType("uuid");
+                        .HasColumnType("uuid")
+                        .HasColumnName("connection_id");
 
                     b.Property<DateTime>("Created")
                         .HasColumnType("timestamp with time zone");
 
-                    b.Property<DateTime?>("DeletedAt")
-                        .HasColumnType("timestamp with time zone");
-
-                    b.Property<DateTime>("LastModified")
+                    b.Property<DateTime?>("Deleted")
                         .HasColumnType("timestamp with time zone");
 
                     b.Property<DateTime?>("LastSeen")
@@ -72,64 +74,78 @@ namespace Cypherly.Identity.Infrastructure.Persistence.Migrations
 
                     b.Property<string>("Name")
                         .IsRequired()
-                        .HasColumnType("text");
+                        .HasColumnType("text")
+                        .HasColumnName("name");
 
                     b.Property<string>("Platform")
                         .IsRequired()
-                        .HasColumnType("text");
+                        .HasColumnType("text")
+                        .HasColumnName("platform");
 
                     b.Property<string>("PublicKey")
                         .IsRequired()
-                        .HasColumnType("text");
+                        .HasColumnType("text")
+                        .HasColumnName("public_key");
 
                     b.Property<string>("Type")
                         .IsRequired()
-                        .HasColumnType("text");
+                        .HasColumnType("text")
+                        .HasColumnName("type");
+
+                    b.Property<DateTime>("Updated")
+                        .HasColumnType("timestamp with time zone");
 
                     b.Property<Guid>("UserId")
                         .HasColumnType("uuid");
 
                     b.HasKey("Id");
 
-                    b.HasIndex("UserId");
+                    b.HasIndex("UserId")
+                        .HasDatabaseName("idx_device_user_id");
 
-                    b.ToTable("Device", (string)null);
+                    b.ToTable("device", (string)null);
                 });
 
             modelBuilder.Entity("Identity.Domain.Entities.RefreshToken", b =>
                 {
                     b.Property<Guid>("Id")
-                        .HasColumnType("uuid");
+                        .HasColumnType("uuid")
+                        .HasColumnName("id");
 
                     b.Property<DateTime>("Created")
                         .HasColumnType("timestamp with time zone");
 
-                    b.Property<DateTime?>("DeletedAt")
+                    b.Property<DateTime?>("Deleted")
                         .HasColumnType("timestamp with time zone");
 
                     b.Property<Guid>("DeviceId")
-                        .HasColumnType("uuid");
+                        .HasColumnType("uuid")
+                        .HasColumnName("device_id");
 
                     b.Property<DateTime>("Expires")
-                        .HasColumnType("timestamp with time zone");
-
-                    b.Property<DateTime>("LastModified")
-                        .HasColumnType("timestamp with time zone");
+                        .HasColumnType("timestamp with time zone")
+                        .HasColumnName("expires");
 
                     b.Property<DateTime?>("Revoked")
-                        .HasColumnType("timestamp with time zone");
+                        .HasColumnType("timestamp with time zone")
+                        .HasColumnName("revoked");
 
                     b.Property<string>("Token")
                         .IsRequired()
                         .HasMaxLength(128)
-                        .HasColumnType("character varying(128)");
+                        .HasColumnType("character varying(128)")
+                        .HasColumnName("token");
+
+                    b.Property<DateTime>("Updated")
+                        .HasColumnType("timestamp with time zone");
 
                     b.HasKey("Id");
 
                     b.HasIndex("DeviceId");
 
                     b.HasIndex("Token")
-                        .IsUnique();
+                        .IsUnique()
+                        .HasDatabaseName("idx_token");
 
                     b.ToTable("RefreshToken", (string)null);
                 });
@@ -137,19 +153,21 @@ namespace Cypherly.Identity.Infrastructure.Persistence.Migrations
             modelBuilder.Entity("Identity.Domain.Entities.UserVerificationCode", b =>
                 {
                     b.Property<Guid>("Id")
-                        .HasColumnType("uuid");
+                        .HasColumnType("uuid")
+                        .HasColumnName("id");
 
                     b.Property<string>("CodeType")
                         .IsRequired()
-                        .HasColumnType("text");
+                        .HasColumnType("text")
+                        .HasColumnName("code_type");
 
                     b.Property<DateTime>("Created")
                         .HasColumnType("timestamp with time zone");
 
-                    b.Property<DateTime?>("DeletedAt")
+                    b.Property<DateTime?>("Deleted")
                         .HasColumnType("timestamp with time zone");
 
-                    b.Property<DateTime>("LastModified")
+                    b.Property<DateTime>("Updated")
                         .HasColumnType("timestamp with time zone");
 
                     b.Property<Guid>("UserId")
@@ -157,7 +175,8 @@ namespace Cypherly.Identity.Infrastructure.Persistence.Migrations
 
                     b.HasKey("Id");
 
-                    b.HasIndex("UserId");
+                    b.HasIndex("UserId")
+                        .HasDatabaseName("idx_user_id");
 
                     b.ToTable("UserVerificationCode", (string)null);
                 });
@@ -166,28 +185,34 @@ namespace Cypherly.Identity.Infrastructure.Persistence.Migrations
                 {
                     b.Property<Guid>("Id")
                         .ValueGeneratedOnAdd()
-                        .HasColumnType("uuid");
+                        .HasColumnType("uuid")
+                        .HasColumnName("id");
 
                     b.Property<string>("Content")
                         .IsRequired()
-                        .HasColumnType("text");
+                        .HasColumnType("text")
+                        .HasColumnName("content");
 
                     b.Property<string>("Error")
-                        .HasColumnType("text");
+                        .HasColumnType("text")
+                        .HasColumnName("error");
 
                     b.Property<DateTime>("OccurredOn")
-                        .HasColumnType("timestamp with time zone");
+                        .HasColumnType("timestamp with time zone")
+                        .HasColumnName("occurred_on");
 
                     b.Property<DateTime?>("ProcessedOn")
-                        .HasColumnType("timestamp with time zone");
+                        .HasColumnType("timestamp with time zone")
+                        .HasColumnName("processed_on");
 
                     b.Property<string>("Type")
                         .IsRequired()
-                        .HasColumnType("text");
+                        .HasColumnType("text")
+                        .HasColumnName("type");
 
                     b.HasKey("Id");
 
-                    b.ToTable("OutboxMessage", (string)null);
+                    b.ToTable("outbox_message", (string)null);
                 });
 
             modelBuilder.Entity("Identity.Domain.Aggregates.User", b =>
@@ -201,14 +226,15 @@ namespace Cypherly.Identity.Infrastructure.Persistence.Migrations
                                 .IsRequired()
                                 .HasMaxLength(255)
                                 .HasColumnType("citext")
-                                .HasColumnName("Email");
+                                .HasColumnName("email");
 
                             b1.HasKey("UserId");
 
                             b1.HasIndex("Address")
-                                .IsUnique();
+                                .IsUnique()
+                                .HasDatabaseName("idx_email");
 
-                            b1.ToTable("User");
+                            b1.ToTable("user");
 
                             b1.WithOwner()
                                 .HasForeignKey("UserId");
@@ -223,11 +249,11 @@ namespace Cypherly.Identity.Infrastructure.Persistence.Migrations
                                 .IsRequired()
                                 .HasMaxLength(255)
                                 .HasColumnType("character varying(255)")
-                                .HasColumnName("Password");
+                                .HasColumnName("password");
 
                             b1.HasKey("UserId");
 
-                            b1.ToTable("User");
+                            b1.ToTable("user");
 
                             b1.WithOwner()
                                 .HasForeignKey("UserId");
@@ -274,20 +300,23 @@ namespace Cypherly.Identity.Infrastructure.Persistence.Migrations
                                 .HasColumnType("uuid");
 
                             b1.Property<DateTime>("ExpirationDate")
-                                .HasColumnType("timestamp with time zone");
+                                .HasColumnType("timestamp with time zone")
+                                .HasColumnName("expiration_date");
 
                             b1.Property<bool>("IsUsed")
-                                .HasColumnType("boolean");
+                                .HasColumnType("boolean")
+                                .HasColumnName("is_used");
 
                             b1.Property<string>("Value")
                                 .IsRequired()
                                 .HasMaxLength(20)
                                 .HasColumnType("character varying(20)")
-                                .HasColumnName("Code");
+                                .HasColumnName("code");
 
                             b1.HasKey("UserVerificationCodeId");
 
-                            b1.HasIndex("ExpirationDate");
+                            b1.HasIndex("ExpirationDate")
+                                .HasDatabaseName("idx_expiration_date");
 
                             b1.HasIndex("Value");
 

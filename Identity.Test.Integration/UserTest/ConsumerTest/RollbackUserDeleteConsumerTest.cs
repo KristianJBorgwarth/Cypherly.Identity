@@ -51,7 +51,7 @@ public class RollbackUserDeleteConsumerTest : IntegrationTestBase
         await _sut.Consume(fakeConsumeContext);
 
         // Assert
-        Db.User.AsNoTracking().FirstOrDefault()!.DeletedAt.Should().BeNull();
+        Db.User.AsNoTracking().FirstOrDefault()!.Deleted.Should().BeNull();
     }
 
     [Fact]
@@ -76,7 +76,7 @@ public class RollbackUserDeleteConsumerTest : IntegrationTestBase
 
         // Assert
         await act.Should().ThrowAsync<KeyNotFoundException>();
-        Db.User.AsNoTracking().FirstOrDefault()!.DeletedAt.Should().NotBeNull();
+        Db.User.AsNoTracking().FirstOrDefault()!.Deleted.Should().NotBeNull();
     }
 
 }

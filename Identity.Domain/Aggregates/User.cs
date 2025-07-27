@@ -44,7 +44,7 @@ public class User : AggregateRoot
             vc.Code.Use();
         }
 
-        _verificationCodes.Add(new(Guid.NewGuid(), userId: Id, codeType));
+        _verificationCodes.Add(new UserVerificationCode(Guid.NewGuid(), userId: Id, codeType));
     }
 
     /// <summary>

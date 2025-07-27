@@ -16,11 +16,12 @@ internal static class PersistenceExtensions
         services.AddDbContext<IdentityDbContext>(options =>
         {
             options.UseNpgsql(configuration.GetConnectionString(ConnectionStringName),
-                sqlOptions =>
+                contextOptionsBuilder =>
                 {
-                    sqlOptions.MigrationsAssembly(assembly.FullName);
-                    sqlOptions.EnableRetryOnFailure();
-                });
+                    contextOptionsBuilder.MigrationsAssembly(assembly.FullName);
+                    contextOptionsBuilder.EnableRetryOnFailure();
+                })
+                .UseLazyLoadingProxies();
         });
 
         services.AddRepositories();

@@ -47,6 +47,9 @@ public class UserVerificationCodeModelConfiguration : BaseModelConfiguration<Use
             .WithMany(u => u.VerificationCodes)
             .HasForeignKey(vc => vc.UserId);
 
+        builder.Property(vc => vc.UserId)
+            .HasColumnName("user_id");
+
         builder.HasIndex(vc => vc.UserId)
             .HasDatabaseName("idx_user_id");
         

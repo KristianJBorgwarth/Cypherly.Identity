@@ -13,7 +13,7 @@ public class GetConnectionIdsByUserQueryValidatorTest
         // Arrange
         var query = new GetConnectionIdsByUserQuery
         {
-            UserId = Guid.NewGuid()
+            TenantId = Guid.NewGuid()
         };
 
         // Act
@@ -29,7 +29,7 @@ public class GetConnectionIdsByUserQueryValidatorTest
         // Arrange
         var query = new GetConnectionIdsByUserQuery
         {
-            UserId = Guid.Empty
+            TenantId = Guid.Empty
         };
 
         // Act
@@ -37,6 +37,6 @@ public class GetConnectionIdsByUserQueryValidatorTest
 
         // Assert
         result.IsValid.Should().BeFalse();
-        result.Errors[0].ErrorMessage.Should().Be("'User Id' must not be empty.");
+        result.Errors[0].ErrorMessage.Should().Be("'Tenant Id' must not be empty.");
     }
 }

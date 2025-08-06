@@ -6,7 +6,7 @@ public class GetConnectionIdsByUserQueryValidator : AbstractValidator<GetConnect
 {
     public GetConnectionIdsByUserQueryValidator()
     {
-        RuleFor(x => x.UserId)
+        RuleFor(x => x.TenantId)
             .NotEmpty();
     }
 }

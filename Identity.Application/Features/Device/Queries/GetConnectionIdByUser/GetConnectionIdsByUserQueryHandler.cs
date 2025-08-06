@@ -16,17 +16,17 @@ public class GetConnectionIdsByUserQueryHandler(
     {
         try
         {
-            var user = await userRepository.GetByIdAsync(request.UserId);
+            var user = await userRepository.GetByIdAsync(request.TenantId);
             if (user is null)
             {
-                return Result.Fail<GetConnectionIdsByUserDto>(Errors.General.NotFound(request.UserId));
+                return Result.Fail<GetConnectionIdsByUserDto>(Errors.General.NotFound(request.TenantId));
             }
             var dto = GetConnectionIdsByUserDto.MapFrom(user.GetDevices());
             return Result.Ok(dto);
         }
         catch (Exception exception)
         {
-            logger.LogCritical(exception, "Error retrieving connection ids for user {UserId}", request.UserId);
+            logger.LogCritical(exception, "Error retrieving connection ids for user {UserId}", request.TenantId);
             return Result.Fail<GetConnectionIdsByUserDto>(Errors.General.UnspecifiedError("An exception occurred while retrieving connection ids for user"));
         }
     }

@@ -1,4 +1,5 @@
-﻿using Identity.Application.Features.Device.Commands.Create;
+﻿using Identity.API.Common;
+using Identity.Application.Features.Device.Commands.Create;
 using Identity.Application.Features.Device.Queries.GetConnectionIdByUser;
 using Identity.Application.Features.Device.Queries.GetConnectionIdsByUsers;
 using Identity.Application.Features.Device.Queries.GetDevices;
@@ -77,13 +78,15 @@ public class UserController(ISender sender) : BaseController
     }
 
     [HttpGet]
+    [Authorize]
     [Route("device/connectionid")]
     [ProducesResponseType(typeof(GetConnectionIdsByUserDto), StatusCodes.Status200OK)]
-    [ProducesResponseType(StatusCodes.Status200OK)]
+    [ProducesResponseType(StatusCodes.Status401Unauthorized)]
     [ProducesResponseType(StatusCodes.Status400BadRequest)]
-    public async Task<IActionResult> GetConnectionId([FromQuery] GetConnectionIdsByUserQuery byUserQuery)
+    public async Task<IActionResult> GetConnectionId()
     {
-        var result = await sender.Send(byUserQuery);
+        var tenantId = User.GetUserId();
+        var result = await sender.Send(new GetConnectionIdsByUserQuery {TenantId = tenantId});
         if (result.Success is false) return Error(result.Error);
 
         return result.Value!.ConnectionIds.Count != 0 ? Ok(result.Value) : NoContent();
@@ -92,7 +95,6 @@ public class UserController(ISender sender) : BaseController
     [HttpGet]
     [Route("devices/connectionids")]
     [ProducesResponseType(typeof(GetConnectionIdsByUsersDto), StatusCodes.Status200OK)]
-    [ProducesResponseType(StatusCodes.Status200OK)]
     [ProducesResponseType(StatusCodes.Status400BadRequest)]
     public async Task<IActionResult> GetConnectionIds([FromQuery] GetConnectionIdsByUsersQuery query)
     {

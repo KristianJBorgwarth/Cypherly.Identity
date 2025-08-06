@@ -30,7 +30,7 @@ public class GetConnectionIdsByUserQueryHandlerTest : IntegrationTestBase
         // Arrange
         var query = new GetConnectionIdsByUserQuery()
         {
-            UserId = Guid.NewGuid()
+            TenantId = Guid.NewGuid()
         };
 
         // Act
@@ -50,7 +50,7 @@ public class GetConnectionIdsByUserQueryHandlerTest : IntegrationTestBase
 
         var query = new GetConnectionIdsByUserQuery()
         {
-            UserId = user.Id
+            TenantId = user.Id
         };
 
         // Act
@@ -76,7 +76,7 @@ public class GetConnectionIdsByUserQueryHandlerTest : IntegrationTestBase
 
         var query = new GetConnectionIdsByUserQuery()
         {
-            UserId = user.Id
+            TenantId = user.Id
         };
 
         // Act

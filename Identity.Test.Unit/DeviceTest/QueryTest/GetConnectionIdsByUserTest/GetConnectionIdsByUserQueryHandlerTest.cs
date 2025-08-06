@@ -26,25 +26,25 @@ public class GetConnectionIdsByUserQueryHandlerTest
     public async Task Handle_WhenUserNotFound_ReturnsNotFound()
     {
         // Arrange
-        var query = new GetConnectionIdsByUserQuery { UserId = Guid.NewGuid() };
-        A.CallTo(() => _fakeRepository.GetByIdAsync(query.UserId)).Returns((User)null);
+        var query = new GetConnectionIdsByUserQuery { TenantId = Guid.NewGuid() };
+        A.CallTo(() => _fakeRepository.GetByIdAsync(query.TenantId)).Returns((User)null);
 
         // Act
         var result = await _sut.Handle(query, CancellationToken.None);
 
         // Assert
         result.Success.Should().BeFalse();
-        result.Error.Should().BeEquivalentTo(Errors.General.NotFound(query.UserId));
+        result.Error.Should().BeEquivalentTo(Errors.General.NotFound(query.TenantId));
     }
 
     [Fact]
     public async Task Handle_WhenUserFound_ReturnsConnectionIds()
     {
         // Arrange
-        var query = new GetConnectionIdsByUserQuery { UserId = Guid.NewGuid() };
+        var query = new GetConnectionIdsByUserQuery { TenantId = Guid.NewGuid() };
         var user = new User();
         user.AddDevice(new Device(Guid.NewGuid(), "test", "1.0", DeviceType.Desktop, DevicePlatform.Android, user.Id));
-        A.CallTo(() => _fakeRepository.GetByIdAsync(query.UserId)).Returns(user);
+        A.CallTo(() => _fakeRepository.GetByIdAsync(query.TenantId)).Returns(user);
 
         // Act
         var result = await _sut.Handle(query, CancellationToken.None);
@@ -58,8 +58,8 @@ public class GetConnectionIdsByUserQueryHandlerTest
     public async Task Handle_WhenExceptionThrown_ReturnsUnspecifiedError()
     {
         // Arrange
-        var query = new GetConnectionIdsByUserQuery { UserId = Guid.NewGuid() };
-        A.CallTo(() => _fakeRepository.GetByIdAsync(query.UserId)).Throws<Exception>();
+        var query = new GetConnectionIdsByUserQuery { TenantId = Guid.NewGuid() };
+        A.CallTo(() => _fakeRepository.GetByIdAsync(query.TenantId)).Throws<Exception>();
 
         // Act
         var result = await _sut.Handle(query, CancellationToken.None);
@@ -73,10 +73,10 @@ public class GetConnectionIdsByUserQueryHandlerTest
     public async Task Handle_When_User_Has_No_Devices_Should_Return_EmptyList()
     {
         // Arrange
-        var query = new GetConnectionIdsByUserQuery { UserId = Guid.NewGuid() };
+        var query = new GetConnectionIdsByUserQuery { TenantId = Guid.NewGuid() };
         var user = new User();
 
-        A.CallTo(() => _fakeRepository.GetByIdAsync(query.UserId)).Returns(user);
+        A.CallTo(() => _fakeRepository.GetByIdAsync(query.TenantId)).Returns(user);
 
         // Act
         var result = await _sut.Handle(query, CancellationToken.None);

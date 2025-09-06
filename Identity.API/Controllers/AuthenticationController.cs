@@ -4,7 +4,6 @@ using Identity.Application.Features.Authentication.Commands.RefreshTokens;
 using Identity.Application.Features.Authentication.Commands.VerifyLogin;
 using Identity.Application.Features.Authentication.Commands.VerifyNonce;
 using Identity.Application.Features.Authentication.Queries.GetNonce;
-using Identity.API.Filters;
 using MediatR;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
@@ -24,7 +23,6 @@ public class AuthenticationController(ISender sender) : BaseController
         return result.Success ? Ok(result.Value) : Error(result.Error);
     }
 
-    [ServiceFilter(typeof(IValidateUserIdFilter))]
     [Authorize]
     [HttpPost]
     [Route("logout")]

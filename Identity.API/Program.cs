@@ -1,12 +1,9 @@
 using System.Reflection;
-using System.Text;
 using Identity.Application.Extensions;
 using Identity.Application.Features.Authentication.Token;
 using Identity.API.Extensions;
-using Identity.API.Filters;
 using Identity.Domain.Extensions;
 using Identity.Infrastructure.Extensions;
-using Microsoft.IdentityModel.Tokens;
 using Microsoft.OpenApi.Models;
 using Serilog;
 
@@ -62,32 +59,7 @@ builder.Services.AddInfrastructure(configuration, Assembly.Load("Identity.Infras
 
 #endregion
 
-#region Authenticaion & Authorization
-
-var jwtSettings = configuration.GetSection("Jwt").Get<JwtSettings>();
-builder.Services.AddAuthentication()
-    .AddJwtBearer(options =>
-    {
-        if (jwtSettings is null)
-            throw new NotImplementedException("MISSING JWT SETTINGS");
-
-        options.TokenValidationParameters = new()
-        {
-            ValidateIssuer = true,
-            ValidateAudience = true,
-            ValidateLifetime = true,
-            ValidateIssuerSigningKey = true,
-            ValidIssuer = jwtSettings.Issuer ?? throw new NotImplementedException($"MISSING VALUE IN JWT SETTINGS {jwtSettings.Issuer}"),
-            ValidAudience = jwtSettings.Audience ?? throw new NotImplementedException($"MISSING VALUE IN JWT SETTINGS {jwtSettings.Audience}"),
-            IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(jwtSettings.Secret))
-        };
-    });
-
-builder.Services.AddAuthorization();
-
-builder.Services.AddScoped<IValidateUserIdFilter, ValidateUserIdIdFilter>();
-
-#endregion
+builder.Services.AddAuthentication(configuration);
 
 #region CORS
 

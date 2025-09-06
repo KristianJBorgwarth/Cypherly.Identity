@@ -1,4 +1,5 @@
-﻿using Identity.API.Common;
+﻿using Identity.API.Authentication;
+using Identity.API.Common;
 using Identity.Application.Features.Device.Commands.Create;
 using Identity.Application.Features.Device.Queries.GetConnectionIdByUser;
 using Identity.Application.Features.Device.Queries.GetConnectionIdsByUsers;
@@ -79,6 +80,7 @@ public class UserController(ISender sender) : BaseController
 
     [HttpGet]
     [Authorize]
+    [Authorize(Policy = PolicyNames.Machine)]
     [Route("device/connectionid")]
     [ProducesResponseType(typeof(GetConnectionIdsByUserDto), StatusCodes.Status200OK)]
     [ProducesResponseType(StatusCodes.Status401Unauthorized)]
@@ -93,6 +95,8 @@ public class UserController(ISender sender) : BaseController
     }
 
     [HttpGet]
+    [Authorize]
+    [Authorize(Policy = PolicyNames.Machine)]
     [Route("devices/connectionids")]
     [ProducesResponseType(typeof(GetConnectionIdsByUsersDto), StatusCodes.Status200OK)]
     [ProducesResponseType(StatusCodes.Status400BadRequest)]

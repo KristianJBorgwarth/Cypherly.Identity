@@ -4,7 +4,6 @@ using Cypherly.Message.Contracts.Responses.Client;
 using Cypherly.Message.Contracts.Responses.Profile;
 using DotNet.Testcontainers.Builders;
 using DotNet.Testcontainers.Containers;
-using Identity.API.Filters;
 using Identity.Application.Features.Authentication.Token;
 using Identity.Infrastructure.Settings;
 using Identity.Test.Integration.Setup.Authentication;
@@ -78,20 +77,7 @@ public class IntegrationTestFactory<TProgram, TDbContext> : WebApplicationFactor
             services.AddAuthorizationBuilder()
                 .AddPolicy("AdminOnly", policy => policy.RequireAssertion(_ => true))
                 .AddPolicy("User", policy => policy.RequireAssertion(_ => true));
-
-            // Mock out ValidateUserIdFilter
-            // Remove the existing ValidateUserIdFilter registration
-            var actionFilterDescriptor = services.SingleOrDefault(
-                d => d.ServiceType == typeof(IValidateUserIdFilter));
-
-            if (actionFilterDescriptor != null)
-            {
-                services.Remove(actionFilterDescriptor);
-            }
-
-            // Replace with a mock or NoOp implementation
-            services.AddScoped<IValidateUserIdFilter, MockValidateUserIdIdFilter>();
-
+            
             #endregion
 
             #region RabbitMq Extensions

@@ -47,7 +47,7 @@ public class GetConnectionIdsByUsersQueryHandlerTest : IntegrationTestBase
 
         var query = new GetConnectionIdsByUsersQuery
         {
-            UserIds = new List<Guid> { user1.Id, user2.Id, user3.Id }
+            TenantIds = new List<Guid> { user1.Id, user2.Id, user3.Id }
         };
 
         // Act
@@ -67,7 +67,7 @@ public class GetConnectionIdsByUsersQueryHandlerTest : IntegrationTestBase
         // Arrange
         var query = new GetConnectionIdsByUsersQuery
         {
-            UserIds = new List<Guid> { Guid.NewGuid(), Guid.NewGuid(), Guid.NewGuid() }
+            TenantIds = new List<Guid> { Guid.NewGuid(), Guid.NewGuid(), Guid.NewGuid() }
         };
 
         // Act

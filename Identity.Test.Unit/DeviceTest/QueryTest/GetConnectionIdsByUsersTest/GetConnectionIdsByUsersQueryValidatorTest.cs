@@ -14,7 +14,7 @@ public class GetConnectionIdsByUsersQueryValidatorTest
         // Arrange
         var query = new GetConnectionIdsByUsersQuery
         {
-            UserIds = new List<Guid> { Guid.NewGuid(), Guid.NewGuid() }
+            TenantIds = new List<Guid> { Guid.NewGuid(), Guid.NewGuid() }
         };
 
         // Act
@@ -30,7 +30,7 @@ public class GetConnectionIdsByUsersQueryValidatorTest
         // Arrange
         var query = new GetConnectionIdsByUsersQuery
         {
-            UserIds = new List<Guid>()
+            TenantIds = new List<Guid>()
         };
 
         // Act
@@ -39,7 +39,7 @@ public class GetConnectionIdsByUsersQueryValidatorTest
         // Assert
         result.IsValid.Should().BeFalse();
         result.Errors.Should().ContainSingle()
-            .Which.ErrorMessage.Should().Be(Errors.General.ValueIsEmpty(nameof(GetConnectionIdsByUsersQuery.UserIds)).Message);
+            .Which.ErrorMessage.Should().Be(Errors.General.ValueIsEmpty(nameof(GetConnectionIdsByUsersQuery.TenantIds)).Message);
     }
 
     [Fact]
@@ -48,7 +48,7 @@ public class GetConnectionIdsByUsersQueryValidatorTest
         // Arrange
         var query = new GetConnectionIdsByUsersQuery
         {
-            UserIds = new List<Guid> { Guid.NewGuid(), Guid.Empty }
+            TenantIds = new List<Guid> { Guid.NewGuid(), Guid.Empty }
         };
 
         // Act

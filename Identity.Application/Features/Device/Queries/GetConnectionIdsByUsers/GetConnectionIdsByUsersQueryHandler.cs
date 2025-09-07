@@ -17,9 +17,15 @@ public class GetConnectionIdsByUsersQueryHandler(
     {
         try
         {
-            var users = await userRepository.GetUsersAsync(request.UserIds.ToArray());
-            var connectionIds = GetConnectionIdsByUsersDto.MapFrom(users);
-            return Result.Ok(connectionIds);
+            var users = await userRepository.GetUsersAsync(request.TenantIds.ToArray());
+            
+            var connectionIds = users.ToDictionary(
+                user => user.Id,
+                user => user.GetDevices().Select(device => device.ConnectionId).ToList());
+            
+            var dto = new GetConnectionIdsByUsersDto() {ConnectionIds = connectionIds};
+
+            return dto;
         }
         catch (Exception e)
         {

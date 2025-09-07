@@ -1,5 +1,4 @@
 ﻿using Cypherly.Domain.Common;
-using Identity.Application.Contracts;
 using Identity.Application.Abstractions;
 using Identity.Application.Contracts.Repository;
 using Identity.Domain.Common;
@@ -17,12 +16,11 @@ public class GetConnectionIdsByUserQueryHandler(
         try
         {
             var user = await userRepository.GetByIdAsync(request.TenantId);
-            if (user is null)
-            {
-                return Result.Fail<GetConnectionIdsByUserDto>(Errors.General.NotFound(request.TenantId));
-            }
-            var dto = GetConnectionIdsByUserDto.MapFrom(user.GetDevices());
-            return Result.Ok(dto);
+            if (user is null) return Result.Fail<GetConnectionIdsByUserDto>(Errors.General.NotFound(request.TenantId));
+            
+            var connectionIds = user.GetDevices().Select(x => x.ConnectionId).ToList(); 
+            
+            return new GetConnectionIdsByUserDto { ConnectionIds = connectionIds };
         }
         catch (Exception exception)
         {

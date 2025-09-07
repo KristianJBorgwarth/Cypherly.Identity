@@ -4,6 +4,7 @@ using Cypherly.Message.Contracts.Abstractions;
 using Cypherly.Message.Contracts.Messages.Common;
 using Cypherly.Message.Contracts.Messages.Email;
 using Cypherly.Message.Contracts.Messages.User;
+using Identity.Application.Features.Device.Consumers;
 using Identity.Infrastructure.Messaging;
 using Identity.Infrastructure.Settings;
 using MassTransit;
@@ -21,6 +22,16 @@ public static class MassTransitExtensions
             cfg.ReceiveEndpoint("authentication_fail_queue", e =>
             {
                 e.Consumer<RollbackUserDeleteConsumer>(context);
+            });
+            
+            cfg.ReceiveEndpoint("connection_id_queue", e =>
+            {
+                e.Consumer<ConnectionIdConsumer>(context);
+            });
+            
+            cfg.ReceiveEndpoint("connection_ids_queue", e =>
+            {
+                e.Consumer<ConnectionIdsConsumer>(context);
             });
         });
         services.AddProducer<SendEmailMessage>();

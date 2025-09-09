@@ -25,16 +25,13 @@ public class LoginCommandHandler(
             var pwResult = user.Password.Verify(request.Password);
             if (!pwResult) return Result.Fail<LoginDto>(Errors.General.UnspecifiedError("Invalid Credentials"));
 
-            if (user.IsVerified == false)
-                return Result.Ok(LoginDto.Map(user, false));
+            if (!user.IsVerified) return Result.Ok(new LoginDto { IsVerified = false, UserId = user.Id});
 
             authenticationService.GenerateLoginVerificationCode(user);
 
             await unitOfWork.SaveChangesAsync(cancellationToken);
-
-            var dto = LoginDto.Map(user, true);
-
-            return Result.Ok(dto);
+            
+            return new LoginDto { IsVerified = true, UserId = user.Id  };
 
         }
         catch (Exception ex)

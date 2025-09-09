@@ -30,16 +30,18 @@ public class RefreshTokensCommandHandler(
             }
 
             var isTokenValid = authService.VerifyRefreshToken(user, request.DeviceId, request.RefreshToken);
-            if (isTokenValid is false)
-            {
-                return Result.Fail<RefreshTokensDto>(Errors.General.UnspecifiedError("Invalid refresh token"));
-            }
-
+            if (!isTokenValid) return Result.Fail<RefreshTokensDto>(Errors.General.UnspecifiedError("Invalid refresh token"));
+            
             var refreshToken = authService.GenerateRefreshToken(user, request.DeviceId);
 
             var accessToken = jwtService.GenerateToken(user.Id, request.DeviceId);
 
-            var dto = RefreshTokensDto.Map(accessToken, refreshToken);
+            var dto = new RefreshTokensDto
+            {
+                Jwt = accessToken,
+                RefreshToken = refreshToken.Token,
+                ExpiresAt = refreshToken.Expires
+            };
 
             await unitOfWork.SaveChangesAsync(cancellationToken);
 

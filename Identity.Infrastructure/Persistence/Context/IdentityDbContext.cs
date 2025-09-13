@@ -8,11 +8,11 @@ namespace Identity.Infrastructure.Persistence.Context;
 
 public class IdentityDbContext(DbContextOptions options) : DbContext(options)
 {
-    public DbSet<User> User { get; private set; } = null!;
-    public DbSet<UserVerificationCode> VerificationCode { get; private set; } = null!;
-    public DbSet<Device> Device { get; private set; } = null!;
-    public DbSet<RefreshToken> RefreshToken { get; private set; } = null!;
-    public DbSet<OutboxMessage> OutboxMessage { get; set; } = null!;
+    public DbSet<User> User { get; init; }
+    public DbSet<UserVerificationCode> VerificationCode { get; init; }
+    public DbSet<Device> Device { get; init; }
+    public DbSet<RefreshToken> RefreshToken { get; init; }
+    public DbSet<OutboxMessage> OutboxMessage { get; init; }
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {

@@ -9,7 +9,7 @@ namespace Cypherly.Authentication.Test.Unit.ServiceTest
 {
     public class UserLifeCycleServicesTests
     {
-        private readonly UserLifeCycleServices _userLifeCycleServices = new();
+        private readonly UserLifeCycleService _userLifeCycleServices = new();
 
         [Fact]
         public void CreateUser_Should_Fail_When_Email_Is_Invalid()

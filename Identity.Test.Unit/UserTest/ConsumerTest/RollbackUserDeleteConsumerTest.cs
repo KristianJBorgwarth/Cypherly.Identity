@@ -16,7 +16,7 @@ namespace Identity.Test.Unit.UserTest.ConsumerTest;
 public class RollbackUserDeleteConsumerTest
 {
     private readonly IUserRepository _fakeRepo;
-    private readonly IUserLifeCycleServices _fakeLifeCycleServices;
+    private readonly IUserLifeCycleService _fakeLifeCycleServices;
     private readonly IUnitOfWork _fakeUnitOfWork;
     private readonly ILogger<RollbackUserDeleteConsumer> _fakeLogger;
     private readonly Fixture _fixture = new();
@@ -25,7 +25,7 @@ public class RollbackUserDeleteConsumerTest
     public RollbackUserDeleteConsumerTest()
     {
         _fakeRepo = A.Fake<IUserRepository>();
-        _fakeLifeCycleServices = A.Fake<IUserLifeCycleServices>();
+        _fakeLifeCycleServices = A.Fake<IUserLifeCycleService>();
         _fakeUnitOfWork = A.Fake<IUnitOfWork>();
         _fakeLogger = A.Fake<ILogger<RollbackUserDeleteConsumer>>();
         _sut = new RollbackUserDeleteConsumer(_fakeRepo, _fakeLifeCycleServices, _fakeUnitOfWork, _fakeLogger);

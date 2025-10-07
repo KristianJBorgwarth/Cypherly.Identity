@@ -13,14 +13,14 @@ public class DeleteUserCommandHandlerTest
 {
     private readonly IUserRepository _fakeUserRepository;
     private readonly IUnitOfWork _fakeUnitOfWork;
-    private readonly IUserLifeCycleServices _fakeUserLifeCycleServices;
+    private readonly IUserLifeCycleService _fakeUserLifeCycleServices;
     private readonly DeleteUserCommandHandler _sut;
 
     public DeleteUserCommandHandlerTest()
     {
         _fakeUserRepository = A.Fake<IUserRepository>();
         _fakeUnitOfWork = A.Fake<IUnitOfWork>();
-        _fakeUserLifeCycleServices = A.Fake<IUserLifeCycleServices>();
+        _fakeUserLifeCycleServices = A.Fake<IUserLifeCycleService>();
         var fakeLogger = A.Fake<ILogger<DeleteUserCommandHandler>>();
         _sut = new(_fakeUserRepository, _fakeUnitOfWork, _fakeUserLifeCycleServices, fakeLogger);
     }

@@ -18,7 +18,7 @@ namespace Identity.Test.Unit.UserTest.CommandTest.CreateTest;
 public class CreateUserCommandHandlerTests
 {
     private readonly IUserRepository _fakeRepo;
-    private readonly IUserLifeCycleServices _fakeUserLifeCycleServices;
+    private readonly IUserLifeCycleService _fakeUserLifeCycleServices;
     private readonly IUnitOfWork _fakeUnitOfWork;
     private readonly IRequestClient<CreateUserProfileMessage> _fakeRequestClient;
     private readonly Fixture _fixture = new();
@@ -27,7 +27,7 @@ public class CreateUserCommandHandlerTests
     public CreateUserCommandHandlerTests()
     {
         _fakeRepo = A.Fake<IUserRepository>();
-        _fakeUserLifeCycleServices = A.Fake<IUserLifeCycleServices>();
+        _fakeUserLifeCycleServices = A.Fake<IUserLifeCycleService>();
         _fakeUnitOfWork = A.Fake<IUnitOfWork>();
         _fakeRequestClient = A.Fake<IRequestClient<CreateUserProfileMessage>>();
         var fakeLogger = A.Fake<ILogger<CreateUserCommandHandler>>();

@@ -21,7 +21,7 @@ public class CreateUserCommandHandlerTest : IntegrationTestBase
     {
 
         var scope = factory.Services.CreateScope();
-        var userService = scope.ServiceProvider.GetRequiredService<IUserLifeCycleServices>();
+        var userService = scope.ServiceProvider.GetRequiredService<IUserLifeCycleService>();
         var unitOfWork = scope.ServiceProvider.GetRequiredService<IUnitOfWork>();
         var requestClient = scope.ServiceProvider.GetRequiredService<IRequestClient<CreateUserProfileMessage>>();
         var logger = scope.ServiceProvider.GetRequiredService<ILogger<CreateUserCommandHandler>>();

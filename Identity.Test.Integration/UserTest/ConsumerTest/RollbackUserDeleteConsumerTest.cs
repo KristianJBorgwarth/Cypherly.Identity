@@ -24,7 +24,7 @@ public class RollbackUserDeleteConsumerTest : IntegrationTestBase
     {
         var scope = factory.Services.CreateScope();
         var repo = scope.ServiceProvider.GetRequiredService<IUserRepository>();
-        var service = scope.ServiceProvider.GetRequiredService<IUserLifeCycleServices>();
+        var service = scope.ServiceProvider.GetRequiredService<IUserLifeCycleService>();
         var unitOfWork = scope.ServiceProvider.GetRequiredService<IUnitOfWork>();
         var logger = scope.ServiceProvider.GetRequiredService<ILogger<RollbackUserDeleteConsumer>>();
         _sut = new RollbackUserDeleteConsumer(repo, service, unitOfWork, logger);

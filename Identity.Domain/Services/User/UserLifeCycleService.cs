@@ -5,7 +5,7 @@ using Identity.Domain.ValueObjects;
 
 namespace Identity.Domain.Services.User;
 
-public interface IUserLifeCycleServices
+public interface IUserLifeCycleService
 {
     Result<Aggregates.User> CreateUser(string email, string password);
     void SoftDelete(Aggregates.User user);
@@ -13,7 +13,7 @@ public interface IUserLifeCycleServices
     bool IsUserDeleted(Aggregates.User user);
 }
 
-public class UserLifeCycleServices : IUserLifeCycleServices
+public class UserLifeCycleService : IUserLifeCycleService
 {
     public Result<Aggregates.User> CreateUser(string email, string password)
     {

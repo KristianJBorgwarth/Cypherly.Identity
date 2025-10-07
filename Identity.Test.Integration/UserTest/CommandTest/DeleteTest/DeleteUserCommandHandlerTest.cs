@@ -21,7 +21,7 @@ public class DeleteUserCommandHandlerTest : IntegrationTestBase
         var scope = factory.Services.CreateScope();
         var repo = scope.ServiceProvider.GetRequiredService<IUserRepository>();
         var unitOfWork = scope.ServiceProvider.GetRequiredService<IUnitOfWork>();
-        var userLifeCycleServices = scope.ServiceProvider.GetRequiredService<IUserLifeCycleServices>();
+        var userLifeCycleServices = scope.ServiceProvider.GetRequiredService<IUserLifeCycleService>();
         var logger = scope.ServiceProvider.GetRequiredService<ILogger<DeleteUserCommandHandler>>();
 
         _sut = new DeleteUserCommandHandler(repo, unitOfWork, userLifeCycleServices, logger);

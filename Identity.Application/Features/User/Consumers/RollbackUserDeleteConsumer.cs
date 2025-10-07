@@ -9,7 +9,7 @@ namespace Identity.Application.Features.User.Consumers;
 
 public class RollbackUserDeleteConsumer(
     IUserRepository userRepository,
-    IUserLifeCycleService userLifeCycleServices,
+    IUserLifeCycleServices userLifeCycleServices,
     IUnitOfWork unitOfWork,
     ILogger<RollbackUserDeleteConsumer> logger)
     : IConsumer<UserDeleteFailedMessage>

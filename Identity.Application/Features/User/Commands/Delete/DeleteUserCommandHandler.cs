@@ -11,7 +11,7 @@ namespace Identity.Application.Features.User.Commands.Delete;
 public class DeleteUserCommandHandler(
     IUserRepository userRepository,
     IUnitOfWork unitOfWork,
-    IUserLifeCycleService userLifeCycleServices,
+    IUserLifeCycleServices userLifeCycleServices,
     ILogger<DeleteUserCommandHandler> logger)
     : ICommandHandler<DeleteUserCommand>
 {

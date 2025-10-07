@@ -13,7 +13,7 @@ namespace Identity.Application.Features.User.Commands.Create;
 
 public class CreateUserCommandHandler(
     IUserRepository userRepository,
-    IUserLifeCycleServices userLifeCycleServices,
+    IUserLifeCycleService userLifeCycleServices,
     IUnitOfWork unitOfWork,
     IRequestClient<CreateUserProfileMessage> requestClient,
     ILogger<CreateUserCommandHandler> logger)

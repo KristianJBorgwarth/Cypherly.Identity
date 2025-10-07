@@ -4,7 +4,6 @@ using Identity.Application.Features.Authentication.Token;
 using Identity.API.Extensions;
 using Identity.Domain.Extensions;
 using Identity.Infrastructure.Extensions;
-using Microsoft.OpenApi.Models;
 using Serilog;
 
 var builder = WebApplication.CreateBuilder(args);

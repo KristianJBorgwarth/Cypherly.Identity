@@ -1,5 +1,4 @@
-﻿using Cypherly.Domain.Common;
-using Identity.Domain.Common;
+﻿using Identity.Domain.Common;
 using FluentValidation;
 
 namespace Identity.Application.Features.Authentication.Commands.Logout;

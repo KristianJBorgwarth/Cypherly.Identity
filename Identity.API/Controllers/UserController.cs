@@ -27,12 +27,13 @@ public class UserController(ISender sender) : BaseController
     }
 
     [HttpDelete]
+    [Authorize]
     [Route("")]
     [ProducesResponseType(StatusCodes.Status200OK)]
     [ProducesResponseType(StatusCodes.Status400BadRequest)]
-    public async Task<IActionResult> Delete([FromQuery] DeleteUserCommand command)
+    public async Task<IActionResult> Delete()
     {
-        var result = await sender.Send(command);
+       var result = await sender.Send(new DeleteUserCommand {Id = User.GetUserId()});
         return result.Success ? Ok() : Error(result.Error);
     }
 
@@ -71,9 +72,9 @@ public class UserController(ISender sender) : BaseController
     [Route("devices")]
     [ProducesResponseType(typeof(GetDevicesDto), StatusCodes.Status200OK)]
     [ProducesResponseType(StatusCodes.Status400BadRequest)]
-    public async Task<IActionResult> GetDevices([FromQuery] GetDevicesQuery query)
+    public async Task<IActionResult> GetDevices()
     {
-        var result = await sender.Send(query);
+        var result = await sender.Send(new GetDevicesQuery {UserId = User.GetUserId()});
         return result.Success ? Ok(result.Value) : Error(result.Error);
     }
 

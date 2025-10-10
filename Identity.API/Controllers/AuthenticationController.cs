@@ -1,4 +1,5 @@
-﻿using Identity.Application.Features.Authentication.Commands.Login;
+﻿using Identity.API.Common;
+using Identity.Application.Features.Authentication.Commands.Login;
 using Identity.Application.Features.Authentication.Commands.Logout;
 using Identity.Application.Features.Authentication.Commands.RefreshTokens;
 using Identity.Application.Features.Authentication.Commands.VerifyLogin;
@@ -28,8 +29,14 @@ public class AuthenticationController(ISender sender) : BaseController
     [Route("logout")]
     [ProducesResponseType(StatusCodes.Status200OK)]
     [ProducesResponseType(StatusCodes.Status400BadRequest)]
-    public async Task<IActionResult> Logout([FromBody] LogoutCommand command)
+    public async Task<IActionResult> Logout([FromBody] Guid deviceId)
     {
+        var command = new LogoutCommand
+        {
+            Id = User.GetUserId(),
+            DeviceId = deviceId
+        };
+
         var result = await sender.Send(command);
         return result.Success ? Ok() : Error(result.Error);
     }

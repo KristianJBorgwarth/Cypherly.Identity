@@ -2,7 +2,7 @@
 
 namespace Identity.Application.Features.User.Commands.Delete;
 
-public sealed record DeleteUserCommand : ICommandId
+public sealed record DeleteUserCommand : ICommand
 {
     public required Guid Id { get; init; }
 }

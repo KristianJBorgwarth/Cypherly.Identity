@@ -59,6 +59,7 @@ public class LogoutCommandHandlerTest : IntegrationTestBase
         result.Success.Should().BeTrue();
         Db.Device.AsNoTracking().FirstOrDefault()!.Deleted.Should().NotBeNull();
         Db.RefreshToken.AsNoTracking().FirstOrDefault()!.IsRevoked.Should().BeTrue();
+        Db.OutboxMessage.Count().Should().Be(1);
     }
 
     [Fact]

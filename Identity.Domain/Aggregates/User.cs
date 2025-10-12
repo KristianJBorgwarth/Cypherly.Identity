@@ -137,8 +137,11 @@ public class User : AggregateRoot
     /// <param name="deviceId">The ID of the device to retreive</param>
     /// <returns></returns>
     /// <exception cref="InvalidOperationException">Exception thrown if the device is marked as Deleted</exception>
-    public Device GetDevice(Guid deviceId)
+    public Device GetDevice(Guid deviceId, bool includeDeleted = false)
     {
+        if (includeDeleted)
+            return Devices.FirstOrDefault(d => d.Id == deviceId) ?? throw new InvalidOperationException("Device not found");
+
         return Devices.FirstOrDefault(d => d.Id == deviceId && d.Deleted is null) ?? throw new InvalidOperationException("Device not found");
     }
 }

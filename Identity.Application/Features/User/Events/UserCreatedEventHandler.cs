@@ -8,7 +8,7 @@ using Microsoft.Extensions.Logging;
 
 namespace Identity.Application.Features.User.Events;
 
-public class UserCreatedEventHandler(
+public sealed class UserCreatedEventHandler(
     IUserRepository userRepository,
     IProducer<SendEmailMessage> emailProducer,
     ILogger<UserCreatedEventHandler> logger)
@@ -38,7 +38,7 @@ public class UserCreatedEventHandler(
             Body = "Welcome to Cypherly! Here is your verification code: " + verificationCode.Code.Value,
             CausationId = null,
         };
-        
+
         await emailProducer.PublishMessageAsync(emailMessage, cancellationToken);
     }
 }

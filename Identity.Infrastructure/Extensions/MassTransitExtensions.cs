@@ -37,6 +37,7 @@ public static class MassTransitExtensions
         services.AddProducer<SendEmailMessage>();
         services.AddProducer<UserDeletedMessage>();
         services.AddProducer<OperationSucceededMessage>();
+        services.AddProducer<UserLogoutMessage>();
     }
 
     /// <summary>

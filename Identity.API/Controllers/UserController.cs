@@ -93,12 +93,12 @@ public class UserController(ISender sender) : BaseController
         return result.Value!.ConnectionIds.Count != 0 ? Ok(result.Value) : NoContent();
     }
 
-    [HttpGet]
+    [HttpPost]
     [Authorize]
     [Route("devices/connectionids")]
     [ProducesResponseType(typeof(GetConnectionIdsByUsersDto), StatusCodes.Status200OK)]
     [ProducesResponseType(StatusCodes.Status400BadRequest)]
-    public async Task<IActionResult> GetConnectionIds([FromQuery] GetConnectionIdsByUsersQuery query)
+    public async Task<IActionResult> GetConnectionIds([FromBody] GetConnectionIdsByUsersQuery query)
     {
         var result = await sender.Send(query);
         return result.Success ? Ok(result.Value) : Error(result.Error);

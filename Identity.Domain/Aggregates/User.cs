@@ -9,7 +9,6 @@ using Identity.Domain.ValueObjects;
 
 namespace Identity.Domain.Aggregates;
 
-[SuppressMessage("ReSharper", "ClassWithVirtualMembersNeverInherited.Global")]
 public class User : AggregateRoot
 {
     public Email Email { get; init; } = null!;
@@ -19,6 +18,7 @@ public class User : AggregateRoot
     private readonly List<Device> _devices = [];
     public virtual IReadOnlyCollection<Device> Devices => _devices;
     public virtual IReadOnlyCollection<UserVerificationCode> VerificationCodes => _verificationCodes;
+
     public User() : base(Guid.Empty) { } // For EF Core
 
     public User(Guid id, Email email, Password password, bool isVerified) : base(id)
@@ -128,7 +128,7 @@ public class User : AggregateRoot
     /// <returns></returns>
     public List<Device> GetDevices()
     {
-        return Devices.Where(x => x.Deleted is null).ToList();
+        return [.. Devices.Where(x => x.Deleted is null)];
     }
 
     /// <summary>

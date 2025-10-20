@@ -4,7 +4,6 @@ using Cypherly.Message.Contracts.Abstractions;
 using Cypherly.Message.Contracts.Messages.Common;
 using Cypherly.Message.Contracts.Messages.Email;
 using Cypherly.Message.Contracts.Messages.User;
-using Identity.Application.Features.Device.Consumers;
 using Identity.Infrastructure.Messaging;
 using Identity.Infrastructure.Settings;
 using MassTransit;
@@ -19,21 +18,16 @@ public static class MassTransitExtensions
     {
         services.ConfigureMasstransit(Assembly.Load("Identity.Application"), null, (cfg, context) =>
         {
-            cfg.ReceiveEndpoint("authentication_fail_queue", e =>
+            cfg.ReceiveEndpoint("identity.fail_queue", e =>
             {
                 e.Consumer<RollbackUserDeleteConsumer>(context);
             });
-            
-            cfg.ReceiveEndpoint("connection_id_queue", e =>
-            {
-                e.Consumer<ConnectionIdConsumer>(context);
-            });
-            
-            cfg.ReceiveEndpoint("connection_ids_queue", e =>
-            {
-                e.Consumer<ConnectionIdsConsumer>(context);
-            });
         });
+        services.AddProducers();
+    }
+
+    private static void AddProducers(this IServiceCollection services)
+    {
         services.AddProducer<SendEmailMessage>();
         services.AddProducer<UserDeletedMessage>();
         services.AddProducer<OperationSucceededMessage>();
@@ -84,14 +78,8 @@ public static class MassTransitExtensions
                     cb.ResetInterval = TimeSpan.FromMinutes(5);
                 });
 
-                if (rabbitMqConfig != null)
-                {
-                    rabbitMqConfig.Invoke(cfg, context);
-                }
-                else
-                {
-                    cfg.ConfigureEndpoints(context);
-                }
+                rabbitMqConfig?.Invoke(cfg, context);
+                cfg.ConfigureEndpoints(context);
             });
         });
     }

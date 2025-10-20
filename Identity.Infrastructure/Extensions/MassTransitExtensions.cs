@@ -23,6 +23,7 @@ public static class MassTransitExtensions
                 e.Consumer<RollbackUserDeleteConsumer>(context);
             });
         });
+
         services.AddProducers();
     }
 
@@ -83,7 +84,6 @@ public static class MassTransitExtensions
             });
         });
     }
-
 
     /// <summary>
     /// Add a producer for a specific message type to the service collection

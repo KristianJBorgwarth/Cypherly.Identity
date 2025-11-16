@@ -29,9 +29,9 @@ public class AuthenticationController(ISender sender) : BaseController
     [Route("logout")]
     [ProducesResponseType(StatusCodes.Status200OK)]
     [ProducesResponseType(StatusCodes.Status400BadRequest)]
-    public async Task<IActionResult> Logout([FromBody] Guid deviceId)
+    public async Task<IActionResult> Logout()
     {
-        var result = await sender.Send(new LogoutCommand { Id = User.GetUserId(), DeviceId = deviceId });
+        var result = await sender.Send(new LogoutCommand { Id = User.GetUserId(), DeviceId = User.GetDeviceId() });
         return result.Success ? Ok() : Error(result.Error);
     }
 

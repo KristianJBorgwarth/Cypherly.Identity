@@ -8,7 +8,7 @@ using Identity.Domain.ValueObjects;
 using Microsoft.Extensions.Options;
 using Microsoft.IdentityModel.JsonWebTokens;
 
-namespace Cypherly.Authentication.Test.Unit.AuthenticationTest.TokenTest;
+namespace Identity.Test.Unit.AuthenticationTest.TokenTest;
 
 public class JwtServiceTest
 {
@@ -44,7 +44,7 @@ public class JwtServiceTest
         var decodedToken = jwtHandler.ReadJsonWebToken(token);
 
         // Assert: Verify token claims
-        decodedToken.Claims.First(c => c.Type == "sub").Value.Should().Be(device.Id.ToString());
+        decodedToken.Claims.First(c => c.Type == "device_id").Value.Should().Be(device.Id.ToString());
         decodedToken.Claims.First(c => c.Type == ClaimTypes.NameIdentifier).Value.Should().Be(user.Id.ToString());
         decodedToken.Claims.First(c => c.Type == "jti").Value.Should().NotBeNullOrEmpty();
     }

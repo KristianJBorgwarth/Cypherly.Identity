@@ -10,10 +10,10 @@ public class JwtService(IOptions<JwtSettings> jwtSettings) : IJwtService
 {
     public string GenerateToken(Guid userId, Guid deviceId)
     {
-        var claims = new List<System.Security.Claims.Claim>
+        var claims = new List<Claim>
         {
             new(ClaimTypes.NameIdentifier, userId.ToString()),
-            new("sub", deviceId.ToString()),
+            new("device_id", deviceId.ToString()),
             new("jti", Guid.NewGuid().ToString()),
         };
 

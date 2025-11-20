@@ -35,7 +35,7 @@ public class DeviceConnectedConsumerTest
         var message = _fixture.Build<ClientConnectedMessage>()
             .With(x => x.DeviceId, user.Devices.First().Id)
             .Create();
-        
+
         A.CallTo(() => _fakeRepo.GetByDeviceIdAsync(message.DeviceId)).Returns(user);
 
         var fakeConsumeContext = A.Fake<ConsumeContext<ClientConnectedMessage>>();

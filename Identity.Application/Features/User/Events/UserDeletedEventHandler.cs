@@ -14,7 +14,7 @@ public class UserDeletedEventHandler(
     public async Task Handle(UserDeletedEvent notification, CancellationToken cancellationToken)
     {
         logger.LogInformation("User with id {UserId} and email {Email} has been deleted", notification.UserId, notification.Email);
-        
+
         var message = new UserDeletedMessage
         {
             CorrelationId = Guid.NewGuid(),
@@ -22,7 +22,7 @@ public class UserDeletedEventHandler(
             Email = notification.Email,
             CausationId = null
         };
-        
+
         await producer.PublishMessageAsync(message, cancellationToken);
     }
 }

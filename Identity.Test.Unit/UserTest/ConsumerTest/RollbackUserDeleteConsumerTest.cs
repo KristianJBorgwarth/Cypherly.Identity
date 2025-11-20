@@ -21,7 +21,7 @@ public class RollbackUserDeleteConsumerTest
     private readonly ILogger<RollbackUserDeleteConsumer> _fakeLogger;
     private readonly Fixture _fixture = new();
     private readonly RollbackUserDeleteConsumer _sut;
-    
+
     public RollbackUserDeleteConsumerTest()
     {
         _fakeRepo = A.Fake<IUserRepository>();
@@ -44,7 +44,7 @@ public class RollbackUserDeleteConsumerTest
             .With(x => x.UserId, user.Id)
             .With(x => x.Services, [ServiceType.AuthenticationService])
             .Create();
-        
+
         var fakeConsumeContext = A.Fake<ConsumeContext<UserDeleteFailedMessage>>();
         A.CallTo(() => fakeConsumeContext.Message).Returns(message);
 
@@ -63,7 +63,7 @@ public class RollbackUserDeleteConsumerTest
         var message = _fixture.Build<UserDeleteFailedMessage>()
             .With(x => x.Services, [ServiceType.UserManagementService])
             .Create();
-        
+
         var fakeConsumeContext = A.Fake<ConsumeContext<UserDeleteFailedMessage>>();
         A.CallTo(() => fakeConsumeContext.Message).Returns(message);
 

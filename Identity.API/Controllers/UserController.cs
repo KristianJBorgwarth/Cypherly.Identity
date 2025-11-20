@@ -33,7 +33,7 @@ public class UserController(ISender sender) : BaseController
     [ProducesResponseType(StatusCodes.Status400BadRequest)]
     public async Task<IActionResult> Delete()
     {
-       var result = await sender.Send(new DeleteUserCommand {Id = User.GetUserId()});
+        var result = await sender.Send(new DeleteUserCommand { Id = User.GetUserId() });
         return result.Success ? Ok() : Error(result.Error);
     }
 
@@ -74,7 +74,7 @@ public class UserController(ISender sender) : BaseController
     [ProducesResponseType(StatusCodes.Status400BadRequest)]
     public async Task<IActionResult> GetDevices()
     {
-        var result = await sender.Send(new GetDevicesQuery {UserId = User.GetUserId()});
+        var result = await sender.Send(new GetDevicesQuery { UserId = User.GetUserId() });
         return result.Success ? Ok(result.Value) : Error(result.Error);
     }
 
@@ -87,7 +87,7 @@ public class UserController(ISender sender) : BaseController
     public async Task<IActionResult> GetConnectionId()
     {
         var tenantId = User.GetUserId();
-        var result = await sender.Send(new GetConnectionIdsByUserQuery {TenantId = tenantId});
+        var result = await sender.Send(new GetConnectionIdsByUserQuery { TenantId = tenantId });
         if (result.Success is false) return Error(result.Error);
 
         return result.Value!.ConnectionIds.Count != 0 ? Ok(result.Value) : NoContent();

@@ -57,9 +57,9 @@ public class CreateUserCommandHandlerTests
 
         // Fake the MassTransit response
         var responseMessage = _fixture.Build<CreateUserProfileResponse>()
-            .With(x=>x.IsSuccess, true)
+            .With(x => x.IsSuccess, true)
             .Create();
-        
+
         var fakeMassTransitResponse = A.Fake<Response<CreateUserProfileResponse>>();
         A.CallTo(() => fakeMassTransitResponse.Message).Returns(responseMessage);
 

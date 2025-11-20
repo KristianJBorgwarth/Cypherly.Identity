@@ -32,6 +32,6 @@ public class OutboxMessageModelConfiguration : IEntityTypeConfiguration<OutboxMe
             .HasColumnName("processed_on");
 
         builder.Property(x => x.Error)
-            .HasColumnName("error");;
+            .HasColumnName("error"); ;
     }
 }

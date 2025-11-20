@@ -17,7 +17,7 @@ namespace Identity.Test.Integration.UserTest.EventTest;
 public class VerificationCodeGeneratedEventHandlerTest : IntegrationTestBase
 {
     private readonly VerificationCodeGeneratedEventHandler _sut;
-    
+
     public VerificationCodeGeneratedEventHandlerTest(IntegrationTestFactory<Program, IdentityDbContext> factory) : base(factory)
     {
         var scope = factory.Services.CreateScope();

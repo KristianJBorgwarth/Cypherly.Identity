@@ -66,7 +66,7 @@ public class CreateUserCommandHandler(
             UserId = userId,
             Username = username
         };
-        
+
         var response = await requestClient.GetResponse<CreateUserProfileResponse>(createProfileRequest);
 
         if (response.Message.IsSuccess)

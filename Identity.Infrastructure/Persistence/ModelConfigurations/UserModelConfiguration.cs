@@ -9,12 +9,12 @@ public class UserModelConfiguration : BaseModelConfiguration<User>
     public override void Configure(EntityTypeBuilder<User> builder)
     {
         builder.ToTable("user");
-        
+
         builder.HasKey(u => u.Id);
 
         builder.Property(rt => rt.Id)
             .HasColumnName("id");
-        
+
         builder.OwnsOne(u => u.Email, email =>
         {
             email.Property(e => e.Address)
@@ -34,11 +34,11 @@ public class UserModelConfiguration : BaseModelConfiguration<User>
                 .IsRequired()
                 .HasMaxLength(255);
         });
-        
+
         builder.Property(u => u.IsVerified)
             .HasColumnName("is_verified")
             .IsRequired();
-        
+
         builder.HasMany(u => u.VerificationCodes)
             .WithOne()
             .HasForeignKey(vc => vc.UserId)
@@ -48,7 +48,7 @@ public class UserModelConfiguration : BaseModelConfiguration<User>
             .WithOne()
             .HasForeignKey(d => d.UserId)
             .OnDelete(DeleteBehavior.Cascade);
-        
+
         base.Configure(builder);
     }
 }

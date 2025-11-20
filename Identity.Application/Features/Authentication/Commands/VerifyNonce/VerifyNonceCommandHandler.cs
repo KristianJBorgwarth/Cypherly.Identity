@@ -1,10 +1,10 @@
 ﻿using Cypherly.Domain.Common;
-using Identity.Application.Contracts;
 using Identity.Application.Abstractions;
 using Identity.Application.Contracts.Cache;
 using Identity.Application.Contracts.Repository;
 using Identity.Application.Features.Authentication.Token;
 using Identity.Domain.Common;
+using Identity.Domain.Events.User;
 using Microsoft.Extensions.Logging;
 
 namespace Identity.Application.Features.Authentication.Commands.VerifyNonce;
@@ -50,6 +50,8 @@ public class VerifyNonceCommandHandler(
             var refreshToken = device.GetActiveRefreshToken();
 
             var dto = VerifyNonceDto.Map(token, refreshToken!);
+
+            user.AddDomainEvent(new UserLoggedInEvent(user.Id, device.Id, device.ConnectionId));
 
             await unitOfWork.SaveChangesAsync(cancellationToken);
 

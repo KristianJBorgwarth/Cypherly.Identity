@@ -33,6 +33,7 @@ public static class MassTransitExtensions
         services.AddProducer<UserDeletedMessage>();
         services.AddProducer<OperationSucceededMessage>();
         services.AddProducer<UserLogoutMessage>();
+        services.AddProducer<UserLoginMessage>();
     }
 
     /// <summary>

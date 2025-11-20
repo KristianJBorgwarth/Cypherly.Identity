@@ -29,7 +29,7 @@ public sealed class ConnectionIdsConsumer(
                 IsSuccess = true,
                 ConnectionIds = connectionIds
             });
-            
+
             logger.LogInformation("Successfully retrieved connection ids for users {TenantIds}", string.Join(", ", ids));
         }
         catch (Exception ex)

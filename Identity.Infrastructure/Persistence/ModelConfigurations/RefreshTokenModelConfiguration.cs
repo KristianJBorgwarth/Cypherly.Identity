@@ -35,7 +35,7 @@ public class RefreshTokenModelConfiguration : BaseModelConfiguration<RefreshToke
         builder.HasIndex(rt => rt.Token)
             .HasDatabaseName("idx_token")
             .IsUnique();
-        
+
         base.Configure(builder);
     }
 }

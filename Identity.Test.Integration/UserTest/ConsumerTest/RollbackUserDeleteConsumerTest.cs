@@ -43,7 +43,7 @@ public class RollbackUserDeleteConsumerTest : IntegrationTestBase
             .With(x => x.UserId, user.Id)
             .With(x => x.Services, [ServiceType.AuthenticationService])
             .Create();
-        
+
         var fakeConsumeContext = A.Fake<ConsumeContext<UserDeleteFailedMessage>>();
         A.CallTo(() => fakeConsumeContext.Message).Returns(message);
 
@@ -67,7 +67,7 @@ public class RollbackUserDeleteConsumerTest : IntegrationTestBase
         var message = Fixture.Build<UserDeleteFailedMessage>()
             .With(x => x.Services, [ServiceType.AuthenticationService])
             .Create();
-        
+
         var fakeConsumeContext = A.Fake<ConsumeContext<UserDeleteFailedMessage>>();
         A.CallTo(() => fakeConsumeContext.Message).Returns(message);
 

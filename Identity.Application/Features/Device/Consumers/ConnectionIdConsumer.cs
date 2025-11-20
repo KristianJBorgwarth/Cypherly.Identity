@@ -33,7 +33,7 @@ public sealed class ConnectionIdConsumer(
                 IsSuccess = true,
                 ConnectionIds = connectionIds
             });
-            
+
             logger.LogInformation("Successfully retrieved connection ids for user {TenantId}", msg.TenantId);
         }
         catch (Exception ex)

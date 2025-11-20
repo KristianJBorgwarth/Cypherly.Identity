@@ -77,7 +77,7 @@ public class IntegrationTestFactory<TProgram, TDbContext> : WebApplicationFactor
             services.AddAuthorizationBuilder()
                 .AddPolicy("AdminOnly", policy => policy.RequireAssertion(_ => true))
                 .AddPolicy("User", policy => policy.RequireAssertion(_ => true));
-            
+
             #endregion
 
             #region RabbitMq Extensions

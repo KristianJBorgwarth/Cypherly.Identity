@@ -52,7 +52,7 @@ public class UserVerificationCodeModelConfiguration : BaseModelConfiguration<Use
 
         builder.HasIndex(vc => vc.UserId)
             .HasDatabaseName("idx_user_id");
-        
+
         base.Configure(builder);
     }
 }

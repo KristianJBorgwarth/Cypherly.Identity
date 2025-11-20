@@ -18,12 +18,12 @@ public class GetConnectionIdsByUsersQueryHandler(
         try
         {
             var users = await userRepository.GetUsersAsync(request.TenantIds.ToArray());
-            
+
             var connectionIds = users.ToDictionary(
                 user => user.Id,
                 user => user.GetDevices().Select(device => device.ConnectionId).ToList());
-            
-            var dto = new GetConnectionIdsByUsersDto() {ConnectionIds = connectionIds};
+
+            var dto = new GetConnectionIdsByUsersDto() { ConnectionIds = connectionIds };
 
             return dto;
         }

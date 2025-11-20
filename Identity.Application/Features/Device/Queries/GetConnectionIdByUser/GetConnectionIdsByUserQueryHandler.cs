@@ -17,9 +17,9 @@ public class GetConnectionIdsByUserQueryHandler(
         {
             var user = await userRepository.GetByIdAsync(request.TenantId);
             if (user is null) return Result.Fail<GetConnectionIdsByUserDto>(Errors.General.NotFound(request.TenantId));
-            
-            var connectionIds = user.GetDevices().Select(x => x.ConnectionId).ToList(); 
-            
+
+            var connectionIds = user.GetDevices().Select(x => x.ConnectionId).ToList();
+
             return new GetConnectionIdsByUserDto { ConnectionIds = connectionIds };
         }
         catch (Exception exception)

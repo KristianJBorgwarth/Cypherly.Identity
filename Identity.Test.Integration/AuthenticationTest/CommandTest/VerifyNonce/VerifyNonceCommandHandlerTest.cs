@@ -184,5 +184,6 @@ public class VerifyNonceCommandHandlerTest : IntegrationTestBase
         result.Value.Jwt.Should().NotBeNullOrEmpty();
         result.Value.RefreshToken.Should().NotBeNullOrEmpty();
         Db.RefreshToken.Count().Should().Be(1);
+        Db.OutboxMessage.Count().Should().Be(1);
     }
 }

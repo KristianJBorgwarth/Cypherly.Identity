@@ -45,7 +45,7 @@ public class DeviceModelConfiguration : BaseModelConfiguration<Device>
 
         builder.HasIndex(d => d.UserId)
             .HasDatabaseName("idx_device_user_id");
-        
+
         base.Configure(builder);
     }
 }

@@ -4,10 +4,14 @@ using Identity.Domain.ValueObjects;
 using FluentValidation;
 using FluentValidation.Results;
 using MediatR;
+using Microsoft.Extensions.Logging;
 
 namespace Identity.Application.Behavior
 {
-    public class ValidationBehavior<TRequest, TResponse>(IValidator<TRequest>? validator = null) : IPipelineBehavior<TRequest, TResponse>
+    public class ValidationBehavior<TRequest, TResponse>(
+        ILogger<ValidationBehavior<TRequest, TResponse>> logger, 
+        IValidator<TRequest>? validator)
+        : IPipelineBehavior<TRequest, TResponse>
         where TRequest : IRequest<TResponse>
         where TResponse : Result
     {
@@ -15,17 +19,18 @@ namespace Identity.Application.Behavior
         {
             if (validator == null)
             {
-                return await next();
+                return await next(cancellationToken);
             }
 
             var validationResult = await validator.ValidateAsync(request, cancellationToken);
 
             if (validationResult.IsValid)
             {
-                return await next();
+                return await next(cancellationToken);
             }
 
             var error = GenerateErrorMessage(validationResult);
+            logger.LogWarning("Validation failed for {RequestType} with errors: {Errors}", typeof(TRequest).Name, error);
 
             return typeof(TResponse).IsGenericType && typeof(TResponse).GetGenericTypeDefinition() == typeof(Result<>)
                 ? CreateGenericFailResponse(error)

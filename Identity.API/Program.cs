@@ -4,7 +4,6 @@ using Identity.Application.Features.Authentication.Token;
 using Identity.API.Extensions;
 using Identity.Domain.Extensions;
 using Identity.Infrastructure.Extensions;
-using Serilog;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -21,8 +20,7 @@ if (env.IsDevelopment())
     configuration.AddUserSecrets(Assembly.GetExecutingAssembly(), true);
 }
 
-builder.AddSerilogger();
-
+builder.AddLogging();
 builder.Services.AddObservability(configuration);
 
 builder.Services.AddDomain();
@@ -53,9 +51,6 @@ var app = builder.Build();
 
 app.UseSwagger();
 app.UseSwaggerUI();
-
-app.MapPrometheusScrapingEndpoint();
-app.UseSerilogRequestLogging();
 
 if (app.Environment.IsProduction())
 {

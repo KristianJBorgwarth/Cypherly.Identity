@@ -5,7 +5,7 @@ namespace Identity.Domain.Extensions;
 
 public static class DomainExtensions
 {
-    public static void AddAuthenticationDomain(this IServiceCollection serviceCollection)
+    public static void AddDomain(this IServiceCollection serviceCollection)
     {
         serviceCollection.AddScoped<IUserLifeCycleService, UserLifeCycleService>();
         serviceCollection.AddScoped<IVerificationCodeService, VerificationCodeService>();

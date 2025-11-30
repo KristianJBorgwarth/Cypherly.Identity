@@ -10,7 +10,7 @@ namespace Identity.Application.Extensions;
 
 public static class ApplicationExtensions
 {
-    public static void AddAuthenticationApplication(this IServiceCollection services, Assembly assembly)
+    public static void AddApplication(this IServiceCollection services, Assembly assembly)
     {
         services.AddValidatorsFromAssembly(assembly);
         services.AddMediatR(cfg =>

@@ -31,18 +31,29 @@ public static class ObservabilityExtensions
                 .AddRuntimeInstrumentation()
                 .AddAspNetCoreInstrumentation()
                 .AddHttpClientInstrumentation()
-                .AddNpgsqlInstrumentation()
                 .AddMeter(InstrumentationOptions.MeterName)
                 .AddOtlpExporter());
     }
-    
+
     public static void AddLogging(this WebApplicationBuilder builder)
     {
+        builder.Logging.ClearProviders();
+
         builder.Logging.AddOpenTelemetry(options =>
         {
             options.IncludeScopes = true;
             options.ParseStateValues = true;
             options.AddOtlpExporter();
         });
+
+        if (builder.Environment.IsDevelopment())
+        {
+            builder.Logging.AddSimpleConsole(o =>
+            {
+                o.SingleLine = true;
+                o.TimestampFormat = "HH:mm:ss ";
+                o.IncludeScopes = true;
+            });
+        }
     }
 }

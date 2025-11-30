@@ -12,7 +12,7 @@ internal static class JobExtensions
         services.AddQuartz(configure =>
         {
             var jobKey = new JobKey($"{nameof(ProcessOutboxMessageJob)}-{assembly.GetName()}");
-
+            
             configure.AddJob<ProcessOutboxMessageJob>(jobKey)
                 .AddTrigger(trigger => trigger.ForJob(jobKey)
                     .WithSimpleSchedule(schedule => schedule.WithIntervalInSeconds(10).RepeatForever()));

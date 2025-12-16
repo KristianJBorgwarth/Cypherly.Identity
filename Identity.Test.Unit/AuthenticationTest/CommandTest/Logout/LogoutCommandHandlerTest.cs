@@ -63,19 +63,4 @@ public class LogoutCommandHandlerTest
         A.CallTo(() => _fakeUnitOfWork.SaveChangesAsync(CancellationToken.None)).MustHaveHappenedOnceExactly();
         A.CallTo(() => _fakeRepo.GetByIdAsync(command.Id)).MustHaveHappenedOnceExactly();
     }
-
-    [Fact]
-    public async Task Handle_When_Exception_Occurs_Should_Return_UnspecifiedError()
-    {
-        // Arrange
-        var command = new LogoutCommand() { Id = Guid.NewGuid(), DeviceId = Guid.NewGuid() };
-        A.CallTo(() => _fakeRepo.GetByIdAsync(command.Id)).Throws<Exception>();
-
-        // Act
-        var result = await _sut.Handle(command, CancellationToken.None);
-
-        // Assert
-        result.Success.Should().BeFalse();
-        result.Error.Should().BeEquivalentTo(Errors.General.UnspecifiedError("An error occured while logging out user"));
-    }
 }

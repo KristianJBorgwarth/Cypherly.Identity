@@ -22,41 +22,33 @@ public class CreateDeviceCommandHandler(
 {
     public async Task<Result<CreateDeviceDto>> Handle(CreateDeviceCommand request, CancellationToken cancellationToken)
     {
-        try
+        var user = await userRepository.GetByIdAsync(request.UserId);
+        if (user is null)
         {
-            var user = await userRepository.GetByIdAsync(request.UserId);
-            if (user is null)
-            {
-                logger.LogWarning("User {UserId} not found", request.UserId);
-                return Result.Fail<CreateDeviceDto>(Errors.General.NotFound(request.UserId));
-            }
-
-            var loginNonce = await loginNonceCache.GetNonceAsync(request.LoginNonceId, cancellationToken);
-
-            if (loginNonce is null || loginNonce.NonceValue != request.LoginNonce)
-            {
-                logger.LogWarning("Login nonce {LoginNonceId} not found or invalid for user with ID: {ID}", request.LoginNonceId, request.UserId);
-                return Result.Fail<CreateDeviceDto>(Errors.General.Unauthorized());
-            }
-
-            var device = deviceService.RegisterDevice(user, request.Base64DevicePublicKey, request.DeviceAppVersion, request.DeviceType, request.DevicePlatform);
-
-            var createClientResult = await CreateClient(device.Id, device.ConnectionId);
-
-            if (createClientResult.Success is false)
-                return Result.Fail<CreateDeviceDto>(createClientResult.Error);
-
-            await unitOfWork.SaveChangesAsync(cancellationToken);
-
-            var dto = CreateDeviceDto.Map(device);
-
-            return Result.Ok(dto);
+            logger.LogWarning("User {UserId} not found", request.UserId);
+            return Result.Fail<CreateDeviceDto>(Errors.General.NotFound(request.UserId));
         }
-        catch (Exception e)
+
+        var loginNonce = await loginNonceCache.GetNonceAsync(request.LoginNonceId, cancellationToken);
+
+        if (loginNonce is null || loginNonce.NonceValue != request.LoginNonce)
         {
-            logger.LogCritical(e, "exception occured while creating device for user {UserId}", request.UserId);
-            return Result.Fail<CreateDeviceDto>(Errors.General.UnspecifiedError("An exception occured while creating device"));
+            logger.LogWarning("Login nonce {LoginNonceId} not found or invalid for user with ID: {ID}", request.LoginNonceId, request.UserId);
+            return Result.Fail<CreateDeviceDto>(Errors.General.Unauthorized());
         }
+
+        var device = deviceService.RegisterDevice(user, request.Base64DevicePublicKey, request.DeviceAppVersion, request.DeviceType, request.DevicePlatform);
+
+        var createClientResult = await CreateClient(device.Id, device.ConnectionId);
+
+        if (createClientResult.Success is false)
+            return Result.Fail<CreateDeviceDto>(createClientResult.Error);
+
+        await unitOfWork.SaveChangesAsync(cancellationToken);
+
+        var dto = CreateDeviceDto.Map(device);
+
+        return Result.Ok(dto);
     }
 
     private async Task<Result> CreateClient(Guid deviceId, Guid connectionId)

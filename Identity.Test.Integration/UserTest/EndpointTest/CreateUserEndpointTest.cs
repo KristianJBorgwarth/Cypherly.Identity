@@ -15,7 +15,7 @@ public class CreateUserEndpointTest(IntegrationTestFactory<Program, IdentityDbCo
     public async Task Valid_Request_Should_Create_User_And_Return_200_Ok()
     {
         // Arrange
-        var req = new CreateUserCommand()
+        var req = new CreateUserCommand
         {
             Username = "TestUser",
             Email = "test@email.dk",
@@ -37,7 +37,7 @@ public class CreateUserEndpointTest(IntegrationTestFactory<Program, IdentityDbCo
     public async Task Invalid_Request_Should_Return_400_BadRequest()
     {
         // Arrange
-        var req = new CreateUserCommand()
+        var req = new CreateUserCommand
         {
             Username = "TestUser",
             Email = "testemail.dk",

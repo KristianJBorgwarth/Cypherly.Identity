@@ -18,6 +18,7 @@ public static class ApplicationExtensions
             cfg.RegisterServicesFromAssembly(assembly);
         });
         services.AddTransient(typeof(IPipelineBehavior<,>), typeof(ValidationBehavior<,>));
+        services.AddTransient(typeof(IPipelineBehavior<,>), typeof(ExceptionBehavior<,>));
         services.AddAutoMapper(assembly);
         services.AddScoped<IJwtService, JwtService>();
         services.AddScoped<IVerifyNonceService, VerifyNonceService>();

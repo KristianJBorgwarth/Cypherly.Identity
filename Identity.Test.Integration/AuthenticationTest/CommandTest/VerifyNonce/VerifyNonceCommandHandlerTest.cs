@@ -78,37 +78,6 @@ public class VerifyNonceCommandHandlerTest : IntegrationTestBase
     }
 
     [Fact]
-    public async Task Handle_Given_Command_With_Invalid_DeviceId_Should_Return_Result_Fail()
-    {
-        // Arrange
-        var deviceId = Guid.NewGuid();
-        var user = new User(Guid.NewGuid(), Email.Create("test@mail.dk"), Password.Create("test=?lk293K"), true);
-
-        // add nonce to cache
-        var nonce = Nonce.Create(user.Id, deviceId);
-        await Cache.SetAsync(nonce.Id.ToString(), nonce, CancellationToken.None, TimeSpan.FromMinutes(10));
-
-        // add user to db
-        Db.User.Add(user);
-        await Db.SaveChangesAsync();
-
-        var cmd = new VerifyNonceCommand()
-        {
-            UserId = user.Id,
-            DeviceId = Guid.NewGuid(),
-            NonceId = nonce.Id,
-            Nonce = "nonce",
-        };
-
-        // Act
-        var result = await _sut.Handle(cmd, CancellationToken.None);
-
-        // Assert
-        result.Success.Should().BeFalse();
-        result.Error.Should().BeEquivalentTo(Errors.General.UnspecifiedError("An exception occured attempting to verify nonce."));
-    }
-
-    [Fact]
     public async Task Handle_Given_Command_With_Invalid_Nonce_Should_Return_Result_Fail()
     {
         // Arrange

@@ -19,9 +19,8 @@ public class GetConnectionIdsByUserQueryHandlerTest : IntegrationTestBase
     {
         var scope = factory.Services.CreateScope();
         var repo = scope.ServiceProvider.GetRequiredService<IUserRepository>();
-        var logger = scope.ServiceProvider.GetRequiredService<ILogger<GetConnectionIdsByUserQueryHandler>>();
 
-        _sut = new GetConnectionIdsByUserQueryHandler(repo, logger);
+        _sut = new GetConnectionIdsByUserQueryHandler(repo);
     }
 
     [Fact]

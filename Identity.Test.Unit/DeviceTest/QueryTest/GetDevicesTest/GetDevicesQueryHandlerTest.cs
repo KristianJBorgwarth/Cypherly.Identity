@@ -1,7 +1,7 @@
-using Identity.Application.Contracts.Repository;
-using Identity.Application.Features.Device.Queries.GetDevices;
 using FakeItEasy;
 using FluentAssertions;
+using Identity.Application.Contracts.Repository;
+using Identity.Application.Features.Device.Queries.GetDevices;
 using Identity.Domain.Aggregates;
 using Identity.Domain.Common;
 using Identity.Domain.Entities;
@@ -9,7 +9,7 @@ using Identity.Domain.Enums;
 using Identity.Domain.ValueObjects;
 using Microsoft.Extensions.Logging;
 
-namespace Cypherly.Authentication.Test.Unit.DeviceTest.QueryTest.GetDevicesTest;
+namespace Identity.Test.Unit.DeviceTest.QueryTest.GetDevicesTest;
 
 public class GetDevicesQueryHandlerTest
 {
@@ -89,25 +89,5 @@ public class GetDevicesQueryHandlerTest
         // Assert
         result.Success.Should().BeFalse();
         result.Error.Should().NotBeNull().And.BeEquivalentTo(Errors.General.NotFound(query.UserId));
-    }
-
-    [Fact]
-    public async Task Handle_Given_Something_Throws_Exception_Should_Return_Fail()
-    {
-        // Arrange
-        var query = new GetDevicesQuery()
-        {
-            UserId = Guid.NewGuid()
-        };
-
-        A.CallTo(() => _fakeUserRepository.GetByIdAsync(query.UserId)).Throws<Exception>();
-
-        // Act
-        var result = await _sut.Handle(query, CancellationToken.None);
-
-
-        // Assert
-        result.Success.Should().BeFalse();
-        result.Error.Should().NotBeNull().And.BeEquivalentTo(Errors.General.UnspecifiedError("An exception occured while fetching devices"));
     }
 }

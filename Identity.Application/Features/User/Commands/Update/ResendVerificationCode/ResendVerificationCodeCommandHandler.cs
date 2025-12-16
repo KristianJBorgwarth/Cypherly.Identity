@@ -18,30 +18,22 @@ public sealed class ResendVerificationCodeCommandHandler(
 {
     public async Task<Result> Handle(ResendVerificationCodeCommand request, CancellationToken cancellationToken)
     {
-        try
+        var user = await userRepository.GetByIdAsync(request.UserId);
+        if (user is null)
         {
-            var user = await userRepository.GetByIdAsync(request.UserId);
-            if (user is null)
-            {
-                logger.LogWarning("User {UserId} not found", request.UserId);
-                return Result.Fail(Errors.General.NotFound(request.UserId));
-            }
-
-            if (user.IsVerified && request.CodeType == UserVerificationCodeType.EmailVerification)
-            {
-                logger.LogWarning("User {UserId} is already verified", request.UserId);
-                return Result.Fail(Errors.General.UnspecifiedError("User is already verified"));
-            }
-
-            verificationCodeService.GenerateVerificationCode(user, request.CodeType);
-            await unitOfWork.SaveChangesAsync(cancellationToken);
-
-            return Result.Ok();
+            logger.LogWarning("User {UserId} not found", request.UserId);
+            return Result.Fail(Errors.General.NotFound(request.UserId));
         }
-        catch (Exception e)
+
+        if (user.IsVerified && request.CodeType == UserVerificationCodeType.EmailVerification)
         {
-            logger.LogError(e, "An exception occurred while resending verification code for user {UserId}", request.UserId);
-            return Result.Fail(Errors.General.UnspecifiedError("An exception occurred while resending verification code for user"));
+            logger.LogWarning("User {UserId} is already verified", request.UserId);
+            return Result.Fail(Errors.General.UnspecifiedError("User is already verified"));
         }
+
+        verificationCodeService.GenerateVerificationCode(user, request.CodeType);
+        await unitOfWork.SaveChangesAsync(cancellationToken);
+
+        return Result.Ok();
     }
 }

@@ -149,26 +149,4 @@ public class VerifyNonceCommandHandlerTest
         // Assert
         result.Success.Should().BeTrue();
     }
-
-    [Fact]
-    public async Task Handle_When_Exception_Should_Return_ResultFail()
-    {
-        // Arrange
-        var cmd = new VerifyNonceCommand
-        {
-            DeviceId = Guid.NewGuid(),
-            Nonce = "nonce",
-            NonceId = Guid.NewGuid(),
-            UserId = Guid.NewGuid()
-        };
-
-        A.CallTo(() => _fakeRepo.GetByIdAsync(cmd.UserId)).Throws<Exception>();
-
-        // Act
-        var result = await _sut.Handle(cmd, CancellationToken.None);
-
-        // Assert
-        result.Success.Should().BeFalse();
-        result.Error.Message.Should().Be(Errors.General.UnspecifiedError("An exception occured attempting to verify nonce.").Message);
-    }
 }

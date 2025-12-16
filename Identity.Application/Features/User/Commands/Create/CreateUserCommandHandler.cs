@@ -21,35 +21,27 @@ public class CreateUserCommandHandler(
 {
     public async Task<Result<CreateUserDto>> Handle(CreateUserCommand request, CancellationToken cancellationToken)
     {
-        try
-        {
-            if (await DoesEmailExist(email: request.Email))
-                return Result.Fail<CreateUserDto>(Errors.General.UnspecifiedError("An account already exists with that email"));
+        if (await DoesEmailExist(email: request.Email))
+            return Result.Fail<CreateUserDto>(Errors.General.UnspecifiedError("An account already exists with that email"));
 
-            var userResult = userLifeCycleServices.CreateUser(request.Email, request.Password);
+        var userResult = userLifeCycleServices.CreateUser(request.Email, request.Password);
 
-            if (userResult.Success is false || userResult.Value is null)
-                return Result.Fail<CreateUserDto>(userResult.Error);
+        if (userResult.Success is false || userResult.Value is null)
+            return Result.Fail<CreateUserDto>(userResult.Error);
 
-            await userRepository.CreateAsync(userResult.Value);
+        await userRepository.CreateAsync(userResult.Value);
 
 
-            var createProfileResult = await CreateProfile(userResult.Value.Id, request.Username);
+        var createProfileResult = await CreateProfile(userResult.Value.Id, request.Username);
 
-            if (createProfileResult.Success is false)
-                return Result.Fail<CreateUserDto>(createProfileResult.Error);
+        if (createProfileResult.Success is false)
+            return Result.Fail<CreateUserDto>(createProfileResult.Error);
 
-            await unitOfWork.SaveChangesAsync(cancellationToken);
+        await unitOfWork.SaveChangesAsync(cancellationToken);
 
-            var dto = CreateUserDto.Map(userResult.Value);
+        var dto = CreateUserDto.Map(userResult.Value);
 
-            return Result.Ok(dto);
-        }
-        catch (Exception ex)
-        {
-            logger.LogError(ex, "Error occured while attempting to create a user");
-            return Result.Fail<CreateUserDto>(Errors.General.UnspecifiedError("Exception occured while attempting to create a user. Check logs for more information"));
-        }
+        return Result.Ok(dto);
     }
 
     private async Task<bool> DoesEmailExist(string email)

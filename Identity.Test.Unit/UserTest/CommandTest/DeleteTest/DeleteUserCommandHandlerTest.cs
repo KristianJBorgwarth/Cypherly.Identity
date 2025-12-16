@@ -22,11 +22,11 @@ public class DeleteUserCommandHandlerTest
         _fakeUnitOfWork = A.Fake<IUnitOfWork>();
         _fakeUserLifeCycleServices = A.Fake<IUserLifeCycleService>();
         var fakeLogger = A.Fake<ILogger<DeleteUserCommandHandler>>();
-        _sut = new(_fakeUserRepository, _fakeUnitOfWork, _fakeUserLifeCycleServices, fakeLogger);
+        _sut = new DeleteUserCommandHandler(_fakeUserRepository, _fakeUnitOfWork, _fakeUserLifeCycleServices, fakeLogger);
     }
 
     [Fact]
-    public async void Handle_When_No_User_Found_Should_Return_ResultFail()
+    public async Task Handle_When_No_User_Found_Should_Return_ResultFail()
     {
         // Arrange
         var command = new DeleteUserCommand { Id = Guid.NewGuid() };
@@ -45,7 +45,7 @@ public class DeleteUserCommandHandlerTest
     }
 
     [Fact]
-    public async void Handle_When_User_Already_Marked_As_Deleted_Should_Return_ResultFail()
+    public async Task Handle_When_User_Already_Marked_As_Deleted_Should_Return_ResultFail()
     {
         // Arrange
         var command = new DeleteUserCommand { Id = Guid.NewGuid() };
@@ -66,7 +66,7 @@ public class DeleteUserCommandHandlerTest
     }
 
     [Fact]
-    public async void Handle_When_User_Deleted_Should_Return_ResultOk()
+    public async Task Handle_When_User_Deleted_Should_Return_ResultOk()
     {
         //Arrage
         var command = new DeleteUserCommand { Id = Guid.NewGuid() };
@@ -84,23 +84,5 @@ public class DeleteUserCommandHandlerTest
         result.Success.Should().BeTrue();
         A.CallTo(() => _fakeUserLifeCycleServices.SoftDelete(user)).MustHaveHappened();
         A.CallTo(() => _fakeUnitOfWork.SaveChangesAsync(CancellationToken.None)).MustHaveHappened();
-    }
-
-    [Fact]
-    public async void Handle_When_Exception_Occurs_Should_Return_ResultFail()
-    {
-        // Arrange
-        var command = new DeleteUserCommand { Id = Guid.NewGuid() };
-
-        A.CallTo(() => _fakeUserRepository.GetByIdAsync(command.Id)).Throws<Exception>();
-
-        // Act
-        var result = await _sut.Handle(command, CancellationToken.None);
-
-        // Assert
-        result.Success.Should().BeFalse();
-        A.CallTo(() => _fakeUserLifeCycleServices.IsUserDeleted(A<User>._)).MustNotHaveHappened();
-        A.CallTo(() => _fakeUserLifeCycleServices.SoftDelete(A<User>._)).MustNotHaveHappened();
-        A.CallTo(() => _fakeUnitOfWork.SaveChangesAsync(CancellationToken.None)).MustNotHaveHappened();
     }
 }

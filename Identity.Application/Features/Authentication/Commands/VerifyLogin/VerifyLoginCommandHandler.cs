@@ -17,34 +17,27 @@ public sealed class VerifyLoginCommandHandler(
 {
     public async Task<Result<VerifyLoginDto>> Handle(VerifyLoginCommand request, CancellationToken cancellationToken)
     {
-        try
+        var user = await userRepository.GetByIdAsync(request.UserId);
+        if (user is null)
         {
-            var user = await userRepository.GetByIdAsync(request.UserId);
-            if (user is null)
-            {
-                return Result.Fail<VerifyLoginDto>(Errors.General.NotFound(request.UserId));
-            }
-
-            var verificationResult = user.VerifyLogin(request.LoginVerificationCode);
-            if (verificationResult.Success is false)
-            {
-                return Result.Fail<VerifyLoginDto>(verificationResult.Error);
-            }
-
-            var loginNonce = LoginNonce.Create(request.UserId);
-
-            await loginNonceCache.AddNonceAsync(loginNonce, cancellationToken);
-
-            var dto = VerifyLoginDto.Map(loginNonce);
-
-            await unitOfWork.SaveChangesAsync(cancellationToken);
-
-            return Result.Ok(dto);
+            logger.LogWarning("User with ID {UserId} not found", request.UserId);
+            return Result.Fail<VerifyLoginDto>(Errors.General.NotFound(request.UserId));
         }
-        catch (Exception e)
+
+        var verificationResult = user.VerifyLogin(request.LoginVerificationCode);
+        if (verificationResult.Success is false)
         {
-            logger.LogCritical(e, "Error verifying login for user {UserId}", request.UserId);
-            return Result.Fail<VerifyLoginDto>(Errors.General.UnspecifiedError("An exception occurred while verifying login"));
+            return Result.Fail<VerifyLoginDto>(verificationResult.Error);
         }
+
+        var loginNonce = LoginNonce.Create(request.UserId);
+
+        await loginNonceCache.AddNonceAsync(loginNonce, cancellationToken);
+
+        var dto = VerifyLoginDto.Map(loginNonce);
+
+        await unitOfWork.SaveChangesAsync(cancellationToken);
+
+        return Result.Ok(dto);
     }
 }

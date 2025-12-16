@@ -21,8 +21,7 @@ public class LoginCommandHandlerTest : IntegrationTestBase
         var repo = scope.GetRequiredService<IUserRepository>();
         var unitOfWork = scope.GetRequiredService<IUnitOfWork>();
         var authservice = scope.GetRequiredService<IAuthenticationService>();
-        var logger = scope.GetRequiredService<ILogger<LoginCommandHandler>>();
-        _sut = new LoginCommandHandler(repo, authservice, unitOfWork, logger);
+        _sut = new LoginCommandHandler(repo, authservice, unitOfWork);
     }
 
     [Fact]

@@ -1,5 +1,4 @@
 ﻿using Cypherly.Domain.Common;
-using Identity.Application.Contracts;
 using Identity.Application.Abstractions;
 using Identity.Application.Caching;
 using Identity.Application.Contracts.Cache;
@@ -17,30 +16,22 @@ public class GetNonceQueryHandler(
 {
     public async Task<Result<GetNonceDto>> Handle(GetNonceQuery request, CancellationToken cancellationToken)
     {
-        try
+        var user = await userRepository.GetByIdAsync(request.UserId);
+
+        if (user is null)
         {
-            var user = await userRepository.GetByIdAsync(request.UserId);
-
-            if (user is null)
-            {
-                logger.LogWarning("User with ID: {ID} not found.", request.UserId);
-                return Result.Fail<GetNonceDto>(Errors.General.NotFound(request.UserId));
-            }
-
-            var device = user.GetDevice(request.DeviceId);
-
-            var nonce = Nonce.Create(user.Id, device.Id);
-
-            await nonceCache.AddNonceAsync(nonce, cancellationToken);
-
-            var dto = GetNonceDto.Map(nonce);
-
-            return Result.Ok(dto);
+            logger.LogWarning("User with ID: {ID} not found.", request.UserId);
+            return Result.Fail<GetNonceDto>(Errors.General.NotFound(request.UserId));
         }
-        catch (Exception e)
-        {
-            logger.LogCritical(e, "Exception occurred attempting to fetch nonce for user with ID: {UserId} and Device ID: {DeviceId}.", request.UserId, request.DeviceId);
-            return Result.Fail<GetNonceDto>(Errors.General.UnspecifiedError("An exception occured attempting to fetch nonce."));
-        }
+
+        var device = user.GetDevice(request.DeviceId);
+
+        var nonce = Nonce.Create(user.Id, device.Id);
+
+        await nonceCache.AddNonceAsync(nonce, cancellationToken);
+
+        var dto = GetNonceDto.Map(nonce);
+
+        return Result.Ok(dto);
     }
 }

@@ -71,24 +71,4 @@ public class GetNonceQueryHandlerTest
         result.Success.Should().BeFalse();
         A.CallTo(() => _fakeCache.AddNonceAsync(A<Nonce>._, A<CancellationToken>._)).MustNotHaveHappened();
     }
-
-    [Fact]
-    public async void Handle_Given_Exception_Should_Return_Fail()
-    {
-        // Arrange
-        var query = new GetNonceQuery()
-        {
-            UserId = Guid.NewGuid(),
-            DeviceId = Guid.NewGuid()
-        };
-
-        A.CallTo(() => _fakeRepo.GetByIdAsync(query.UserId)).Throws<Exception>();
-
-        // Act
-        var result = await _sut.Handle(query, new CancellationToken());
-
-        // Assert
-        result.Success.Should().BeFalse();
-        A.CallTo(() => _fakeCache.AddNonceAsync(A<Nonce>._, A<CancellationToken>._)).MustNotHaveHappened();
-    }
 }

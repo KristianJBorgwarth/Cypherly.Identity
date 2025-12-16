@@ -83,7 +83,7 @@ public class CreateUserCommandHandlerTests
     }
 
     [Fact]
-    public async void Handle_Given_Email_Exists_Should_Return_ResultFail()
+    public async Task Handle_Given_Email_Exists_Should_Return_ResultFail()
     {
         // Arrange
         var cmd = new CreateUserCommand()
@@ -113,7 +113,7 @@ public class CreateUserCommandHandlerTests
     }
 
     [Fact]
-    public async void Handle_Given_UserService_CreateUser_Fails_Should_Return_ResultFail()
+    public async Task Handle_Given_UserService_CreateUser_Fails_Should_Return_ResultFail()
     {
         // Arrange
         var cmd = new CreateUserCommand()
@@ -136,36 +136,6 @@ public class CreateUserCommandHandlerTests
 
         A.CallTo(() => _fakeRepo.GetByEmailAsync(cmd.Email)).MustHaveHappenedOnceExactly();
         A.CallTo(() => _fakeUserLifeCycleServices.CreateUser(A<string>.Ignored, A<string>.Ignored)).MustHaveHappenedOnceExactly();
-        A.CallTo(() => _fakeRepo.CreateAsync(A<User>.Ignored)).MustNotHaveHappened();
-        A.CallTo(() => _fakeUnitOfWork.SaveChangesAsync(A<CancellationToken>.Ignored)).MustNotHaveHappened();
-        A.CallTo(() => _fakeRequestClient.GetResponse<CreateUserProfileResponse>(A<CreateUserProfileMessage>.Ignored, A<CancellationToken>.Ignored, A<RequestTimeout>.Ignored))
-            .MustNotHaveHappened();
-    }
-
-    [Fact]
-    public async void Handle_Exception_Is_Thrown_Should_Return_ResultFail()
-    {
-        // Arrange
-        var cmd = new CreateUserCommand()
-        {
-            Email = "test@mail.dk",
-            Password = "password923K=?",
-            Username = "validUsername"
-        };
-
-
-        // Simulate an exception when calling the repository's GetUserByEmail method
-        A.CallTo(() => _fakeRepo.GetByEmailAsync(cmd.Email)).Throws(new Exception("Database connection failed"));
-
-        // Act
-        var result = await _sut.Handle(cmd, new CancellationToken());
-
-        // Assert
-        result.Success.Should().BeFalse();
-        result.Error.Message.Should().Be("Exception occured while attempting to create a user. Check logs for more information");
-
-        // Verify the exception was thrown and handled
-        A.CallTo(() => _fakeRepo.GetByEmailAsync(cmd.Email)).MustHaveHappenedOnceExactly();
         A.CallTo(() => _fakeRepo.CreateAsync(A<User>.Ignored)).MustNotHaveHappened();
         A.CallTo(() => _fakeUnitOfWork.SaveChangesAsync(A<CancellationToken>.Ignored)).MustNotHaveHappened();
         A.CallTo(() => _fakeRequestClient.GetResponse<CreateUserProfileResponse>(A<CreateUserProfileMessage>.Ignored, A<CancellationToken>.Ignored, A<RequestTimeout>.Ignored))

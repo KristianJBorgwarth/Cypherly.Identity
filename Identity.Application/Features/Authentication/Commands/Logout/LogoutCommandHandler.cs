@@ -16,25 +16,17 @@ public class LogoutCommandHandler(
 {
     public async Task<Result> Handle(LogoutCommand request, CancellationToken cancellationToken)
     {
-        try
+        var user = await userRepository.GetByIdAsync(request.Id);
+        if (user is null)
         {
-            var user = await userRepository.GetByIdAsync(request.Id);
-            if (user is null)
-            {
-                logger.LogWarning("User with ID {UserId} not found", request.Id);
-                return Result.Fail(Errors.General.NotFound(request.Id));
-            }
-
-            authenticationService.Logout(user, request.DeviceId);
-
-            await unitOfWork.SaveChangesAsync(cancellationToken);
-
-            return Result.Ok();
+            logger.LogWarning("User with ID {UserId} not found", request.Id);
+            return Result.Fail(Errors.General.NotFound(request.Id));
         }
-        catch (Exception ex)
-        {
-            logger.LogError(ex, "An exception occured while logging out user with ID {UserId} and device with ID: {DeviceId}", request.Id, request.DeviceId);
-            return Result.Fail(Errors.General.UnspecifiedError("An error occured while logging out user"));
-        }
+
+        authenticationService.Logout(user, request.DeviceId);
+
+        await unitOfWork.SaveChangesAsync(cancellationToken);
+
+        return Result.Ok();
     }
 }

@@ -6,7 +6,7 @@ namespace Identity.Domain.ValueObjects
 {
     public class Password : ValueObject
     {
-        public string HashedPassword { get; private set; } = null!;
+        public string HashedPassword { get; private set; } = string.Empty;
 
         public Password() { } //For EF Core
 

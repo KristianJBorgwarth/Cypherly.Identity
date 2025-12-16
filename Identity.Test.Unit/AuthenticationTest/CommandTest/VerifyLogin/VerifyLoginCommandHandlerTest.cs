@@ -96,25 +96,4 @@ public class VerifyLoginCommandHandlerTest
         result.Error.Message.Should().Contain("Invalid verification code");
         A.CallTo(() => _fakeNonceCache.AddNonceAsync(A<LoginNonce>._, A<CancellationToken>._)).MustNotHaveHappened();
     }
-
-    [Fact]
-    public async Task Handle_Given_Something_Throws_Exception_Should_Return_ResultFail()
-    {
-        // Arrange
-        A.CallTo(() => _fakeRepo.GetByIdAsync(A<Guid>._)).Throws<Exception>();
-
-        var command = new VerifyLoginCommand()
-        {
-            UserId = Guid.NewGuid(),
-            LoginVerificationCode = "123456",
-        };
-
-        // Act
-        var result = await _sut.Handle(command, CancellationToken.None);
-
-        // Assert
-        result.Success.Should().BeFalse();
-        result.Error.Message.Should().Contain("An exception occurred while verifying login");
-        A.CallTo(() => _fakeNonceCache.AddNonceAsync(A<LoginNonce>._, A<CancellationToken>._)).MustNotHaveHappened();
-    }
 }

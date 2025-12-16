@@ -2,7 +2,7 @@
 using FluentValidation.TestHelper;
 using Identity.Application.Features.Authentication.Commands.Login;
 
-namespace Ide1ntity.Test.Unit.AuthenticationTest.CommandTest.Login;
+namespace Identity.Test.Unit.AuthenticationTest.CommandTest.Login;
 
 public class LoginCommandValidatorTest
 {

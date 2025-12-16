@@ -101,8 +101,8 @@ public class CreateDeviceCommandHandlerTest
             LoginNonceId = Guid.NewGuid(),
             LoginNonce = "nonce",
             DeviceAppVersion = null,
-            DeviceType = (DeviceType)0,
-            DevicePlatform = (DevicePlatform)0,
+            DeviceType = 0,
+            DevicePlatform = 0,
             Base64DevicePublicKey = null
         };
 
@@ -115,33 +115,6 @@ public class CreateDeviceCommandHandlerTest
         // Assert
         result.Success.Should().BeFalse();
         result.Error.Should().BeEquivalentTo(Errors.General.Unauthorized());
-        A.CallTo(() => _fakeUnitOfWork.SaveChangesAsync(CancellationToken.None)).MustNotHaveHappened();
-        A.CallTo(() => _fakeDeviceService.RegisterDevice(A<User>._, A<string>._, A<string>._, A<DeviceType>._, A<DevicePlatform>._)).MustNotHaveHappened();
-    }
-
-    [Fact]
-    public async Task Handle_WhenExceptionOccurs_ReturnsUnspecifiedError()
-    {
-        // Arrange
-        var request = new CreateDeviceCommand
-        {
-            UserId = Guid.NewGuid(),
-            LoginNonceId = Guid.NewGuid(),
-            LoginNonce = "nonce",
-            DeviceAppVersion = null,
-            DeviceType = (DeviceType)0,
-            DevicePlatform = (DevicePlatform)0,
-            Base64DevicePublicKey = null
-        };
-
-        A.CallTo(() => _fakeRepo.GetByIdAsync(request.UserId)).Throws<Exception>();
-
-        // Act
-        var result = await _sut.Handle(request, CancellationToken.None);
-
-        // Assert
-        result.Success.Should().BeFalse();
-        result.Error.Should().BeEquivalentTo(Errors.General.UnspecifiedError("An exception occured while creating device"));
         A.CallTo(() => _fakeUnitOfWork.SaveChangesAsync(CancellationToken.None)).MustNotHaveHappened();
         A.CallTo(() => _fakeDeviceService.RegisterDevice(A<User>._, A<string>._, A<string>._, A<DeviceType>._, A<DevicePlatform>._)).MustNotHaveHappened();
     }

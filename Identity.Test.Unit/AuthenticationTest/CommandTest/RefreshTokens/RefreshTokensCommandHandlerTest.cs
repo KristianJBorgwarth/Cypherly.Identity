@@ -99,27 +99,4 @@ public class RefreshTokensCommandHandlerTest
         result.Success.Should().BeTrue();
         result.Value.Should().NotBeNull();
     }
-
-    [Fact]
-    public async Task Handle_Given_Exception_Should_Return_ResultFail()
-    {
-        // Arrange
-        var command = new RefreshTokensCommand
-        {
-            RefreshToken = Guid.NewGuid().ToString(),
-            UserId = Guid.NewGuid(),
-            DeviceId = Guid.NewGuid(),
-        };
-
-        var user = new User();
-        A.CallTo(() => _fakeUserRepo.GetByIdAsync(command.UserId))!.Returns(user);
-        A.CallTo(() => _fakeAuthService.VerifyRefreshToken(user, command.DeviceId, command.RefreshToken))!.Throws<Exception>();
-
-        // Act
-        var result = await _sut.Handle(command, CancellationToken.None);
-
-        // Assert
-        result.Success.Should().BeFalse();
-        result.Error.Message.Should().Match("Error occured while refreshing tokens");
-    }
 }

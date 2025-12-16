@@ -79,27 +79,4 @@ public class LogoutCommandHandlerTest : IntegrationTestBase
         result.Success.Should().BeFalse();
         result.Error.Should().BeEquivalentTo(Errors.General.NotFound(command.Id));
     }
-
-    [Fact]
-    public async Task Handle_Given_No_Device_Should_Throw_Exception_And_Return_Result_Fail()
-    {
-        // Arrange
-        var user = new User(Guid.NewGuid(), Email.Create("test@mail.dk"), Password.Create("Test98??KLadds"), true);
-
-        await Db.User.AddAsync(user);
-        await Db.SaveChangesAsync();
-
-        var command = new LogoutCommand
-        {
-            Id = user.Id,
-            DeviceId = Guid.NewGuid(),
-        };
-
-        // Act
-        var result = await _sut.Handle(command, CancellationToken.None);
-
-        // Assert
-        result.Success.Should().BeFalse();
-        result.Error.Message.Should().Contain("An error occured while logging out user");
-    }
 }

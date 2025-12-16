@@ -63,28 +63,7 @@ public class ResendVerificationCodeCommandHandlerTest
         result.Success.Should().BeFalse();
         result.Error.Message.Should().Be("User is already verified");
     }
-
-    [Fact]
-    public async Task Handle_Command_When_Something_Throws_Exception_Should_Return_Result_Fail()
-    {
-        // Arrange
-        var user = new User(Guid.NewGuid(), Email.Create("Test@mail.dk"), Password.Create("kjsKidh??923"), false);
-        var cmd = new ResendVerificationCodeCommand
-        {
-            UserId = user.Id,
-            CodeType = UserVerificationCodeType.EmailVerification,
-        };
-        A.CallTo(() => _fakeRepo.GetByIdAsync(cmd.UserId)).Returns(user);
-        A.CallTo(() => _fakeVerificationCodeService.GenerateVerificationCode(user, UserVerificationCodeType.EmailVerification)).Throws<Exception>();
-
-        // Act
-        var result = await _sut.Handle(cmd, CancellationToken.None);
-
-        // Assert
-        result.Success.Should().BeFalse();
-        result.Error.Message.Should().Be("An exception occurred while resending verification code for user");
-    }
-
+    
     [Fact]
     public async Task Handle_Command_With_Valid_Id_Should_Generate_New_Verification_Code_And_Return_Result_Ok()
     {

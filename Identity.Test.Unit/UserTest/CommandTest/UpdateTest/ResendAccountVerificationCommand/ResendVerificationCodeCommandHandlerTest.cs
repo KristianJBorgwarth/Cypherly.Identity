@@ -35,7 +35,7 @@ public class ResendVerificationCodeCommandHandlerTest
             UserId = Guid.NewGuid(),
             CodeType = UserVerificationCodeType.EmailVerification,
         };
-        A.CallTo(() => _fakeRepo.GetByIdAsync(cmd.UserId))!.Returns<User>(null);
+        A.CallTo(() => _fakeRepo.GetByIdAsync(cmd.UserId, A<CancellationToken>._))!.Returns<User>(null);
 
         // Act
         var result = await _sut.Handle(cmd, CancellationToken.None);
@@ -54,7 +54,7 @@ public class ResendVerificationCodeCommandHandlerTest
             UserId = user.Id,
             CodeType = UserVerificationCodeType.EmailVerification,
         };
-        A.CallTo(() => _fakeRepo.GetByIdAsync(cmd.UserId)).Returns(user);
+        A.CallTo(() => _fakeRepo.GetByIdAsync(cmd.UserId, A<CancellationToken>._)).Returns(user);
 
         // Act
         var result = await _sut.Handle(cmd, CancellationToken.None);
@@ -75,14 +75,14 @@ public class ResendVerificationCodeCommandHandlerTest
             CodeType = UserVerificationCodeType.EmailVerification,
 
         };
-        A.CallTo(() => _fakeRepo.GetByIdAsync(cmd.UserId)).Returns(user);
+        A.CallTo(() => _fakeRepo.GetByIdAsync(cmd.UserId, A<CancellationToken>._)).Returns(user);
         A.CallTo(() => _fakeVerificationCodeService.GenerateVerificationCode(user, UserVerificationCodeType.EmailVerification)).DoesNothing();
         A.CallTo(() => _fakeUnitOfWork.SaveChangesAsync(CancellationToken.None)).DoesNothing();
 
         var result = await _sut.Handle(cmd, CancellationToken.None);
 
         result.Success.Should().BeTrue();
-        A.CallTo(() => _fakeRepo.GetByIdAsync(cmd.UserId)).MustHaveHappenedOnceExactly();
+        A.CallTo(() => _fakeRepo.GetByIdAsync(cmd.UserId, A<CancellationToken>._)).MustHaveHappenedOnceExactly();
         A.CallTo(() => _fakeVerificationCodeService.GenerateVerificationCode(user, UserVerificationCodeType.EmailVerification)).MustHaveHappenedOnceExactly();
         A.CallTo(() => _fakeUnitOfWork.SaveChangesAsync(CancellationToken.None)).MustHaveHappenedOnceExactly();
 

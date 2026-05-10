@@ -17,7 +17,7 @@ public class DeleteUserCommandHandler(
 {
     public async Task<Result> Handle(DeleteUserCommand request, CancellationToken cancellationToken)
     {
-        var user = await userRepository.GetByIdAsync(request.Id);
+        var user = await userRepository.GetByIdAsync(request.Id, cancellationToken);
         if (user is null)
         {
             logger.LogError("User not found with id {Id} during delete process", request.Id);

@@ -36,7 +36,7 @@ public class DeviceConnectedConsumerTest
             .With(x => x.DeviceId, user.Devices.First().Id)
             .Create();
 
-        A.CallTo(() => _fakeRepo.GetByDeviceIdAsync(message.DeviceId)).Returns(user);
+        A.CallTo(() => _fakeRepo.GetByDeviceIdAsync(message.DeviceId, A<CancellationToken>._)).Returns(user);
 
         var fakeConsumeContext = A.Fake<ConsumeContext<ClientConnectedMessage>>();
         A.CallTo(() => fakeConsumeContext.Message).Returns(message);
@@ -55,7 +55,7 @@ public class DeviceConnectedConsumerTest
         // Arrange
         var message = _fixture.Create<ClientConnectedMessage>();
 
-        A.CallTo(() => _fakeRepo.GetByDeviceIdAsync(message.DeviceId)).Returns<User?>(null);
+        A.CallTo(() => _fakeRepo.GetByDeviceIdAsync(message.DeviceId, A<CancellationToken>._)).Returns<User?>(null);
 
         var fakeConsumeContext = A.Fake<ConsumeContext<ClientConnectedMessage>>();
         A.CallTo(() => fakeConsumeContext.Message).Returns(message);

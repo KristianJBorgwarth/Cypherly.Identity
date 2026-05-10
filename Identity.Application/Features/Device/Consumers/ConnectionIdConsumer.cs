@@ -16,7 +16,7 @@ public sealed class ConnectionIdConsumer(
         try
         {
             var msg = context.Message;
-            var user = await userRepository.GetByIdAsync(context.Message.TenantId);
+            var user = await userRepository.GetByIdAsync(context.Message.TenantId, context.CancellationToken);
 
             if (user is null)
             {

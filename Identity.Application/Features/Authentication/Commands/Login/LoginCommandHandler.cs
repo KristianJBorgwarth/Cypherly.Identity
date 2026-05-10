@@ -14,7 +14,7 @@ public class LoginCommandHandler(
 {
     public async Task<Result<LoginDto>> Handle(LoginCommand request, CancellationToken cancellationToken)
     {
-        var user = await userRepository.GetByEmailAsync(request.Email);
+        var user = await userRepository.GetByEmailAsync(request.Email, cancellationToken);
         if (user is null) return Result.Fail<LoginDto>(Errors.General.UnspecifiedError("Invalid Credentials"));
 
         var pwResult = user.Password.Verify(request.Password);

@@ -20,7 +20,7 @@ public class VerifyNonceCommandHandler(
 {
     public async Task<Result<VerifyNonceDto>> Handle(VerifyNonceCommand cmd, CancellationToken cancellationToken)
     {
-        var user = await userRepository.GetByIdAsync(cmd.UserId);
+        var user = await userRepository.GetByIdAsync(cmd.UserId, cancellationToken);
 
         if (user is null)
         {

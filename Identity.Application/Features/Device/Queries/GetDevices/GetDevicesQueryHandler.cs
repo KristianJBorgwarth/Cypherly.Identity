@@ -14,7 +14,7 @@ public class GetDevicesQueryHandler(
 
     public async Task<Result<GetDevicesDto>> Handle(GetDevicesQuery request, CancellationToken cancellationToken)
     {
-        var user = await userRepository.GetByIdAsync(request.UserId);
+        var user = await userRepository.GetByIdAsync(request.UserId, cancellationToken);
         if (user is null)
         {
             logger.LogCritical("User not found in GetDevicesQueryHandler for user with ID: {UserId}", request.UserId);

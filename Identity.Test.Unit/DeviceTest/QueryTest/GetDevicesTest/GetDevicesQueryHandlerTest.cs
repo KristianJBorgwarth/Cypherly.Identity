@@ -38,7 +38,7 @@ public class GetDevicesQueryHandlerTest
             UserId = user.Id
         };
 
-        A.CallTo(() => _fakeUserRepository.GetByIdAsync(query.UserId)).Returns(user);
+        A.CallTo(() => _fakeUserRepository.GetByIdAsync(query.UserId, A<CancellationToken>._)).Returns(user);
 
         // Act
         var result = await _sut.Handle(query, CancellationToken.None);
@@ -47,7 +47,7 @@ public class GetDevicesQueryHandlerTest
         result.Success.Should().BeTrue();
         result.Value.Should().NotBeNull();
         result.Value.Devices.Should().NotBeNull().And.NotBeEmpty();
-        A.CallTo(() => _fakeUserRepository.GetByIdAsync(query.UserId)).MustHaveHappenedOnceExactly();
+        A.CallTo(() => _fakeUserRepository.GetByIdAsync(query.UserId, A<CancellationToken>._)).MustHaveHappenedOnceExactly();
     }
 
     [Fact]
@@ -61,7 +61,7 @@ public class GetDevicesQueryHandlerTest
             UserId = user.Id
         };
 
-        A.CallTo(() => _fakeUserRepository.GetByIdAsync(query.UserId)).Returns(user);
+        A.CallTo(() => _fakeUserRepository.GetByIdAsync(query.UserId, A<CancellationToken>._)).Returns(user);
 
         // Act
         var result = await _sut.Handle(query, CancellationToken.None);
@@ -81,7 +81,7 @@ public class GetDevicesQueryHandlerTest
             UserId = Guid.NewGuid()
         };
 
-        A.CallTo(() => _fakeUserRepository.GetByIdAsync(query.UserId)).Returns((User)null);
+        A.CallTo(() => _fakeUserRepository.GetByIdAsync(query.UserId, A<CancellationToken>._)).Returns((User)null);
 
         // Act
         var result = await _sut.Handle(query, CancellationToken.None);

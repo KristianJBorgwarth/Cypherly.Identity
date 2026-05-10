@@ -23,7 +23,7 @@ public class RollbackUserDeleteConsumer(
 
             if (!message.ContainsService(ServiceType.AuthenticationService)) return;
 
-            var user = await userRepository.GetByIdAsync(message.UserId);
+            var user = await userRepository.GetByIdAsync(message.UserId, context.CancellationToken);
             if (user is null)
             {
                 logger.LogError("User with id {UserId} not found", message.UserId);

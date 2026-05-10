@@ -16,7 +16,7 @@ public sealed class UserCreatedEventHandler(
 {
     public async Task Handle(UserCreatedEvent notification, CancellationToken cancellationToken)
     {
-        var user = await userRepository.GetByIdAsync(notification.UserId);
+        var user = await userRepository.GetByIdAsync(notification.UserId, cancellationToken);
         if (user is null)
         {
             logger.LogError("User with id {UserId} not found", notification.UserId);

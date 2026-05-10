@@ -1,6 +1,4 @@
-﻿using Cypherly.Domain.Common;
-
-// ReSharper disable ReturnTypeCanBeEnumerable.Global
+﻿// ReSharper disable ReturnTypeCanBeEnumerable.Global
 
 namespace Identity.Domain.Abstractions;
 

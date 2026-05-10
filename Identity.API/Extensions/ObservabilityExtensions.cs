@@ -10,7 +10,7 @@ namespace Identity.API.Extensions;
 
 public static class ObservabilityExtensions
 {
-    public static void AddObservability(this IServiceCollection services, IConfiguration configuration)
+    public static void AddObservability(this IServiceCollection services)
     {
         services.AddOpenTelemetry()
             .ConfigureResource(r => r

@@ -21,7 +21,7 @@ if (env.IsDevelopment())
 }
 
 builder.AddLogging();
-builder.Services.AddObservability(configuration);
+builder.Services.AddObservability();
 
 builder.Services.AddDomain();
 

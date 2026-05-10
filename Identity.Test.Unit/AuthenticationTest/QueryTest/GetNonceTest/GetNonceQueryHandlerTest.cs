@@ -35,7 +35,7 @@ public class GetNonceQueryHandlerTest
         var device = new Device(Guid.NewGuid(), "SomeKey", "1.0", DeviceType.Desktop, DevicePlatform.Android, user.Id);
         user.AddDevice(device);
 
-        A.CallTo(() => _fakeRepo.GetByIdAsync(user.Id)).Returns(user);
+        A.CallTo(() => _fakeRepo.GetByIdAsync(user.Id, A<CancellationToken>._)).Returns(user);
 
         var query = new GetNonceQuery()
         {
@@ -62,7 +62,7 @@ public class GetNonceQueryHandlerTest
             DeviceId = Guid.NewGuid()
         };
 
-        A.CallTo(() => _fakeRepo.GetByIdAsync(query.UserId)).Returns((User)null!);
+        A.CallTo(() => _fakeRepo.GetByIdAsync(query.UserId, A<CancellationToken>._)).Returns((User)null!);
 
         // Act
         var result = await _sut.Handle(query, new CancellationToken());

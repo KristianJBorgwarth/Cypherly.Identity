@@ -50,10 +50,10 @@ public class CreateUserCommandHandlerTests
 
         var user = new User(Guid.NewGuid(), Email.Create(cmd.Email), Password.Create(cmd.Password), isVerified: false);
 
-        A.CallTo(() => _fakeRepo.GetByEmailAsync(cmd.Email)).Returns<User>(null);
+        A.CallTo(() => _fakeRepo.GetByEmailAsync(cmd.Email, A<CancellationToken>._)).Returns<User>(null);
         A.CallTo(() => _fakeUserLifeCycleServices.CreateUser(cmd.Email, cmd.Password)).Returns(Result.Ok(user));
         A.CallTo(() => _fakeUnitOfWork.SaveChangesAsync(A<CancellationToken>.Ignored)).DoesNothing();
-        A.CallTo(() => _fakeRepo.CreateAsync(A<User>.Ignored)).DoesNothing();
+        A.CallTo(() => _fakeRepo.CreateAsync(A<User>.Ignored, A<CancellationToken>._)).DoesNothing();
 
         // Fake the MassTransit response
         var responseMessage = _fixture.Build<CreateUserProfileResponse>()
@@ -74,8 +74,8 @@ public class CreateUserCommandHandlerTests
         result.Success.Should().BeTrue();
         result.Value.Email.Should().Be(cmd.Email);
 
-        A.CallTo(() => _fakeRepo.GetByEmailAsync(cmd.Email)).MustHaveHappenedOnceExactly();
-        A.CallTo(() => _fakeRepo.CreateAsync(A<User>.Ignored)).MustHaveHappenedOnceExactly();
+        A.CallTo(() => _fakeRepo.GetByEmailAsync(cmd.Email, A<CancellationToken>._)).MustHaveHappenedOnceExactly();
+        A.CallTo(() => _fakeRepo.CreateAsync(A<User>.Ignored, A<CancellationToken>._)).MustHaveHappenedOnceExactly();
         A.CallTo(() => _fakeUnitOfWork.SaveChangesAsync(A<CancellationToken>.Ignored)).MustHaveHappenedOnceExactly();
 
         A.CallTo(() => _fakeRequestClient.GetResponse<CreateUserProfileResponse>(A<CreateUserProfileMessage>.Ignored, A<CancellationToken>.Ignored, A<RequestTimeout>.Ignored))
@@ -96,7 +96,7 @@ public class CreateUserCommandHandlerTests
 
         var existingUser = new User(Guid.NewGuid(), Email.Create(cmd.Email), Password.Create(cmd.Password), isVerified: false);
 
-        A.CallTo(() => _fakeRepo.GetByEmailAsync(cmd.Email)).Returns(existingUser);
+        A.CallTo(() => _fakeRepo.GetByEmailAsync(cmd.Email, A<CancellationToken>._)).Returns(existingUser);
 
         // Act
         var result = await _sut.Handle(cmd, CancellationToken.None);
@@ -105,8 +105,8 @@ public class CreateUserCommandHandlerTests
         result.Success.Should().BeFalse();
         result.Error.Message.Should().Be("An account already exists with that email");
 
-        A.CallTo(() => _fakeRepo.GetByEmailAsync(cmd.Email)).MustHaveHappenedOnceExactly();
-        A.CallTo(() => _fakeRepo.CreateAsync(A<User>.Ignored)).MustNotHaveHappened();
+        A.CallTo(() => _fakeRepo.GetByEmailAsync(cmd.Email, A<CancellationToken>._)).MustHaveHappenedOnceExactly();
+        A.CallTo(() => _fakeRepo.CreateAsync(A<User>.Ignored, A<CancellationToken>._)).MustNotHaveHappened();
         A.CallTo(() => _fakeUnitOfWork.SaveChangesAsync(A<CancellationToken>.Ignored)).MustNotHaveHappened();
         A.CallTo(() => _fakeRequestClient.GetResponse<CreateUserProfileResponse>(A<CreateUserProfileMessage>.Ignored, A<CancellationToken>.Ignored, A<RequestTimeout>.Ignored))
             .MustNotHaveHappened();
@@ -124,7 +124,7 @@ public class CreateUserCommandHandlerTests
         };
 
 
-        A.CallTo(() => _fakeRepo.GetByEmailAsync(cmd.Email)).Returns<User>(null);
+        A.CallTo(() => _fakeRepo.GetByEmailAsync(cmd.Email, A<CancellationToken>._)).Returns<User>(null);
         A.CallTo(() => _fakeUserLifeCycleServices.CreateUser(cmd.Email, cmd.Password)).Returns(Result.Fail<User>(Errors.General.UnspecifiedError("error")));
 
         // Act
@@ -134,9 +134,9 @@ public class CreateUserCommandHandlerTests
         result.Success.Should().BeFalse();
         result.Error.Message.Should().Be("error");
 
-        A.CallTo(() => _fakeRepo.GetByEmailAsync(cmd.Email)).MustHaveHappenedOnceExactly();
+        A.CallTo(() => _fakeRepo.GetByEmailAsync(cmd.Email, A<CancellationToken>._)).MustHaveHappenedOnceExactly();
         A.CallTo(() => _fakeUserLifeCycleServices.CreateUser(A<string>.Ignored, A<string>.Ignored)).MustHaveHappenedOnceExactly();
-        A.CallTo(() => _fakeRepo.CreateAsync(A<User>.Ignored)).MustNotHaveHappened();
+        A.CallTo(() => _fakeRepo.CreateAsync(A<User>.Ignored, A<CancellationToken>._)).MustNotHaveHappened();
         A.CallTo(() => _fakeUnitOfWork.SaveChangesAsync(A<CancellationToken>.Ignored)).MustNotHaveHappened();
         A.CallTo(() => _fakeRequestClient.GetResponse<CreateUserProfileResponse>(A<CreateUserProfileMessage>.Ignored, A<CancellationToken>.Ignored, A<RequestTimeout>.Ignored))
             .MustNotHaveHappened();

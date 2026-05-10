@@ -16,7 +16,7 @@ public class DeviceConnectedConsumer(
         try
         {
             var deviceId = context.Message.DeviceId;
-            var user = await userRepository.GetByDeviceIdAsync(deviceId);
+            var user = await userRepository.GetByDeviceIdAsync(deviceId, context.CancellationToken);
 
             if (user is null)
             {

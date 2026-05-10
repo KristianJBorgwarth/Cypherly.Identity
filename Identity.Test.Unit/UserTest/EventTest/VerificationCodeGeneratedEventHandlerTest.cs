@@ -35,14 +35,14 @@ public class VerificationCodeGeneratedEventHandlerTest
 
         var notification = new VerificationCodeGeneratedEvent(user.Id, UserVerificationCodeType.EmailVerification);
 
-        A.CallTo(() => _fakeRepo.GetByIdAsync(user.Id)).Returns(user);
+        A.CallTo(() => _fakeRepo.GetByIdAsync(user.Id, A<CancellationToken>._)).Returns(user);
         A.CallTo(() => _fakeEmailProducer.PublishMessageAsync(A<SendEmailMessage>._, CancellationToken.None)).DoesNothing();
 
         // Act
         await _sut.Handle(notification, CancellationToken.None);
 
         // Assert
-        A.CallTo(() => _fakeRepo.GetByIdAsync(user.Id)).MustHaveHappenedOnceExactly();
+        A.CallTo(() => _fakeRepo.GetByIdAsync(user.Id, A<CancellationToken>._)).MustHaveHappenedOnceExactly();
         A.CallTo(() => _fakeEmailProducer.PublishMessageAsync(A<SendEmailMessage>._, CancellationToken.None)).MustHaveHappenedOnceExactly();
     }
 
@@ -51,7 +51,7 @@ public class VerificationCodeGeneratedEventHandlerTest
     {
         // Arrange
         var notification = new VerificationCodeGeneratedEvent(Guid.NewGuid(), UserVerificationCodeType.EmailVerification);
-        A.CallTo(() => _fakeRepo.GetByIdAsync(notification.UserId)).Returns<User?>(null);
+        A.CallTo(() => _fakeRepo.GetByIdAsync(notification.UserId, A<CancellationToken>._)).Returns<User?>(null);
 
 
         // Act
@@ -59,7 +59,7 @@ public class VerificationCodeGeneratedEventHandlerTest
 
         // Assert
         await act.Should().ThrowAsync<InvalidOperationException>();
-        A.CallTo(() => _fakeRepo.GetByIdAsync(notification.UserId)).MustHaveHappenedOnceExactly();
+        A.CallTo(() => _fakeRepo.GetByIdAsync(notification.UserId, A<CancellationToken>._)).MustHaveHappenedOnceExactly();
         A.CallTo(() => _fakeEmailProducer.PublishMessageAsync(A<SendEmailMessage>._, CancellationToken.None)).MustNotHaveHappened();
     }
 
@@ -71,14 +71,14 @@ public class VerificationCodeGeneratedEventHandlerTest
 
         var notification = new VerificationCodeGeneratedEvent(user.Id, UserVerificationCodeType.EmailVerification);
 
-        A.CallTo(() => _fakeRepo.GetByIdAsync(user.Id)).Returns(user);
+        A.CallTo(() => _fakeRepo.GetByIdAsync(user.Id, A<CancellationToken>._)).Returns(user);
 
         // Act
         var act = async () => await _sut.Handle(notification, CancellationToken.None);
 
         // Assert
         await act.Should().ThrowAsync<InvalidOperationException>();
-        A.CallTo(() => _fakeRepo.GetByIdAsync(user.Id)).MustHaveHappenedOnceExactly();
+        A.CallTo(() => _fakeRepo.GetByIdAsync(user.Id, A<CancellationToken>._)).MustHaveHappenedOnceExactly();
         A.CallTo(() => _fakeEmailProducer.PublishMessageAsync(A<SendEmailMessage>._, CancellationToken.None)).MustNotHaveHappened();
     }
 

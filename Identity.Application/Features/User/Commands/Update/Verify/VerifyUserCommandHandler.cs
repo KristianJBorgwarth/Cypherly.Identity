@@ -14,7 +14,7 @@ public class VerifyUserCommandHandler(
 {
     public async Task<Result> Handle(VerifyUserCommand request, CancellationToken cancellationToken)
     {
-        var user = await userRepository.GetByIdAsync(request.UserId);
+        var user = await userRepository.GetByIdAsync(request.UserId, cancellationToken);
         if (user is null)
         {
             logger.LogWarning("User with ID {UserId} not found during verification process", request.UserId);
@@ -24,7 +24,7 @@ public class VerifyUserCommandHandler(
         var result = user.VerifyAccount(request.VerificationCode);
         if (result.Success is false) return Result.Fail(result.Error);
 
-        await userRepository.UpdateAsync(user);
+        await userRepository.UpdateAsync(user, cancellationToken);
         await unitOfWork.SaveChangesAsync(cancellationToken);
 
         return Result.Ok();

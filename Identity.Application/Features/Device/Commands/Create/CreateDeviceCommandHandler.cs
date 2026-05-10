@@ -22,7 +22,7 @@ public class CreateDeviceCommandHandler(
 {
     public async Task<Result<CreateDeviceDto>> Handle(CreateDeviceCommand request, CancellationToken cancellationToken)
     {
-        var user = await userRepository.GetByIdAsync(request.UserId);
+        var user = await userRepository.GetByIdAsync(request.UserId, cancellationToken);
         if (user is null)
         {
             logger.LogWarning("User {UserId} not found", request.UserId);

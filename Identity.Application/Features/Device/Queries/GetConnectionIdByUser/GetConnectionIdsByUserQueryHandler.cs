@@ -9,7 +9,7 @@ public class GetConnectionIdsByUserQueryHandler(IUserRepository userRepository) 
 {
     public async Task<Result<GetConnectionIdsByUserDto>> Handle(GetConnectionIdsByUserQuery request, CancellationToken cancellationToken)
     {
-        var user = await userRepository.GetByIdAsync(request.TenantId);
+        var user = await userRepository.GetByIdAsync(request.TenantId, cancellationToken);
         if (user is null) return Result.Fail<GetConnectionIdsByUserDto>(Errors.General.NotFound(request.TenantId));
 
         var connectionIds = user.GetDevices().Select(x => x.ConnectionId).ToList();

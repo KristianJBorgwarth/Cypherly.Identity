@@ -38,7 +38,7 @@ public class RollbackUserDeleteConsumerTest
         var user = new User(Guid.NewGuid(), Email.Create("test@mail.dk"), Password.Create("test123KLJJSD?"), false);
         user.SetDelete();
 
-        A.CallTo(() => _fakeRepo.GetByIdAsync(user.Id)).Returns(user);
+        A.CallTo(() => _fakeRepo.GetByIdAsync(user.Id, A<CancellationToken>._)).Returns(user);
 
         var message = _fixture.Build<UserDeleteFailedMessage>()
             .With(x => x.UserId, user.Id)
@@ -71,7 +71,7 @@ public class RollbackUserDeleteConsumerTest
         await _sut.Consume(fakeConsumeContext);
 
         // Assert
-        A.CallTo(() => _fakeRepo.GetByIdAsync(A<Guid>._)).MustNotHaveHappened();
+        A.CallTo(() => _fakeRepo.GetByIdAsync(A<Guid>._, A<CancellationToken>._)).MustNotHaveHappened();
         A.CallTo(() => _fakeLifeCycleServices.RevertSoftDelete(A<User>._)).MustNotHaveHappened();
     }
 
@@ -82,7 +82,7 @@ public class RollbackUserDeleteConsumerTest
             .With(x => x.Services, [ServiceType.AuthenticationService])
             .Create();
 
-        A.CallTo(() => _fakeRepo.GetByIdAsync(A<Guid>._)).Returns<User?>(null);
+        A.CallTo(() => _fakeRepo.GetByIdAsync(A<Guid>._, A<CancellationToken>._)).Returns<User?>(null);
 
         var fakeConsumeContext = A.Fake<ConsumeContext<UserDeleteFailedMessage>>();
         A.CallTo(() => fakeConsumeContext.Message).Returns(message);

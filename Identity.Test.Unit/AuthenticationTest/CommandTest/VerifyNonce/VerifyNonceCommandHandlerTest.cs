@@ -48,7 +48,7 @@ public class VerifyNonceCommandHandlerTest
             UserId = Guid.NewGuid()
         };
 
-        A.CallTo(() => _fakeRepo.GetByIdAsync(cmd.UserId)).Returns((User)null!);
+        A.CallTo(() => _fakeRepo.GetByIdAsync(cmd.UserId, A<CancellationToken>._)).Returns((User)null!);
 
         // Act
         var result = await _sut.Handle(cmd, CancellationToken.None);
@@ -75,7 +75,7 @@ public class VerifyNonceCommandHandlerTest
             UserId = user.Id
         };
 
-        A.CallTo(() => _fakeRepo.GetByIdAsync(cmd.UserId)).Returns(user);
+        A.CallTo(() => _fakeRepo.GetByIdAsync(cmd.UserId, A<CancellationToken>._)).Returns(user);
         A.CallTo(() => _fakeCachce.GetNonceAsync(cmd.NonceId, A<CancellationToken>._)).Returns((Nonce)null!);
 
         // Act
@@ -105,7 +105,7 @@ public class VerifyNonceCommandHandlerTest
 
         var nonce = Nonce.Create(user.Id, device.Id);
 
-        A.CallTo(() => _fakeRepo.GetByIdAsync(cmd.UserId)).Returns(user);
+        A.CallTo(() => _fakeRepo.GetByIdAsync(cmd.UserId, A<CancellationToken>._)).Returns(user);
         A.CallTo(() => _fakeCachce.GetNonceAsync(cmd.NonceId, A<CancellationToken>._)).Returns(nonce);
 
         A.CallTo(() => _fakeVerify.VerifyNonce(nonce.NonceValue, cmd.Nonce, device.PublicKey)).Returns(false);
@@ -138,7 +138,7 @@ public class VerifyNonceCommandHandlerTest
 
         var nonce = Nonce.Create(user.Id, device.Id);
 
-        A.CallTo(() => _fakeRepo.GetByIdAsync(cmd.UserId)).Returns(user);
+        A.CallTo(() => _fakeRepo.GetByIdAsync(cmd.UserId, A<CancellationToken>._)).Returns(user);
         A.CallTo(() => _fakeCachce.GetNonceAsync(cmd.NonceId, A<CancellationToken>._)).Returns(nonce);
 
         A.CallTo(() => _fakeVerify.VerifyNonce(nonce.NonceValue, cmd.Nonce, device.PublicKey)).Returns(true);

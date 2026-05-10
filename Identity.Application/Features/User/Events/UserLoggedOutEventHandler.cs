@@ -15,7 +15,7 @@ public sealed class UserLoggedOutEventHandler(
 {
     public async Task Handle(UserLoggedOutEvent notification, CancellationToken cancellationToken)
     {
-        var user = await userRepository.GetByIdAsync(notification.UserId);
+        var user = await userRepository.GetByIdAsync(notification.UserId, cancellationToken);
         if (user is null)
         {
             logger.LogError("User with id {UserId} not found", notification.UserId);

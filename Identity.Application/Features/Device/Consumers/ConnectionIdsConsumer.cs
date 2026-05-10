@@ -16,7 +16,7 @@ public sealed class ConnectionIdsConsumer(
         try
         {
             var ids = context.Message.TenantIds.ToArray();
-            var users = await userRepository.GetUsersAsync(ids);
+            var users = await userRepository.GetUsersAsync(ids, context.CancellationToken);
 
             var connectionIds = users.ToDictionary(
                 user => user.Id,

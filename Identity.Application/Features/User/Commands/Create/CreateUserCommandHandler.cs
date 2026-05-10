@@ -21,7 +21,7 @@ public class CreateUserCommandHandler(
 {
     public async Task<Result<CreateUserDto>> Handle(CreateUserCommand request, CancellationToken cancellationToken)
     {
-        if (await DoesEmailExist(email: request.Email))
+        if (await DoesEmailExist(request.Email, cancellationToken))
             return Result.Fail<CreateUserDto>(Errors.General.UnspecifiedError("An account already exists with that email"));
 
         var userResult = userLifeCycleServices.CreateUser(request.Email, request.Password);
@@ -29,7 +29,7 @@ public class CreateUserCommandHandler(
         if (userResult.Success is false || userResult.Value is null)
             return Result.Fail<CreateUserDto>(userResult.Error);
 
-        await userRepository.CreateAsync(userResult.Value);
+        await userRepository.CreateAsync(userResult.Value, cancellationToken);
 
 
         var createProfileResult = await CreateProfile(userResult.Value.Id, request.Username);
@@ -44,9 +44,9 @@ public class CreateUserCommandHandler(
         return Result.Ok(dto);
     }
 
-    private async Task<bool> DoesEmailExist(string email)
+    private async Task<bool> DoesEmailExist(string email, CancellationToken cancellationToken)
     {
-        var user = await userRepository.GetByEmailAsync(email);
+        var user = await userRepository.GetByEmailAsync(email, cancellationToken);
         return user is not null;
     }
 

@@ -9,7 +9,7 @@ public class GetConnectionIdsByUsersQueryHandler(IUserRepository userRepository)
 
     public async Task<Result<GetConnectionIdsByUsersDto>> Handle(GetConnectionIdsByUsersQuery request, CancellationToken cancellationToken)
     {
-        var users = await userRepository.GetUsersAsync([.. request.TenantIds]);
+        var users = await userRepository.GetUsersAsync([.. request.TenantIds], cancellationToken);
 
         var connectionIds = users.ToDictionary(
             user => user.Id,

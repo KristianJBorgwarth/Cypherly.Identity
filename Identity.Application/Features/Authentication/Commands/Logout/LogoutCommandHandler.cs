@@ -16,7 +16,7 @@ public class LogoutCommandHandler(
 {
     public async Task<Result> Handle(LogoutCommand request, CancellationToken cancellationToken)
     {
-        var user = await userRepository.GetByIdAsync(request.Id);
+        var user = await userRepository.GetByIdAsync(request.Id, cancellationToken);
         if (user is null)
         {
             logger.LogWarning("User with ID {UserId} not found", request.Id);

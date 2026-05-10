@@ -19,7 +19,7 @@ public class RefreshTokensCommandHandler(
 
     public async Task<Result<RefreshTokensDto>> Handle(RefreshTokensCommand request, CancellationToken cancellationToken)
     {
-        var user = await userRepository.GetByIdAsync(request.UserId);
+        var user = await userRepository.GetByIdAsync(request.UserId, cancellationToken);
         if (user is null)
         {
             logger.LogCritical("User with {UserId} not found", request.UserId);

@@ -14,7 +14,8 @@ public class UserRepository(IdentityDbContext context) : IUserRepository
 
     public async Task<IReadOnlyCollection<User>> GetUsersAsync(Guid[] userIds, CancellationToken ct = default)
     {
-        return await context.User.Include(u => u.Devices).Where(u => userIds.Contains(u.Id)).ToListAsync(ct);
+        List<Guid> ids = [..userIds];
+        return await context.User.Include(u => u.Devices).Where(u => ids.Contains(u.Id)).ToListAsync(ct);
     }
 
     public Task DeleteAsync(User entity, CancellationToken ct = default)

@@ -50,7 +50,7 @@ public class CreateDeviceCommandHandlerTest
             Base64DevicePublicKey = null
         };
 
-        A.CallTo(() => _fakeRepo.GetByIdAsync(request.UserId, A<CancellationToken>._)).Returns((User)null);
+        A.CallTo(() => _fakeRepo.GetSinleAsync(A<UserWithDevicesSpec>._, A<CancellationToken>._)).Returns((User)null);
 
         // Act
         var result = await _sut.Handle(request, CancellationToken.None);
@@ -78,7 +78,7 @@ public class CreateDeviceCommandHandlerTest
             Base64DevicePublicKey = null
         };
 
-        A.CallTo(() => _fakeRepo.GetByIdAsync(request.UserId, A<CancellationToken>._)).Returns(new User());
+        A.CallTo(() => _fakeRepo.GetSinleAsync(A<UserWithDevicesSpec>._, A<CancellationToken>._)).Returns(new User());
         A.CallTo(() => _fakeLoginNonceCache.GetNonceAsync(request.LoginNonceId, CancellationToken.None)).Returns((LoginNonce)null);
 
         // Act
@@ -106,7 +106,7 @@ public class CreateDeviceCommandHandlerTest
             Base64DevicePublicKey = null
         };
 
-        A.CallTo(() => _fakeRepo.GetByIdAsync(request.UserId, A<CancellationToken>._)).Returns(new User());
+        A.CallTo(() => _fakeRepo.GetSinleAsync(A<UserWithDevicesSpec>._, A<CancellationToken>._)).Returns(new User());
         A.CallTo(() => _fakeLoginNonceCache.GetNonceAsync(request.LoginNonceId, CancellationToken.None)).Returns(LoginNonce.Create(Guid.NewGuid()));
 
         // Act

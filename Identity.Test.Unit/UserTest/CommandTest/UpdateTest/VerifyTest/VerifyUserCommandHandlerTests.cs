@@ -36,7 +36,7 @@ namespace Identity.Test.Unit.UserTest.CommandTest.UpdateTest.VerifyTest
             var user = new User(Guid.NewGuid(), email, password, isVerified: false);
             user.AddVerificationCode(UserVerificationCodeType.EmailVerification);  // Setting the verification code
 
-            A.CallTo(() => _fakeUserRepository.GetByIdAsync(userId, A<CancellationToken>._)).Returns(user);
+            A.CallTo(() => _fakeUserRepository.GetSinleAsync(A<UserWithVerificationCodesSpec>._, A<CancellationToken>._)).Returns(user);
             A.CallTo(() => _fakeUnitOfWork.SaveChangesAsync(A<CancellationToken>.Ignored)).DoesNothing();
 
             var command = new VerifyUserCommand
@@ -65,7 +65,7 @@ namespace Identity.Test.Unit.UserTest.CommandTest.UpdateTest.VerifyTest
                 VerificationCode = "someCode"
             };
 
-            A.CallTo(() => _fakeUserRepository.GetByIdAsync(userId, A<CancellationToken>._))!.Returns<User>(null!);
+            A.CallTo(() => _fakeUserRepository.GetSinleAsync(A<UserWithVerificationCodesSpec>._, A<CancellationToken>._))!.Returns<User>(null!);
 
             // Act
             var result = await _sut.Handle(command, CancellationToken.None);
@@ -87,7 +87,7 @@ namespace Identity.Test.Unit.UserTest.CommandTest.UpdateTest.VerifyTest
             var user = new User(Guid.NewGuid(), email, password, isVerified: false);
             user.AddVerificationCode(UserVerificationCodeType.EmailVerification);  // Setting the verification code
 
-            A.CallTo(() => _fakeUserRepository.GetByIdAsync(userId, A<CancellationToken>._)).Returns(user);
+            A.CallTo(() => _fakeUserRepository.GetSinleAsync(A<UserWithVerificationCodesSpec>._, A<CancellationToken>._)).Returns(user);
             A.CallTo(() => _fakeUnitOfWork.SaveChangesAsync(A<CancellationToken>.Ignored)).DoesNothing();
 
             var command = new VerifyUserCommand

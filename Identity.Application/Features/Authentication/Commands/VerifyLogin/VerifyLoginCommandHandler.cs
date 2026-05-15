@@ -17,7 +17,7 @@ public sealed class VerifyLoginCommandHandler(
 {
     public async Task<Result<VerifyLoginDto>> Handle(VerifyLoginCommand cmd, CancellationToken ct)
     {
-        var user = await userRepository.GetSinleAsync(new UserWithVerificationCodeSpec(cmd.UserId), ct);
+        var user = await userRepository.GetSinleAsync(new UserWithVerificationCodesSpec(cmd.UserId), ct);
         if (user is null)
         {
             logger.LogWarning("User with ID {UserId} not found", cmd.UserId);

@@ -16,7 +16,7 @@ public class VerificationCodeGeneratedEventHandler(
 {
     public async Task Handle(VerificationCodeGeneratedEvent ntf, CancellationToken ct)
     {
-        var user = await userRepository.GetSinleAsync(new UserWithVerificationCodeSpec(ntf.UserId), ct);
+        var user = await userRepository.GetSinleAsync(new UserWithVerificationCodesSpec(ntf.UserId), ct);
         if (user is null)
         {
             logger.LogError("User with id {UserId} not found", ntf.UserId);

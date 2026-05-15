@@ -1,5 +1,4 @@
-﻿using System.Diagnostics.CodeAnalysis;
-using Cypherly.Domain.Common;
+﻿using Cypherly.Domain.Common;
 using Identity.Domain.Abstractions;
 using Identity.Domain.Common;
 using Identity.Domain.Entities;
@@ -16,8 +15,8 @@ public class User : AggregateRoot
     public bool IsVerified { get; private set; }
     private readonly List<UserVerificationCode> _verificationCodes = [];
     private readonly List<Device> _devices = [];
-    public virtual IReadOnlyCollection<Device> Devices => _devices;
-    public virtual IReadOnlyCollection<UserVerificationCode> VerificationCodes => _verificationCodes;
+    public IReadOnlyCollection<Device> Devices => _devices;
+    public IReadOnlyCollection<UserVerificationCode> VerificationCodes => _verificationCodes;
 
     public User() : base(Guid.Empty) { } // For EF Core
 

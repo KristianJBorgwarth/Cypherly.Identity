@@ -34,7 +34,7 @@ public class UserCreatedEventHandlerTest
         var user = new User(Guid.NewGuid(), Email.Create("test@mail.dk"), Password.Create("Test=??8239"), false);
         user.AddVerificationCode(UserVerificationCodeType.EmailVerification);
 
-        A.CallTo(() => _fakeUserRepository.GetByIdAsync(user.Id, A<CancellationToken>._)).Returns(user);
+        A.CallTo(() => _fakeUserRepository.GetSinleAsync(A<UserWithVerificationCodesSpec>._, A<CancellationToken>._)).Returns(user);
 
         A.CallTo(() => _fakeEmailProducer.PublishMessageAsync(A<SendEmailMessage>._, A<CancellationToken>._))
             .Returns(Task.CompletedTask);
@@ -45,7 +45,7 @@ public class UserCreatedEventHandlerTest
         await _sut.Handle(userCreatedEvent, CancellationToken.None);
 
         // Assert
-        A.CallTo(() => _fakeUserRepository.GetByIdAsync(user.Id, A<CancellationToken>._)).MustHaveHappenedOnceExactly();
+        A.CallTo(() => _fakeUserRepository.GetSinleAsync(A<UserWithVerificationCodesSpec>._, A<CancellationToken>._)).MustHaveHappenedOnceExactly();
         A.CallTo(() => _fakeEmailProducer.PublishMessageAsync(A<SendEmailMessage>._, A<CancellationToken>._))
             .MustHaveHappenedOnceExactly();
     }
@@ -55,14 +55,14 @@ public class UserCreatedEventHandlerTest
     {
         // Arrange
         var userCreatedEvent = new UserCreatedEvent(Guid.NewGuid());
-        A.CallTo(() => _fakeUserRepository.GetByIdAsync(userCreatedEvent.UserId, A<CancellationToken>._)).Returns<User?>(null);
+        A.CallTo(() => _fakeUserRepository.GetSinleAsync(A<UserWithVerificationCodesSpec>._, A<CancellationToken>._)).Returns<User?>(null);
 
         // Act
         var act = async () => await _sut.Handle(userCreatedEvent, CancellationToken.None);
 
         // Assert
         await act.Should().ThrowAsync<InvalidOperationException>().WithMessage("User not found");
-        A.CallTo(() => _fakeUserRepository.GetByIdAsync(userCreatedEvent.UserId, A<CancellationToken>._)).MustHaveHappenedOnceExactly();
+        A.CallTo(() => _fakeUserRepository.GetSinleAsync(A<UserWithVerificationCodesSpec>._, A<CancellationToken>._)).MustHaveHappenedOnceExactly();
         A.CallTo(() => _fakeEmailProducer.PublishMessageAsync(A<SendEmailMessage>._, A<CancellationToken>._))
             .MustNotHaveHappened();
     }
@@ -74,7 +74,7 @@ public class UserCreatedEventHandlerTest
         var user = new User(Guid.NewGuid(), Email.Create("test@mail.dk"), Password.Create("fuckasdk?2329JS"), false);
         var userEvent = new UserCreatedEvent(user.Id);
 
-        A.CallTo(() => _fakeUserRepository.GetByIdAsync(user.Id, A<CancellationToken>._)).Returns(user);
+        A.CallTo(() => _fakeUserRepository.GetSinleAsync(A<UserWithVerificationCodesSpec>._, A<CancellationToken>._)).Returns(user);
 
         //Will throw since user will have no verification code
         //Act
@@ -84,7 +84,7 @@ public class UserCreatedEventHandlerTest
         // Assert
         await act.Should().ThrowAsync<InvalidOperationException>().WithMessage("Verification code not found");
 
-        A.CallTo(() => _fakeUserRepository.GetByIdAsync(userEvent.UserId, A<CancellationToken>._)).MustHaveHappenedOnceExactly();
+        A.CallTo(() => _fakeUserRepository.GetSinleAsync(A<UserWithVerificationCodesSpec>._, A<CancellationToken>._)).MustHaveHappenedOnceExactly();
         A.CallTo(() => _fakeEmailProducer.PublishMessageAsync(A<SendEmailMessage>._, A<CancellationToken>._))
             .MustNotHaveHappened();
     }
@@ -96,7 +96,7 @@ public class UserCreatedEventHandlerTest
         var user = new User(Guid.NewGuid(), Email.Create("test@mail.dk"), Password.Create("Test=??8239"), false);
         user.AddVerificationCode(UserVerificationCodeType.EmailVerification);
 
-        A.CallTo(() => _fakeUserRepository.GetByIdAsync(user.Id, A<CancellationToken>._)).Returns(user);
+        A.CallTo(() => _fakeUserRepository.GetSinleAsync(A<UserWithVerificationCodesSpec>._, A<CancellationToken>._)).Returns(user);
 
         A.CallTo(() => _fakeEmailProducer.PublishMessageAsync(A<SendEmailMessage>._, A<CancellationToken>._))
             .Throws<Exception>();
@@ -108,7 +108,7 @@ public class UserCreatedEventHandlerTest
 
         // Assert
         await act.Should().ThrowAsync<Exception>();
-        A.CallTo(() => _fakeUserRepository.GetByIdAsync(user.Id, A<CancellationToken>._)).MustHaveHappenedOnceExactly();
+        A.CallTo(() => _fakeUserRepository.GetSinleAsync(A<UserWithVerificationCodesSpec>._, A<CancellationToken>._)).MustHaveHappenedOnceExactly();
         A.CallTo(() => _fakeEmailProducer.PublishMessageAsync(A<SendEmailMessage>._, A<CancellationToken>._))
             .MustHaveHappenedOnceExactly();
     }

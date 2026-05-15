@@ -1,5 +1,4 @@
-﻿using Cypherly.Domain.Common;
-using Identity.Domain.Abstractions;
+﻿using Identity.Domain.Abstractions;
 using Identity.Domain.Enums;
 using Identity.Domain.ValueObjects;
 

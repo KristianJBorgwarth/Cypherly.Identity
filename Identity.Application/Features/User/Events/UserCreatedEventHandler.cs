@@ -16,7 +16,7 @@ public sealed class UserCreatedEventHandler(
 {
     public async Task Handle(UserCreatedEvent ntf, CancellationToken ct)
     {
-        var user = await userRepository.GetSinleAsync(new UserSpec(ntf.UserId), ct);
+        var user = await userRepository.GetSinleAsync(new UserWithVerificationCodesSpec(ntf.UserId), ct);
         if (user is null)
         {
             logger.LogError("User with id {UserId} not found", ntf.UserId);

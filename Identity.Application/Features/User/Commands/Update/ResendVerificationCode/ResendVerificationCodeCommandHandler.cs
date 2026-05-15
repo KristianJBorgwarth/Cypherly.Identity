@@ -17,7 +17,7 @@ public sealed class ResendVerificationCodeCommandHandler(
 {
     public async Task<Result> Handle(ResendVerificationCodeCommand cmd, CancellationToken ct)
     {
-        var user = await userRepository.GetSinleAsync(new UserWithVerificationCodeSpec(cmd.UserId), ct);
+        var user = await userRepository.GetSinleAsync(new UserWithVerificationCodesSpec(cmd.UserId), ct);
         if (user is null)
         {
             logger.LogWarning("User {UserId} not found", cmd.UserId);

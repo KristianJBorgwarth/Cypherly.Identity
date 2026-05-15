@@ -1,5 +1,4 @@
 ﻿using System.Security.Cryptography;
-using Cypherly.Domain.Common;
 using Identity.Domain.Abstractions;
 
 namespace Identity.Domain.Entities;
@@ -12,7 +11,7 @@ public class RefreshToken : Entity
     public bool IsRevoked => Revoked.HasValue;
     public bool IsExpired => DateTime.UtcNow >= Expires;
     public Guid DeviceId { get; private set; }
-    public virtual Device Device { get; private set; } = null!;
+    public Device Device { get; private set; } = null!;
 
     public RefreshToken() : base(Guid.Empty) { } // For EF Core
 

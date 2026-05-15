@@ -1,6 +1,6 @@
 using Microsoft.IdentityModel.Tokens;
 
-namespace Identity.Application.Interfaces;
+namespace Identity.Infrastructure.Interfaces;
 
 internal interface IRsaKeyGenerator
 {

@@ -7,7 +7,7 @@ using Identity.Application.Services;
 using MediatR;
 using Microsoft.Extensions.DependencyInjection;
 
-namespace Identity.Application.Extensions;
+namespace Identity.Application.Configuration;
 
 public static class ApplicationExtensions
 {

@@ -1,5 +1,6 @@
 ﻿using System.Security.Claims;
 using System.Text;
+using Identity.Application.Extensions;
 using Identity.Application.Features.Authentication.Queries.GetJwks;
 using Identity.Application.Interfaces;
 using Identity.Application.Settings;
@@ -9,13 +10,11 @@ using Microsoft.IdentityModel.Tokens;
 
 namespace Identity.Application.Services;
 
-public class JwtService(IOptions<JwtSettings> jwtSettings) : IJwtService
+internal class JwtService(
+    IJwkCache jwkCache,
+    IOptions<JwtSettings> jwtSettings)
+    : IJwtService
 {
-    public JwksDto GenerateJwks()
-    {
-        throw new NotImplementedException();
-    }
-
     public string GenerateToken(Guid userId, Guid deviceId)
     {
         var claims = new List<Claim>
@@ -41,5 +40,12 @@ public class JwtService(IOptions<JwtSettings> jwtSettings) : IJwtService
         var token = tokenHandler.CreateToken(tokenDescriptor);
 
         return token;
+    }
+
+    public async Task<IReadOnlyList<JwksDto>> GenerateJwks(CancellationToken ct = default)
+    {
+        var jwks = await jwkCache.GetJwks();
+        var jwksDtos = jwks.ToPubKeyDtos();
+        return jwksDtos;
     }
 }

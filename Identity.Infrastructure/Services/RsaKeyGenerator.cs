@@ -1,8 +1,8 @@
 using System.Security.Cryptography;
-using Identity.Application.Interfaces;
+using Identity.Infrastructure.Interfaces;
 using Microsoft.IdentityModel.Tokens;
 
-namespace Identity.Application.Services;
+namespace Identity.Infrastructure.Services;
 
 internal sealed class RsaKeyGenerator : IRsaKeyGenerator
 {

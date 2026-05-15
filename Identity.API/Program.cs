@@ -5,6 +5,7 @@ using Identity.Domain.Extensions;
 using Identity.Infrastructure.Extensions;
 using Scalar.AspNetCore;
 using Identity.Application.Settings;
+using Identity.Application.Configuration;
 
 var builder = WebApplication.CreateBuilder(args);
 

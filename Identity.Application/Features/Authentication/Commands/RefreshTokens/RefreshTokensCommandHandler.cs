@@ -17,21 +17,21 @@ public class RefreshTokensCommandHandler(
     : ICommandHandler<RefreshTokensCommand, RefreshTokensDto>
 {
 
-    public async Task<Result<RefreshTokensDto>> Handle(RefreshTokensCommand request, CancellationToken cancellationToken)
+    public async Task<Result<RefreshTokensDto>> Handle(RefreshTokensCommand cmd, CancellationToken ct)
     {
-        var user = await userRepository.GetByIdAsync(request.UserId, cancellationToken);
+        var user = await userRepository.GetSinleAsync(new UserWithDeviceAndRefreshTokensSpec(cmd.UserId), ct);
         if (user is null)
         {
-            logger.LogCritical("User with {UserId} not found", request.UserId);
-            return Result.Fail<RefreshTokensDto>(Errors.General.NotFound(request.UserId));
+            logger.LogCritical("User with {UserId} not found", cmd.UserId);
+            return Result.Fail<RefreshTokensDto>(Errors.General.NotFound(cmd.UserId));
         }
 
-        var isTokenValid = authService.VerifyRefreshToken(user, request.DeviceId, request.RefreshToken);
+        var isTokenValid = authService.VerifyRefreshToken(user, cmd.DeviceId, cmd.RefreshToken);
         if (!isTokenValid) return Result.Fail<RefreshTokensDto>(Errors.General.UnspecifiedError("Invalid refresh token"));
 
-        var refreshToken = authService.GenerateRefreshToken(user, request.DeviceId);
+        var refreshToken = authService.GenerateRefreshToken(user, cmd.DeviceId);
 
-        var accessToken = jwtService.GenerateToken(user.Id, request.DeviceId);
+        var accessToken = jwtService.GenerateToken(user.Id, cmd.DeviceId);
 
         var dto = new RefreshTokensDto
         {
@@ -40,7 +40,7 @@ public class RefreshTokensCommandHandler(
             ExpiresAt = refreshToken.Expires
         };
 
-        await unitOfWork.SaveChangesAsync(cancellationToken);
+        await unitOfWork.SaveChangesAsync(ct);
 
         return Result.Ok(dto);
     }

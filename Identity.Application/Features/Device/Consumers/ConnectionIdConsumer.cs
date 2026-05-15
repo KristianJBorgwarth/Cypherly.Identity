@@ -11,12 +11,12 @@ public sealed class ConnectionIdConsumer(
     ILogger<ConnectionIdConsumer> logger)
     : IConsumer<ConnectionIdMessage>
 {
-    public async Task Consume(ConsumeContext<ConnectionIdMessage> context)
+    public async Task Consume(ConsumeContext<ConnectionIdMessage> ctx)
     {
         try
         {
-            var msg = context.Message;
-            var user = await userRepository.GetByIdAsync(context.Message.TenantId, context.CancellationToken);
+            var msg = ctx.Message;
+            var user = await userRepository.GetSinleAsync(new UserWithDevicesSpec(msg.TenantId), ctx.CancellationToken);
 
             if (user is null)
             {
@@ -26,7 +26,7 @@ public sealed class ConnectionIdConsumer(
 
             var connectionIds = user.GetDevices().Select(x => x.ConnectionId).ToList();
 
-            await context.RespondAsync(new ConnectionIdResponse
+            await ctx.RespondAsync(new ConnectionIdResponse
             {
                 CorrelationId = msg.CorrelationId,
                 CausationId = msg.CausationId,

@@ -14,19 +14,19 @@ public sealed class UserCreatedEventHandler(
     ILogger<UserCreatedEventHandler> logger)
     : IDomainEventHandler<UserCreatedEvent>
 {
-    public async Task Handle(UserCreatedEvent notification, CancellationToken cancellationToken)
+    public async Task Handle(UserCreatedEvent ntf, CancellationToken ct)
     {
-        var user = await userRepository.GetByIdAsync(notification.UserId, cancellationToken);
+        var user = await userRepository.GetSinleAsync(new UserSpec(ntf.UserId), ct);
         if (user is null)
         {
-            logger.LogError("User with id {UserId} not found", notification.UserId);
+            logger.LogError("User with id {UserId} not found", ntf.UserId);
             throw new InvalidOperationException("User not found");
         }
 
         var verificationCode = user.GetActiveVerificationCode(UserVerificationCodeType.EmailVerification);
         if (verificationCode is null)
         {
-            logger.LogError("Verification code for user with id {UserId} not found", notification.UserId);
+            logger.LogError("Verification code for user with id {UserId} not found", ntf.UserId);
             throw new InvalidOperationException("Verification code not found");
         }
 
@@ -39,6 +39,6 @@ public sealed class UserCreatedEventHandler(
             CausationId = null,
         };
 
-        await emailProducer.PublishMessageAsync(emailMessage, cancellationToken);
+        await emailProducer.PublishMessageAsync(emailMessage, ct);
     }
 }

@@ -11,12 +11,12 @@ public class DeviceConnectedConsumer(
     ILogger<DeviceConnectedConsumer> logger)
     : IConsumer<ClientConnectedMessage>
 {
-    public async Task Consume(ConsumeContext<ClientConnectedMessage> context)
+    public async Task Consume(ConsumeContext<ClientConnectedMessage> ctx)
     {
         try
         {
-            var deviceId = context.Message.DeviceId;
-            var user = await userRepository.GetByDeviceIdAsync(deviceId, context.CancellationToken);
+            var deviceId = ctx.Message.DeviceId;
+            var user = await userRepository.GetSinleAsync(new UserByDeviceIdWithDevicesSpec(deviceId), ctx.CancellationToken);
 
             if (user is null)
             {
@@ -32,7 +32,7 @@ public class DeviceConnectedConsumer(
         }
         catch (Exception ex)
         {
-            logger.LogError(ex, "Error processing device connected message for device {DeviceId}", context.Message.DeviceId);
+            logger.LogError(ex, "Error processing device connected message for device {DeviceId}", ctx.Message.DeviceId);
             throw;
         }
     }

@@ -13,25 +13,25 @@ public sealed class UserLoggedOutEventHandler(
     ILogger<UserLoggedOutEventHandler> logger)
     : IDomainEventHandler<UserLoggedOutEvent>
 {
-    public async Task Handle(UserLoggedOutEvent notification, CancellationToken cancellationToken)
+    public async Task Handle(UserLoggedOutEvent ntf, CancellationToken ct)
     {
-        var user = await userRepository.GetByIdAsync(notification.UserId, cancellationToken);
+        var user = await userRepository.GetSinleAsync(new UserWithDevicesSpec(ntf.UserId), ct);
         if (user is null)
         {
-            logger.LogError("User with id {UserId} not found", notification.UserId);
+            logger.LogError("User with id {UserId} not found", ntf.UserId);
             throw new InvalidOperationException("User not found");
         }
 
-        var device = user.GetDevice(notification.DeviceId, true);
+        var device = user.GetDevice(ntf.DeviceId, true);
 
         var userLogoutMessage = new UserLogoutMessage
         {
             CorrelationId = Guid.NewGuid(),
-            UserId = notification.UserId,
+            UserId = ntf.UserId,
             DeviceId = device.Id,
             ConnectionId = device.ConnectionId,
         };
 
-        await userLogoutProducer.PublishMessageAsync(userLogoutMessage, cancellationToken);
+        await userLogoutProducer.PublishMessageAsync(userLogoutMessage, ct);
     }
 }

@@ -14,21 +14,21 @@ public class GetNonceQueryHandler(
     ILogger<GetNonceQueryHandler> logger)
     : IQueryHandler<GetNonceQuery, GetNonceDto>
 {
-    public async Task<Result<GetNonceDto>> Handle(GetNonceQuery request, CancellationToken cancellationToken)
+    public async Task<Result<GetNonceDto>> Handle(GetNonceQuery q, CancellationToken ct)
     {
-        var user = await userRepository.GetByIdAsync(request.UserId, cancellationToken);
+        var user = await userRepository.GetSinleAsync(new UserWithDevicesSpec(q.UserId), ct);
 
         if (user is null)
         {
-            logger.LogWarning("User with ID: {ID} not found.", request.UserId);
-            return Result.Fail<GetNonceDto>(Errors.General.NotFound(request.UserId));
+            logger.LogWarning("User with ID: {ID} not found.", q.UserId);
+            return Result.Fail<GetNonceDto>(Errors.General.NotFound(q.UserId));
         }
 
-        var device = user.GetDevice(request.DeviceId);
+        var device = user.GetDevice(q.DeviceId);
 
         var nonce = Nonce.Create(user.Id, device.Id);
 
-        await nonceCache.AddNonceAsync(nonce, cancellationToken);
+        await nonceCache.AddNonceAsync(nonce, ct);
 
         var dto = GetNonceDto.Map(nonce);
 

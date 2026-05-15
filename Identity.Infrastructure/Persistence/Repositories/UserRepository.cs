@@ -53,4 +53,13 @@ public class UserRepository(IdentityDbContext context) : IUserRepository
 
         return await q.FirstOrDefaultAsync(ct);
     }
+
+    public Task<List<User>> GetListAsync(ISpecification<User> spec, CancellationToken ct = default)
+    {
+        var q = context.User.Where(spec.Criteria);
+
+        q = spec.Includes.Aggregate(q, (current, include) => current.Include(include));
+
+        return q.ToListAsync(ct);
+    }
 }

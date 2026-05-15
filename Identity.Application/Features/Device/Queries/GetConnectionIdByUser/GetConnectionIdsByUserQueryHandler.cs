@@ -7,10 +7,10 @@ namespace Identity.Application.Features.Device.Queries.GetConnectionIdByUser;
 
 public class GetConnectionIdsByUserQueryHandler(IUserRepository userRepository) : IQueryHandler<GetConnectionIdsByUserQuery, GetConnectionIdsByUserDto>
 {
-    public async Task<Result<GetConnectionIdsByUserDto>> Handle(GetConnectionIdsByUserQuery request, CancellationToken cancellationToken)
+    public async Task<Result<GetConnectionIdsByUserDto>> Handle(GetConnectionIdsByUserQuery q, CancellationToken ct)
     {
-        var user = await userRepository.GetByIdAsync(request.TenantId, cancellationToken);
-        if (user is null) return Result.Fail<GetConnectionIdsByUserDto>(Errors.General.NotFound(request.TenantId));
+        var user = await userRepository.GetSinleAsync(new UserWithDevicesSpec(q.TenantId), ct);
+        if (user is null) return Result.Fail<GetConnectionIdsByUserDto>(Errors.General.NotFound(q.TenantId));
 
         var connectionIds = user.GetDevices().Select(x => x.ConnectionId).ToList();
 

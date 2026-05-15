@@ -1,10 +1,10 @@
 using System.Reflection;
 using Identity.Application.Extensions;
-using Identity.Application.Features.Authentication.Token;
 using Identity.API.Extensions;
 using Identity.Domain.Extensions;
 using Identity.Infrastructure.Extensions;
 using Scalar.AspNetCore;
+using Identity.Application.Settings;
 
 var builder = WebApplication.CreateBuilder(args);
 

@@ -2,7 +2,7 @@
 using FluentAssertions;
 using Identity.Application.Contracts.Repository;
 using Identity.Application.Features.Authentication.Commands.RefreshTokens;
-using Identity.Application.Features.Authentication.Token;
+using Identity.Application.Interfaces;
 using Identity.Domain.Aggregates;
 using Identity.Domain.Common;
 using Identity.Domain.Entities;

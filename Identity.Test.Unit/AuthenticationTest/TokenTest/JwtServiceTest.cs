@@ -1,5 +1,4 @@
 ﻿using System.Security.Claims;
-using Identity.Application.Features.Authentication.Token;
 using FluentAssertions;
 using Identity.Domain.Aggregates;
 using Identity.Domain.Entities;
@@ -7,6 +6,7 @@ using Identity.Domain.Enums;
 using Identity.Domain.ValueObjects;
 using Microsoft.Extensions.Options;
 using Microsoft.IdentityModel.JsonWebTokens;
+using Identity.Application.Services;
 
 namespace Identity.Test.Unit.AuthenticationTest.TokenTest;
 

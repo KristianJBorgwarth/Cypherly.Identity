@@ -1,7 +1,7 @@
 ﻿using Cypherly.Domain.Common;
 using Identity.Application.Abstractions;
 using Identity.Application.Contracts.Repository;
-using Identity.Application.Features.Authentication.Token;
+using Identity.Application.Interfaces;
 using Identity.Domain.Common;
 using Identity.Domain.Services.User;
 using Microsoft.Extensions.Logging;

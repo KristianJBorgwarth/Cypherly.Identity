@@ -6,7 +6,7 @@ namespace Identity.Infrastructure.Caching;
 
 public class LoginNonceCache(IValkeyCacheService valkeyCacheService) : ILoginNonceCache
 {
-    private readonly JsonSerializerOptions _options = new JsonSerializerOptions()
+    private readonly JsonSerializerOptions _options = new()
     {
         Converters = { new LoginNonceJsonConverter() },
     };

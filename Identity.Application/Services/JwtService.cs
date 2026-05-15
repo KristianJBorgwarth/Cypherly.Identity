@@ -1,13 +1,21 @@
 ﻿using System.Security.Claims;
 using System.Text;
+using Identity.Application.Features.Authentication.Queries.GetJwks;
+using Identity.Application.Interfaces;
+using Identity.Application.Settings;
 using Microsoft.Extensions.Options;
 using Microsoft.IdentityModel.JsonWebTokens;
 using Microsoft.IdentityModel.Tokens;
 
-namespace Identity.Application.Features.Authentication.Token;
+namespace Identity.Application.Services;
 
 public class JwtService(IOptions<JwtSettings> jwtSettings) : IJwtService
 {
+    public JwksDto GenerateJwks()
+    {
+        throw new NotImplementedException();
+    }
+
     public string GenerateToken(Guid userId, Guid deviceId)
     {
         var claims = new List<Claim>

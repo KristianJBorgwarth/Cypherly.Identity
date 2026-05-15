@@ -1,5 +1,4 @@
-﻿
-namespace Identity.Application.Features.Authentication.Token;
+﻿namespace Identity.Application.Settings;
 
 public class JwtSettings
 {

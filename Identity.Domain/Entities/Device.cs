@@ -16,7 +16,7 @@ public class Device : Entity
     public Guid UserId { get; private set; }
 
     private readonly List<RefreshToken> _refreshTokens = [];
-    public virtual IReadOnlyCollection<RefreshToken> RefreshTokens => _refreshTokens;
+    public IReadOnlyCollection<RefreshToken> RefreshTokens => _refreshTokens;
 
     public Device() : base(Guid.Empty) { } // For EF Core
 

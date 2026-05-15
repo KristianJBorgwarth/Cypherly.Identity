@@ -31,7 +31,7 @@ public class DeleteUserCommandHandlerTest
         // Arrange
         var command = new DeleteUserCommand { Id = Guid.NewGuid() };
 
-        A.CallTo(() => _fakeUserRepository.GetByIdAsync(command.Id, A<CancellationToken>._)).Returns<User?>(null);
+        A.CallTo(() => _fakeUserRepository.GetSinleAsync(A<UserSpec>._, A<CancellationToken>._)).Returns<User?>(null);
 
         // Act
         var result = await _sut.Handle(command, CancellationToken.None);
@@ -52,7 +52,7 @@ public class DeleteUserCommandHandlerTest
 
         var user = new User(Guid.NewGuid(), Email.Create("test@mail.dk"), Password.Create("kjIosdl??923228jS"), false);
 
-        A.CallTo(() => _fakeUserRepository.GetByIdAsync(command.Id, A<CancellationToken>._)).Returns(user);
+        A.CallTo(() => _fakeUserRepository.GetSinleAsync(A<UserSpec>._, A<CancellationToken>._)).Returns(user);
 
         A.CallTo(() => _fakeUserLifeCycleServices.IsUserDeleted(user)).Returns(true);
 
@@ -73,7 +73,7 @@ public class DeleteUserCommandHandlerTest
 
         var user = new User(Guid.NewGuid(), Email.Create("test@mail.dk"), Password.Create("kjIosdl??923228jS"), false);
 
-        A.CallTo(() => _fakeUserRepository.GetByIdAsync(command.Id, A<CancellationToken>._)).Returns(user);
+        A.CallTo(() => _fakeUserRepository.GetSinleAsync(A<UserSpec>._, A<CancellationToken>._)).Returns(user);
 
         A.CallTo(() => _fakeUserLifeCycleServices.IsUserDeleted(user)).Returns(false);
 

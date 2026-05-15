@@ -37,7 +37,7 @@ public class GenerateAccountVerificationCodeEndpointTest(IntegrationTestFactory<
 
         // Assert
         response.StatusCode.Should().Be(HttpStatusCode.OK);
-        Db.User.AsNoTracking().First().VerificationCodes.Should().HaveCount(1);
+        Db.User.Include(u => u.VerificationCodes).FirstOrDefault()!.VerificationCodes.Should().HaveCount(1);
     }
 
     [Fact]

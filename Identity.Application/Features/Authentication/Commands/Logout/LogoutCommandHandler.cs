@@ -14,18 +14,18 @@ public class LogoutCommandHandler(
     ILogger<LogoutCommandHandler> logger)
     : ICommandHandler<LogoutCommand>
 {
-    public async Task<Result> Handle(LogoutCommand request, CancellationToken cancellationToken)
+    public async Task<Result> Handle(LogoutCommand cmd, CancellationToken ct)
     {
-        var user = await userRepository.GetByIdAsync(request.Id, cancellationToken);
+        var user = await userRepository.GetSinleAsync(new UserWithDeviceAndRefreshTokensSpec(cmd.Id), ct);
         if (user is null)
         {
-            logger.LogWarning("User with ID {UserId} not found", request.Id);
-            return Result.Fail(Errors.General.NotFound(request.Id));
+            logger.LogWarning("User with ID {UserId} not found", cmd.Id);
+            return Result.Fail(Errors.General.NotFound(cmd.Id));
         }
 
-        authenticationService.Logout(user, request.DeviceId);
+        authenticationService.Logout(user, cmd.DeviceId);
 
-        await unitOfWork.SaveChangesAsync(cancellationToken);
+        await unitOfWork.SaveChangesAsync(ct);
 
         return Result.Ok();
     }

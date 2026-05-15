@@ -12,13 +12,13 @@ public class GetDevicesQueryHandler(
     : IQueryHandler<GetDevicesQuery, GetDevicesDto>
 {
 
-    public async Task<Result<GetDevicesDto>> Handle(GetDevicesQuery request, CancellationToken cancellationToken)
+    public async Task<Result<GetDevicesDto>> Handle(GetDevicesQuery q, CancellationToken ct)
     {
-        var user = await userRepository.GetByIdAsync(request.UserId, cancellationToken);
+        var user = await userRepository.GetSinleAsync(new UserWithDevicesSpec(q.UserId), ct);
         if (user is null)
         {
-            logger.LogCritical("User not found in GetDevicesQueryHandler for user with ID: {UserId}", request.UserId);
-            return Result.Fail<GetDevicesDto>(Errors.General.NotFound(request.UserId));
+            logger.LogCritical("User not found in GetDevicesQueryHandler for user with ID: {UserId}", q.UserId);
+            return Result.Fail<GetDevicesDto>(Errors.General.NotFound(q.UserId));
         }
 
         var devices = user.GetDevices();

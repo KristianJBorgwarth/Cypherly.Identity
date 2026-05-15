@@ -20,31 +20,31 @@ public class CreateDeviceCommandHandler(
     ILogger<CreateDeviceCommandHandler> logger)
     : ICommandHandler<CreateDeviceCommand, CreateDeviceDto>
 {
-    public async Task<Result<CreateDeviceDto>> Handle(CreateDeviceCommand request, CancellationToken cancellationToken)
+    public async Task<Result<CreateDeviceDto>> Handle(CreateDeviceCommand cmd, CancellationToken ct)
     {
-        var user = await userRepository.GetByIdAsync(request.UserId, cancellationToken);
+        var user = await userRepository.GetSinleAsync(new UserWithDevicesSpec(cmd.UserId), ct);
         if (user is null)
         {
-            logger.LogWarning("User {UserId} not found", request.UserId);
-            return Result.Fail<CreateDeviceDto>(Errors.General.NotFound(request.UserId));
+            logger.LogWarning("User {UserId} not found", cmd.UserId);
+            return Result.Fail<CreateDeviceDto>(Errors.General.NotFound(cmd.UserId));
         }
 
-        var loginNonce = await loginNonceCache.GetNonceAsync(request.LoginNonceId, cancellationToken);
+        var loginNonce = await loginNonceCache.GetNonceAsync(cmd.LoginNonceId, ct);
 
-        if (loginNonce is null || loginNonce.NonceValue != request.LoginNonce)
+        if (loginNonce is null || loginNonce.NonceValue != cmd.LoginNonce)
         {
-            logger.LogWarning("Login nonce {LoginNonceId} not found or invalid for user with ID: {ID}", request.LoginNonceId, request.UserId);
+            logger.LogWarning("Login nonce {LoginNonceId} not found or invalid for user with ID: {ID}", cmd.LoginNonceId, cmd.UserId);
             return Result.Fail<CreateDeviceDto>(Errors.General.Unauthorized());
         }
 
-        var device = deviceService.RegisterDevice(user, request.Base64DevicePublicKey, request.DeviceAppVersion, request.DeviceType, request.DevicePlatform);
+        var device = deviceService.RegisterDevice(user, cmd.Base64DevicePublicKey, cmd.DeviceAppVersion, cmd.DeviceType, cmd.DevicePlatform);
 
         var createClientResult = await CreateClient(device.Id, device.ConnectionId);
 
         if (createClientResult.Success is false)
             return Result.Fail<CreateDeviceDto>(createClientResult.Error);
 
-        await unitOfWork.SaveChangesAsync(cancellationToken);
+        await unitOfWork.SaveChangesAsync(ct);
 
         var dto = CreateDeviceDto.Map(device);
 

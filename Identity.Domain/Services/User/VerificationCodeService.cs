@@ -5,12 +5,12 @@ namespace Identity.Domain.Services.User;
 
 public interface IVerificationCodeService
 {
-    void GenerateVerificationCode(Identity.Domain.Aggregates.User user, UserVerificationCodeType codeType);
+    void GenerateVerificationCode(Aggregates.User user, UserVerificationCodeType codeType);
 }
 
 public class VerificationCodeService : IVerificationCodeService
 {
-    public void GenerateVerificationCode(Identity.Domain.Aggregates.User user, UserVerificationCodeType codeType)
+    public void GenerateVerificationCode(Aggregates.User user, UserVerificationCodeType codeType)
     {
         user.AddVerificationCode(codeType);
         user.AddDomainEvent(new VerificationCodeGeneratedEvent(user.Id, codeType));

@@ -19,34 +19,33 @@ public class CreateUserCommandHandler(
     ILogger<CreateUserCommandHandler> logger)
     : ICommandHandler<CreateUserCommand, CreateUserDto>
 {
-    public async Task<Result<CreateUserDto>> Handle(CreateUserCommand request, CancellationToken cancellationToken)
+    public async Task<Result<CreateUserDto>> Handle(CreateUserCommand cmd, CancellationToken ct)
     {
-        if (await DoesEmailExist(request.Email, cancellationToken))
+        if (await DoesEmailExist(cmd.Email, ct))
             return Result.Fail<CreateUserDto>(Errors.General.UnspecifiedError("An account already exists with that email"));
 
-        var userResult = userLifeCycleServices.CreateUser(request.Email, request.Password);
+        var userResult = userLifeCycleServices.CreateUser(cmd.Email, cmd.Password);
 
         if (userResult.Success is false || userResult.Value is null)
             return Result.Fail<CreateUserDto>(userResult.Error);
 
-        await userRepository.CreateAsync(userResult.Value, cancellationToken);
+        await userRepository.CreateAsync(userResult.Value, ct);
 
-
-        var createProfileResult = await CreateProfile(userResult.Value.Id, request.Username);
+        var createProfileResult = await CreateProfile(userResult.Value.Id, cmd.Username);
 
         if (createProfileResult.Success is false)
             return Result.Fail<CreateUserDto>(createProfileResult.Error);
 
-        await unitOfWork.SaveChangesAsync(cancellationToken);
+        await unitOfWork.SaveChangesAsync(ct);
 
         var dto = CreateUserDto.Map(userResult.Value);
 
         return Result.Ok(dto);
     }
 
-    private async Task<bool> DoesEmailExist(string email, CancellationToken cancellationToken)
+    private async Task<bool> DoesEmailExist(string email, CancellationToken ct)
     {
-        var user = await userRepository.GetByEmailAsync(email, cancellationToken);
+        var user = await userRepository.GetSinleAsync(new UserByEmailSpec(email), ct);
         return user is not null;
     }
 

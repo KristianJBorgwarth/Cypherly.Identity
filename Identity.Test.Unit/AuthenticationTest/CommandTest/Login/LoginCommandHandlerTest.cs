@@ -29,7 +29,7 @@ public class LoginCommandHandlerTest
     public async Task Handle_Given_Invalid_Email_Should_Return_InvalidCredentials()
     {
         // Arrange
-        A.CallTo(() => _fakeUserRepository.GetByEmailAsync(A<string>._, A<CancellationToken>._)).Returns((User)null);
+        A.CallTo(() => _fakeUserRepository.GetSinleAsync(A<UserByEmailSpec>._, A<CancellationToken>._)).Returns((User)null);
 
         var cmd = new LoginCommand()
         {
@@ -43,7 +43,7 @@ public class LoginCommandHandlerTest
         // Assert
         result.Success.Should().BeFalse();
         result.Error.Message.Should().Contain("Invalid Credentials");
-        A.CallTo(() => _fakeUserRepository.GetByEmailAsync(A<string>._, A<CancellationToken>._)).MustHaveHappenedOnceExactly();
+        A.CallTo(() => _fakeUserRepository.GetSinleAsync(A<UserByEmailSpec>._, A<CancellationToken>._)).MustHaveHappenedOnceExactly();
         A.CallTo(() => _fakeAuthService.GenerateLoginVerificationCode(A<User>._)).MustNotHaveHappened();
         A.CallTo(() => _fakeUnitOfWork.SaveChangesAsync(CancellationToken.None)).MustNotHaveHappened();
     }
@@ -54,7 +54,7 @@ public class LoginCommandHandlerTest
         // Arrange
         var user = new User(Guid.NewGuid(), Email.Create("Test@mail.dk"), Password.Create("kj9203KKJHSD?23"), true);
 
-        A.CallTo(() => _fakeUserRepository.GetByEmailAsync(A<string>._, A<CancellationToken>._)).Returns(user);
+        A.CallTo(() => _fakeUserRepository.GetSinleAsync(A<UserByEmailSpec>._, A<CancellationToken>._)).Returns(user);
 
         var cmd = new LoginCommand()
         {
@@ -68,7 +68,7 @@ public class LoginCommandHandlerTest
         // Assert
         result.Success.Should().BeFalse();
         result.Error.Message.Should().Contain("Invalid Credentials");
-        A.CallTo(() => _fakeUserRepository.GetByEmailAsync(A<string>._, A<CancellationToken>._)).MustHaveHappenedOnceExactly();
+        A.CallTo(() => _fakeUserRepository.GetSinleAsync(A<UserByEmailSpec>._, A<CancellationToken>._)).MustHaveHappenedOnceExactly();
         A.CallTo(() => _fakeAuthService.GenerateLoginVerificationCode(A<User>._)).MustNotHaveHappened();
 
         A.CallTo(() => _fakeUnitOfWork.SaveChangesAsync(CancellationToken.None)).MustNotHaveHappened();
@@ -80,7 +80,7 @@ public class LoginCommandHandlerTest
         // Arrange
         var user = new User(Guid.NewGuid(), Email.Create("Test@mail.dk"), Password.Create("kj9203KKJHSD?23"), false);
 
-        A.CallTo(() => _fakeUserRepository.GetByEmailAsync(A<string>._, A<CancellationToken>._)).Returns(user);
+        A.CallTo(() => _fakeUserRepository.GetSinleAsync(A<UserByEmailSpec>._, A<CancellationToken>._)).Returns(user);
 
         var cmd = new LoginCommand()
         {
@@ -95,7 +95,7 @@ public class LoginCommandHandlerTest
         result.Success.Should().BeTrue();
         result.Value.Should().NotBeNull();
         result.Value.IsVerified.Should().BeFalse();
-        A.CallTo(() => _fakeUserRepository.GetByEmailAsync(A<string>._, A<CancellationToken>._)).MustHaveHappenedOnceExactly();
+        A.CallTo(() => _fakeUserRepository.GetSinleAsync(A<UserByEmailSpec>._, A<CancellationToken>._)).MustHaveHappenedOnceExactly();
         A.CallTo(() => _fakeAuthService.GenerateLoginVerificationCode(A<User>._)).MustNotHaveHappened();
         A.CallTo(() => _fakeUnitOfWork.SaveChangesAsync(CancellationToken.None)).MustNotHaveHappened();
     }
@@ -106,7 +106,7 @@ public class LoginCommandHandlerTest
         // Arrange
         var user = new User(Guid.NewGuid(), Email.Create("Test@mail.dk"), Password.Create("kj9203KKJHSD?23"), true);
 
-        A.CallTo(() => _fakeUserRepository.GetByEmailAsync(A<string>._, A<CancellationToken>._)).Returns(user);
+        A.CallTo(() => _fakeUserRepository.GetSinleAsync(A<UserByEmailSpec>._, A<CancellationToken>._)).Returns(user);
 
         var cmd = new LoginCommand()
         {
@@ -121,7 +121,7 @@ public class LoginCommandHandlerTest
         result.Success.Should().BeTrue();
         result.Value.Should().NotBeNull();
         result.Value.IsVerified.Should().BeTrue();
-        A.CallTo(() => _fakeUserRepository.GetByEmailAsync(A<string>._, A<CancellationToken>._)).MustHaveHappenedOnceExactly();
+        A.CallTo(() => _fakeUserRepository.GetSinleAsync(A<UserByEmailSpec>._, A<CancellationToken>._)).MustHaveHappenedOnceExactly();
         A.CallTo(() => _fakeAuthService.GenerateLoginVerificationCode(A<User>._)).MustHaveHappenedOnceExactly();
         A.CallTo(() => _fakeUnitOfWork.SaveChangesAsync(CancellationToken.None)).MustHaveHappenedOnceExactly();
     }

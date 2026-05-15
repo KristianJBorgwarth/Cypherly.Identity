@@ -15,15 +15,15 @@ public class RollbackUserDeleteConsumer(
     : IConsumer<UserDeleteFailedMessage>
 {
 
-    public async Task Consume(ConsumeContext<UserDeleteFailedMessage> context)
+    public async Task Consume(ConsumeContext<UserDeleteFailedMessage> ctx)
     {
         try
         {
-            var message = context.Message;
+            var message = ctx.Message;
 
             if (!message.ContainsService(ServiceType.AuthenticationService)) return;
 
-            var user = await userRepository.GetByIdAsync(message.UserId, context.CancellationToken);
+            var user = await userRepository.GetSinleAsync(new UserSpec(message.UserId), ctx.CancellationToken);
             if (user is null)
             {
                 logger.LogError("User with id {UserId} not found", message.UserId);

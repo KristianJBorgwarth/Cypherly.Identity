@@ -34,7 +34,7 @@ public class VerifyLoginCommandHandlerTest
         var user = new User(Guid.NewGuid(), Email.Create("test@mail.dk"), Password.Create("kjash)023+23?JK"), true);
         user.AddVerificationCode(UserVerificationCodeType.Login);
 
-        A.CallTo(() => _fakeRepo.GetByIdAsync(user.Id, A<CancellationToken>._)).Returns(user);
+        A.CallTo(() => _fakeRepo.GetSinleAsync(A<UserWithVerificationCodesSpec>._, A<CancellationToken>._)).Returns(user);
 
         var command = new VerifyLoginCommand()
         {
@@ -56,7 +56,7 @@ public class VerifyLoginCommandHandlerTest
     public async Task Handle_Given_Repo_Returns_Null_Should_Return_ResultFail()
     {
         // Arrange
-        A.CallTo(() => _fakeRepo.GetByIdAsync(A<Guid>._, A<CancellationToken>._)).Returns((User)null!);
+        A.CallTo(() => _fakeRepo.GetSinleAsync(A<UserWithVerificationCodesSpec>._, A<CancellationToken>._)).Returns((User)null!);
 
         var command = new VerifyLoginCommand()
         {
@@ -80,7 +80,7 @@ public class VerifyLoginCommandHandlerTest
         var user = new User(Guid.NewGuid(), Email.Create("test@mail.dk"), Password.Create("kjash)023+23?JK"), true);
         user.AddVerificationCode(UserVerificationCodeType.Login);
 
-        A.CallTo(() => _fakeRepo.GetByIdAsync(user.Id, A<CancellationToken>._)).Returns(user);
+        A.CallTo(() => _fakeRepo.GetSinleAsync(A<UserWithVerificationCodesSpec>._, A<CancellationToken>._)).Returns(user);
 
         var command = new VerifyLoginCommand()
         {

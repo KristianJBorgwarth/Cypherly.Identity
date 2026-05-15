@@ -25,7 +25,7 @@ public class GetConnectionIdsByUserQueryHandlerTest
     {
         // Arrange
         var query = new GetConnectionIdsByUserQuery { TenantId = Guid.NewGuid() };
-        A.CallTo(() => _fakeRepository.GetByIdAsync(query.TenantId, A<CancellationToken>._)).Returns((User)null);
+        A.CallTo(() => _fakeRepository.GetSinleAsync(A<UserWithDevicesSpec>._, A<CancellationToken>._)).Returns((User)null);
 
         // Act
         var result = await _sut.Handle(query, CancellationToken.None);
@@ -42,7 +42,7 @@ public class GetConnectionIdsByUserQueryHandlerTest
         var query = new GetConnectionIdsByUserQuery { TenantId = Guid.NewGuid() };
         var user = new User();
         user.AddDevice(new Device(Guid.NewGuid(), "test", "1.0", DeviceType.Desktop, DevicePlatform.Android, user.Id));
-        A.CallTo(() => _fakeRepository.GetByIdAsync(query.TenantId, A<CancellationToken>._)).Returns(user);
+        A.CallTo(() => _fakeRepository.GetSinleAsync(A<UserWithDevicesSpec>._, A<CancellationToken>._)).Returns(user);
 
         // Act
         var result = await _sut.Handle(query, CancellationToken.None);
@@ -59,7 +59,7 @@ public class GetConnectionIdsByUserQueryHandlerTest
         var query = new GetConnectionIdsByUserQuery { TenantId = Guid.NewGuid() };
         var user = new User();
 
-        A.CallTo(() => _fakeRepository.GetByIdAsync(query.TenantId, A<CancellationToken>._)).Returns(user);
+        A.CallTo(() => _fakeRepository.GetSinleAsync(A<UserWithDevicesSpec>._, A<CancellationToken>._)).Returns(user);
 
         // Act
         var result = await _sut.Handle(query, CancellationToken.None);

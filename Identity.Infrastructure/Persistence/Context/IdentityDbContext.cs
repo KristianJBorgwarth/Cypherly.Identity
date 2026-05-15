@@ -1,6 +1,5 @@
 ﻿using Identity.Domain.Aggregates;
 using Identity.Domain.Entities;
-using Identity.Infrastructure.Persistence.ModelConfigurations;
 using Identity.Infrastructure.Persistence.Outbox;
 using Microsoft.EntityFrameworkCore;
 

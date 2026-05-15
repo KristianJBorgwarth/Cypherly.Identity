@@ -1,5 +1,4 @@
 ﻿using Cypherly.Domain.Common;
-using Identity.Application.Contracts;
 using Identity.Application.Abstractions;
 using Identity.Application.Contracts.Repository;
 using Identity.Domain.Common;
@@ -16,23 +15,23 @@ public sealed class ResendVerificationCodeCommandHandler(
     ILogger<ResendVerificationCodeCommandHandler> logger)
     : ICommandHandler<ResendVerificationCodeCommand>
 {
-    public async Task<Result> Handle(ResendVerificationCodeCommand request, CancellationToken cancellationToken)
+    public async Task<Result> Handle(ResendVerificationCodeCommand cmd, CancellationToken ct)
     {
-        var user = await userRepository.GetByIdAsync(request.UserId, cancellationToken);
+        var user = await userRepository.GetSinleAsync(new UserWithVerificationCodesSpec(cmd.UserId), ct);
         if (user is null)
         {
-            logger.LogWarning("User {UserId} not found", request.UserId);
-            return Result.Fail(Errors.General.NotFound(request.UserId));
+            logger.LogWarning("User {UserId} not found", cmd.UserId);
+            return Result.Fail(Errors.General.NotFound(cmd.UserId));
         }
 
-        if (user.IsVerified && request.CodeType == UserVerificationCodeType.EmailVerification)
+        if (user.IsVerified && cmd.CodeType == UserVerificationCodeType.EmailVerification)
         {
-            logger.LogWarning("User {UserId} is already verified", request.UserId);
+            logger.LogWarning("User {UserId} is already verified", cmd.UserId);
             return Result.Fail(Errors.General.UnspecifiedError("User is already verified"));
         }
 
-        verificationCodeService.GenerateVerificationCode(user, request.CodeType);
-        await unitOfWork.SaveChangesAsync(cancellationToken);
+        verificationCodeService.GenerateVerificationCode(user, cmd.CodeType);
+        await unitOfWork.SaveChangesAsync(ct);
 
         return Result.Ok();
     }

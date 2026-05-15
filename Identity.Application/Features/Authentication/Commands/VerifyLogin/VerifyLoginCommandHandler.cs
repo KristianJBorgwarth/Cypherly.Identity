@@ -15,28 +15,28 @@ public sealed class VerifyLoginCommandHandler(
     ILogger<VerifyLoginCommandHandler> logger)
     : ICommandHandler<VerifyLoginCommand, VerifyLoginDto>
 {
-    public async Task<Result<VerifyLoginDto>> Handle(VerifyLoginCommand request, CancellationToken cancellationToken)
+    public async Task<Result<VerifyLoginDto>> Handle(VerifyLoginCommand cmd, CancellationToken ct)
     {
-        var user = await userRepository.GetByIdAsync(request.UserId, cancellationToken);
+        var user = await userRepository.GetSinleAsync(new UserWithVerificationCodesSpec(cmd.UserId), ct);
         if (user is null)
         {
-            logger.LogWarning("User with ID {UserId} not found", request.UserId);
-            return Result.Fail<VerifyLoginDto>(Errors.General.NotFound(request.UserId));
+            logger.LogWarning("User with ID {UserId} not found", cmd.UserId);
+            return Result.Fail<VerifyLoginDto>(Errors.General.NotFound(cmd.UserId));
         }
 
-        var verificationResult = user.VerifyLogin(request.LoginVerificationCode);
+        var verificationResult = user.VerifyLogin(cmd.LoginVerificationCode);
         if (verificationResult.Success is false)
         {
             return Result.Fail<VerifyLoginDto>(verificationResult.Error);
         }
 
-        var loginNonce = LoginNonce.Create(request.UserId);
+        var loginNonce = LoginNonce.Create(cmd.UserId);
 
-        await loginNonceCache.AddNonceAsync(loginNonce, cancellationToken);
+        await loginNonceCache.AddNonceAsync(loginNonce, ct);
 
         var dto = VerifyLoginDto.Map(loginNonce);
 
-        await unitOfWork.SaveChangesAsync(cancellationToken);
+        await unitOfWork.SaveChangesAsync(ct);
 
         return Result.Ok(dto);
     }

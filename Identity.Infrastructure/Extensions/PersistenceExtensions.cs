@@ -20,8 +20,7 @@ internal static class PersistenceExtensions
                 {
                     contextOptionsBuilder.MigrationsAssembly(assembly.FullName);
                     contextOptionsBuilder.EnableRetryOnFailure();
-                })
-                .UseLazyLoadingProxies();
+                });
         });
 
         services.AddRepositories();

@@ -1,6 +1,7 @@
 using Cypherly.Message.Contracts.Messages.Device;
 using Cypherly.Message.Contracts.Responses.Device;
 using Identity.Application.Contracts.Repository;
+using Identity.Application.Specifications;
 using MassTransit;
 using Microsoft.Extensions.Logging;
 
@@ -16,7 +17,7 @@ public sealed class ConnectionIdsConsumer(
         try
         {
             var ids = context.Message.TenantIds.ToArray();
-            var users = await userRepository.GetUsersAsync(ids, context.CancellationToken);
+            var users = await userRepository.GetListAsync(new UsersWithDevicesSpec(ids), context.CancellationToken);
 
             var connectionIds = users.ToDictionary(
                 user => user.Id,

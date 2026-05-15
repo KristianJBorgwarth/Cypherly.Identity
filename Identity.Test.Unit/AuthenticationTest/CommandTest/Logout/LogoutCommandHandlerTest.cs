@@ -30,7 +30,7 @@ public class LogoutCommandHandlerTest
     {
         // Arrange
         var command = new LogoutCommand { Id = Guid.NewGuid(), DeviceId = Guid.NewGuid() };
-        A.CallTo(() => _fakeRepo.GetByIdAsync(command.Id, A<CancellationToken>._)).Returns((User)null);
+        A.CallTo(() => _fakeRepo.GetSinleAsync(A<UserWithDeviceAndRefreshTokensSpec>._, A<CancellationToken>._)).Returns((User)null);
 
         // Act
         var result = await _sut.Handle(command, CancellationToken.None);
@@ -38,7 +38,7 @@ public class LogoutCommandHandlerTest
         // Assert
         result.Success.Should().BeFalse();
         result.Error.Should().BeEquivalentTo(Errors.General.NotFound(command.Id));
-        A.CallTo(() => _fakeRepo.GetByIdAsync(command.Id, A<CancellationToken>._)).MustHaveHappenedOnceExactly();
+        A.CallTo(() => _fakeRepo.GetSinleAsync(A<UserWithDeviceAndRefreshTokensSpec>._, A<CancellationToken>._)).MustHaveHappenedOnceExactly();
         A.CallTo(() => _fakeAuthService.Logout(A<User>._, A<Guid>._)).MustNotHaveHappened();
     }
 
@@ -50,7 +50,7 @@ public class LogoutCommandHandlerTest
 
         var command = new LogoutCommand { Id = user.Id, DeviceId = Guid.NewGuid() };
 
-        A.CallTo(() => _fakeRepo.GetByIdAsync(command.Id, A<CancellationToken>._)).Returns(user);
+        A.CallTo(() => _fakeRepo.GetSinleAsync(A<UserWithDeviceAndRefreshTokensSpec>._, A<CancellationToken>._)).Returns(user);
         A.CallTo(() => _fakeAuthService.Logout(user, command.DeviceId)).DoesNothing();
         A.CallTo(() => _fakeUnitOfWork.SaveChangesAsync(CancellationToken.None)).DoesNothing();
 
@@ -61,6 +61,6 @@ public class LogoutCommandHandlerTest
         result.Success.Should().BeTrue();
         A.CallTo(() => _fakeAuthService.Logout(user, command.DeviceId)).MustHaveHappenedOnceExactly();
         A.CallTo(() => _fakeUnitOfWork.SaveChangesAsync(CancellationToken.None)).MustHaveHappenedOnceExactly();
-        A.CallTo(() => _fakeRepo.GetByIdAsync(command.Id, A<CancellationToken>._)).MustHaveHappenedOnceExactly();
+        A.CallTo(() => _fakeRepo.GetSinleAsync(A<UserWithDeviceAndRefreshTokensSpec>._, A<CancellationToken>._)).MustHaveHappenedOnceExactly();
     }
 }

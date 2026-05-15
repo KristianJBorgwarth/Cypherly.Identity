@@ -31,7 +31,6 @@ public class CreateUserCommandHandler(
 
         await userRepository.CreateAsync(userResult.Value, cancellationToken);
 
-
         var createProfileResult = await CreateProfile(userResult.Value.Id, request.Username);
 
         if (createProfileResult.Success is false)
@@ -46,7 +45,7 @@ public class CreateUserCommandHandler(
 
     private async Task<bool> DoesEmailExist(string email, CancellationToken cancellationToken)
     {
-        var user = await userRepository.GetByEmailAsync(email, cancellationToken);
+        var user = await userRepository.GetSinleAsync(new UserByEmailSpec(email), cancellationToken);
         return user is not null;
     }
 

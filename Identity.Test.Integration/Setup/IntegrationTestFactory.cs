@@ -25,12 +25,11 @@ namespace Identity.Test.Integration.Setup;
 public class IntegrationTestFactory<TProgram, TDbContext> : WebApplicationFactory<TProgram>, IAsyncLifetime
     where TProgram : class where TDbContext : DbContext
 {
-    protected bool ShouldTestWithLazyLoadingProxies { get; set; } = true;
-
     private readonly PostgreSqlContainer _dbContainer = new PostgreSqlBuilder()
         .WithImage("postgres:latest")
         .WithCleanUp(true)
         .Build();
+
     private readonly IContainer _valkeyContainer = new ContainerBuilder()
         .WithImage("valkey/valkey:latest")
         .WithEnvironment("ALLOW_EMPTY_PASSWORD", "yes")
@@ -38,8 +37,6 @@ public class IntegrationTestFactory<TProgram, TDbContext> : WebApplicationFactor
         .WithPortBinding(6974, 6379)
         .WithCleanUp(true)
         .Build();
-
-
 
     protected override void ConfigureWebHost(IWebHostBuilder builder)
     {
@@ -60,11 +57,6 @@ public class IntegrationTestFactory<TProgram, TDbContext> : WebApplicationFactor
             {
                 options.UseNpgsql(_dbContainer.GetConnectionString(),
                     b => b.MigrationsAssembly(typeof(TDbContext).Assembly.FullName));
-
-                if (ShouldTestWithLazyLoadingProxies)
-                {
-                    options.UseLazyLoadingProxies();
-                }
             });
 
             #endregion

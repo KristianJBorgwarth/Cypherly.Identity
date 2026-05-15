@@ -12,20 +12,20 @@ public class VerifyUserCommandHandler(
     IUnitOfWork unitOfWork)
     : ICommandHandler<VerifyUserCommand>
 {
-    public async Task<Result> Handle(VerifyUserCommand request, CancellationToken cancellationToken)
+    public async Task<Result> Handle(VerifyUserCommand cmd, CancellationToken ct)
     {
-        var user = await userRepository.GetByIdAsync(request.UserId, cancellationToken);
+        var user = await userRepository.GetSinleAsync(new UserWithVerificationCodeSpec(cmd.UserId), ct);
         if (user is null)
         {
-            logger.LogWarning("User with ID {UserId} not found during verification process", request.UserId);
-            return Result.Fail(Errors.General.NotFound(request.UserId));
+            logger.LogWarning("User with ID {UserId} not found during verification process", cmd.UserId);
+            return Result.Fail(Errors.General.NotFound(cmd.UserId));
         }
 
-        var result = user.VerifyAccount(request.VerificationCode);
+        var result = user.VerifyAccount(cmd.VerificationCode);
         if (result.Success is false) return Result.Fail(result.Error);
 
-        await userRepository.UpdateAsync(user, cancellationToken);
-        await unitOfWork.SaveChangesAsync(cancellationToken);
+        await userRepository.UpdateAsync(user, ct);
+        await unitOfWork.SaveChangesAsync(ct);
 
         return Result.Ok();
     }

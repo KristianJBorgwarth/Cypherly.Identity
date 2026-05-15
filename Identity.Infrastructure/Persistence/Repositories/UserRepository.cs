@@ -1,4 +1,5 @@
-﻿using Identity.Application.Contracts.Repository;
+﻿using Identity.Application.Abstractions;
+using Identity.Application.Contracts.Repository;
 using Identity.Domain.Aggregates;
 using Identity.Infrastructure.Persistence.Context;
 using Microsoft.EntityFrameworkCore;
@@ -14,7 +15,7 @@ public class UserRepository(IdentityDbContext context) : IUserRepository
 
     public async Task<IReadOnlyCollection<User>> GetUsersAsync(Guid[] userIds, CancellationToken ct = default)
     {
-        List<Guid> ids = [..userIds];
+        List<Guid> ids = [.. userIds];
         return await context.User.Include(u => u.Devices).Where(u => ids.Contains(u.Id)).ToListAsync(ct);
     }
 
@@ -42,5 +43,14 @@ public class UserRepository(IdentityDbContext context) : IUserRepository
     public Task<User?> GetByDeviceIdAsync(Guid deviceId, CancellationToken ct = default)
     {
         return context.User.FirstOrDefaultAsync(c => c.Devices.Any(c => c.Id == deviceId), ct);
+    }
+
+    public async Task<User?> GetSinleAsync(ISpecification<User> spec, CancellationToken ct = default)
+    {
+        var q = context.User.Where(spec.Criteria);
+
+        q = spec.Includes.Aggregate(q, (current, include) => current.Include(include));
+
+        return await q.FirstOrDefaultAsync(ct);
     }
 }

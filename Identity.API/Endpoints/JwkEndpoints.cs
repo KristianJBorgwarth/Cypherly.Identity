@@ -23,7 +23,7 @@ internal sealed class JwksEndpoints : IEndpoint
 
         group.MapGet("/openid-configuration", (IConfiguration config) =>
         {
-            var baseUrl = config["ApiBaseUrl"]!.TrimEnd('/');
+            var baseUrl = config["Jwt:Issuer"]!.TrimEnd('/');
             return Results.Ok(new
             {
                 issuer = config["Jwt:Issuer"],

@@ -14,6 +14,7 @@ internal static class AuthenticationExtensions
         services.AddAuthentication()
             .AddJwtBearer(options =>
             {
+                options.RequireHttpsMetadata = false;
                 options.Authority = jwtSettings.Issuer;
                 options.Audience = jwtSettings.Audience;
                 options.TokenValidationParameters = new TokenValidationParameters

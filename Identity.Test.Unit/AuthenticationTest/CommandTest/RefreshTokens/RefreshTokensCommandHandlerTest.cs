@@ -64,8 +64,8 @@ public class RefreshTokensCommandHandlerTest
         };
 
         var user = new User();
-        A.CallTo(() => _fakeUserRepo.GetSinleAsync(A<UserWithDeviceAndRefreshTokensSpec>._, A<CancellationToken>._))!.Returns(user);
-        A.CallTo(() => _fakeAuthService.VerifyRefreshToken(user, command.DeviceId, command.RefreshToken))!.Returns(false);
+        A.CallTo(() => _fakeUserRepo.GetSinleAsync(A<UserWithDeviceAndRefreshTokensSpec>._, A<CancellationToken>._)).Returns(user);
+        A.CallTo(() => _fakeAuthService.VerifyRefreshToken(user, command.DeviceId, command.RefreshToken)).Returns(false);
 
         // Act
         var result = await _sut.Handle(command, CancellationToken.None);
@@ -87,10 +87,10 @@ public class RefreshTokensCommandHandlerTest
         };
 
         var user = new User(Guid.NewGuid(), Email.Create("test@mail.dk"), Password.Create("testk98?kKLll"), true);
-        A.CallTo(() => _fakeUserRepo.GetSinleAsync(A<UserWithDeviceAndRefreshTokensSpec>._, A<CancellationToken>._))!.Returns(user);
-        A.CallTo(() => _fakeAuthService.VerifyRefreshToken(user, command.DeviceId, command.RefreshToken))!.Returns(true);
+        A.CallTo(() => _fakeUserRepo.GetSinleAsync(A<UserWithDeviceAndRefreshTokensSpec>._, A<CancellationToken>._)).Returns(user);
+        A.CallTo(() => _fakeAuthService.VerifyRefreshToken(user, command.DeviceId, command.RefreshToken)).Returns(true);
         A.CallTo(() => _fakeAuthService.GenerateRefreshToken(user, command.DeviceId)).Returns(new RefreshToken(Guid.NewGuid(), Guid.NewGuid()));
-        A.CallTo(() => _fakeJwtService.GenerateToken(user.Id, command.DeviceId)).Returns(Guid.NewGuid().ToString());
+        A.CallTo(() => _fakeJwtService.GenerateTokenAsync(user.Id, command.DeviceId)).Returns(Guid.NewGuid().ToString());
 
         // Act
         var result = await _sut.Handle(command, CancellationToken.None);

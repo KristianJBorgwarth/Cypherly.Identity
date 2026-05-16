@@ -4,6 +4,6 @@ namespace Identity.Application.Interfaces;
 
 public interface IJwtService
 {
-    string GenerateToken(Guid userId, Guid deviceId);
+    Task<string> GenerateTokenAsync(Guid userId, Guid deviceId, CancellationToken ct = default);
     Task<IReadOnlyList<JwksDto>> GenerateJwks(CancellationToken ct = default);
 }

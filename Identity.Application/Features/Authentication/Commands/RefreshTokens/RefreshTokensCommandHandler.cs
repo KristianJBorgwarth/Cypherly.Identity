@@ -31,7 +31,7 @@ public class RefreshTokensCommandHandler(
 
         var refreshToken = authService.GenerateRefreshToken(user, cmd.DeviceId);
 
-        var accessToken = jwtService.GenerateToken(user.Id, cmd.DeviceId);
+        var accessToken = await jwtService.GenerateTokenAsync(user.Id, cmd.DeviceId);
 
         var dto = new RefreshTokensDto
         {

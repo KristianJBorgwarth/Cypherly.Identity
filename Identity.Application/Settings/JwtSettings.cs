@@ -2,8 +2,8 @@
 
 public class JwtSettings
 {
-    public string Secret { get; init; } = null!;
-    public string Issuer { get; init; } = null!;
-    public string Audience { get; init; } = null!;
-    public int TokenLifeTimeInMinutes { get; init; }
+    public required string Authority { get; init; } 
+    public required string Audience { get; init; } 
+    public required string TokenEndpoint { get; init; } 
+    public required int TokenLifeTimeInMinutes { get; init; }
 }

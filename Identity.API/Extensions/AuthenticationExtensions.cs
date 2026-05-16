@@ -1,4 +1,3 @@
-using System.Text;
 using Identity.Application.Settings;
 using Microsoft.IdentityModel.Tokens;
 
@@ -6,27 +5,25 @@ namespace Identity.API.Extensions;
 
 internal static class AuthenticationExtensions
 {
-    public static void AddAuthentication(this IServiceCollection services, IConfiguration configuration)
+    public static void AddAuthentication(
+        this IServiceCollection services,
+        IConfiguration configuration)
     {
-        var jwtSettings = configuration.GetSection("Jwt").Get<JwtSettings>();
-        if (jwtSettings is null) throw new InvalidOperationException("Jwt settings are not configured properly.");
+        var jwtSettings = configuration.GetSection("Jwt").Get<JwtSettings>() ?? throw new InvalidOperationException("Jwt settings are not configured properly.");
 
         services.AddAuthentication()
             .AddJwtBearer(options =>
             {
+                options.Authority = jwtSettings.Authority;
+                options.Audience = jwtSettings.Audience;
                 options.TokenValidationParameters = new TokenValidationParameters
                 {
                     ValidateIssuer = true,
                     ValidateAudience = true,
                     ValidateLifetime = true,
                     ValidateIssuerSigningKey = true,
-                    ValidIssuer = jwtSettings.Issuer ??
-                                  throw new NotImplementedException(
-                                      $"MISSING VALUE IN JWT SETTINGS {jwtSettings.Issuer}"),
-                    ValidAudience = jwtSettings.Audience ??
-                                    throw new NotImplementedException(
-                                        $"MISSING VALUE IN JWT SETTINGS {jwtSettings.Audience}"),
-                    IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(jwtSettings.Secret))
+                    ValidIssuer = jwtSettings.Authority,
+                    ValidAudience = jwtSettings.Audience,
                 };
             });
 

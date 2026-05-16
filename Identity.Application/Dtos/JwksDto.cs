@@ -1,4 +1,4 @@
-namespace Identity.Application.Features.Authentication.Queries.GetJwks;
+namespace Identity.Application.Dtos;
 
 public sealed record JwksDto
 {

@@ -1,7 +1,7 @@
 ﻿using System.Security.Claims;
 using System.Text;
+using Identity.Application.Dtos;
 using Identity.Application.Extensions;
-using Identity.Application.Features.Authentication.Queries.GetJwks;
 using Identity.Application.Interfaces;
 using Identity.Application.Settings;
 using Microsoft.Extensions.Options;
@@ -44,7 +44,7 @@ internal class JwtService(
 
     public async Task<IReadOnlyList<JwksDto>> GenerateJwks(CancellationToken ct = default)
     {
-        var jwks = await jwkCache.GetJwks();
+        var jwks = await jwkCache.GetJwks(ct);
         var jwksDtos = jwks.ToPubKeyDtos();
         return jwksDtos;
     }

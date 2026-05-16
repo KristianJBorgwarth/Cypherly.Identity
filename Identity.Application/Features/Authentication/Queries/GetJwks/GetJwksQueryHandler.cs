@@ -1,12 +1,14 @@
+using Cypherly.Domain.Common;
+using Identity.Application.Abstractions;
 using Identity.Application.Interfaces;
-using MediatR;
 
 namespace Identity.Application.Features.Authentication.Queries.GetJwks;
 
-public sealed class GetJwksQueryHandler(
-    IJwtService jwtService) 
-    : IRequestHandler<GetJwksQuery, IReadOnlyList<JwksDto>>
+public sealed class GetJwksQueryHandler(IJwtService jwtService) : IQueryHandler<GetJwksQuery, JwksResponse>
 {
-    public async Task<IReadOnlyList<JwksDto>> Handle(GetJwksQuery q, CancellationToken ct) 
-        => await jwtService.GenerateJwks(ct);
+    public async Task<Result<JwksResponse>> Handle(GetJwksQuery request, CancellationToken cancellationToken)
+    {
+        var jwks = await jwtService.GenerateJwks(cancellationToken);
+        return new JwksResponse() { Keys = jwks };
+    }
 }

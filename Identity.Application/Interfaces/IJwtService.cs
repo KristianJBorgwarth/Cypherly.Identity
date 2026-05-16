@@ -1,4 +1,4 @@
-﻿using Identity.Application.Features.Authentication.Queries.GetJwks;
+﻿using Identity.Application.Dtos;
 
 namespace Identity.Application.Interfaces;
 

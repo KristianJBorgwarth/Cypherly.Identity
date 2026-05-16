@@ -1,3 +1,4 @@
+using Identity.Application.Dtos;
 using Identity.Application.Features.Authentication.Queries.GetJwks;
 using Microsoft.IdentityModel.Tokens;
 

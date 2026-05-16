@@ -1,5 +1,4 @@
 using System.Reflection;
-using Identity.Application.Extensions;
 using Identity.API.Extensions;
 using Identity.Domain.Extensions;
 using Identity.Infrastructure.Extensions;
@@ -47,6 +46,7 @@ builder.Services.AddCors(options =>
 });
 
 builder.Services.AddControllers();
+builder.Services.AddEndpoints();
 builder.Services.AddOpenApi();
 
 var app = builder.Build();
@@ -74,6 +74,7 @@ app.UseAuthentication();
 app.UseAuthorization();
 
 app.MapControllers();
+app.RegisterMinimalEndpoints();
 
 app.Run();
 

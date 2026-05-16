@@ -10,13 +10,14 @@ namespace Identity.Application.Behavior
 {
     public class ValidationBehavior<TRequest, TResponse>(
         ILogger<ValidationBehavior<TRequest, TResponse>> logger, 
-        IValidator<TRequest>? validator)
+        IEnumerable<IValidator<TRequest>> validators)
         : IPipelineBehavior<TRequest, TResponse>
         where TRequest : IRequest<TResponse>
         where TResponse : Result
     {
         public async Task<TResponse> Handle(TRequest request, RequestHandlerDelegate<TResponse> next, CancellationToken cancellationToken)
         {
+            var validator = validators.FirstOrDefault();
             if (validator == null)
             {
                 return await next(cancellationToken);

@@ -14,7 +14,7 @@ internal static class AuthenticationExtensions
         services.AddAuthentication()
             .AddJwtBearer(options =>
             {
-                options.Authority = jwtSettings.Authority;
+                options.Authority = jwtSettings.Issuer;
                 options.Audience = jwtSettings.Audience;
                 options.TokenValidationParameters = new TokenValidationParameters
                 {
@@ -22,7 +22,7 @@ internal static class AuthenticationExtensions
                     ValidateAudience = true,
                     ValidateLifetime = true,
                     ValidateIssuerSigningKey = true,
-                    ValidIssuer = jwtSettings.Authority,
+                    ValidIssuer = jwtSettings.Issuer,
                     ValidAudience = jwtSettings.Audience,
                 };
             });

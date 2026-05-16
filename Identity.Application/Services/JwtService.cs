@@ -1,5 +1,4 @@
 ﻿using System.Security.Claims;
-using System.Text;
 using Identity.Application.Dtos;
 using Identity.Application.Extensions;
 using Identity.Application.Interfaces;
@@ -15,8 +14,11 @@ internal class JwtService(
     IOptions<JwtSettings> jwtSettings)
     : IJwtService
 {
-    public string GenerateToken(Guid userId, Guid deviceId)
+    public async Task<string> GenerateTokenAsync(Guid userId, Guid deviceId, CancellationToken ct = default)
     {
+        var jwks = await jwkCache.GetJwks(ct);
+        var signingKey = jwks.GetSigningKeys().FirstOrDefault() ?? throw new InvalidOperationException("No signing key available.");
+
         var claims = new List<Claim>
         {
             new(ClaimTypes.NameIdentifier, userId.ToString()),
@@ -24,15 +26,14 @@ internal class JwtService(
             new("jti", Guid.NewGuid().ToString()),
         };
 
-        var key = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(jwtSettings.Value.Secret));
-        var creds = new SigningCredentials(key, SecurityAlgorithms.HmacSha256);
+        var creds = new SigningCredentials(signingKey, SecurityAlgorithms.RsaSha256);
 
         var tokenDescriptor = new SecurityTokenDescriptor
         {
             Subject = new(claims),
-            Expires = DateTime.UtcNow.AddDays(jwtSettings.Value.TokenLifeTimeInMinutes),
+            Expires = DateTime.UtcNow.AddMinutes(jwtSettings.Value.TokenLifeTimeInMinutes),
             SigningCredentials = creds,
-            Issuer = jwtSettings.Value.Issuer,
+            Issuer = jwtSettings.Value.Authority,
             Audience = jwtSettings.Value.Audience,
         };
 
@@ -41,6 +42,7 @@ internal class JwtService(
 
         return token;
     }
+
 
     public async Task<IReadOnlyList<JwksDto>> GenerateJwks(CancellationToken ct = default)
     {

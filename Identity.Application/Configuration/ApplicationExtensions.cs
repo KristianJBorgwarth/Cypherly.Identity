@@ -2,11 +2,12 @@
 using FluentValidation;
 using Identity.Application.Behavior;
 using Identity.Application.Features.Authentication.Commands.VerifyNonce;
-using Identity.Application.Features.Authentication.Token;
+using Identity.Application.Interfaces;
+using Identity.Application.Services;
 using MediatR;
 using Microsoft.Extensions.DependencyInjection;
 
-namespace Identity.Application.Extensions;
+namespace Identity.Application.Configuration;
 
 public static class ApplicationExtensions
 {

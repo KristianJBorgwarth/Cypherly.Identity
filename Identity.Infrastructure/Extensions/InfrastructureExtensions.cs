@@ -1,4 +1,6 @@
 ﻿using System.Reflection;
+using Identity.Infrastructure.Interfaces;
+using Identity.Infrastructure.Services;
 using Identity.Infrastructure.Settings;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
@@ -13,6 +15,7 @@ public static class InfrastructureExtensions
         services.ConfigureSettings(configuration);
         services.AddIdentityPersistence(configuration, assembly);
         services.AddMassTransitRabbitMq();
+        services.AddServices();
         services.AddValkey();
     }
 
@@ -20,5 +23,10 @@ public static class InfrastructureExtensions
     {
         services.Configure<ValkeySettings>(configuration.GetSection("Valkey"));
         services.Configure<RabbitMqSettings>(configuration.GetSection("RabbitMq"));
+    }
+
+    private static void AddServices(this IServiceCollection services)
+    {
+        services.AddSingleton<IRsaKeyGenerator, RsaKeyGenerator>();
     }
 }

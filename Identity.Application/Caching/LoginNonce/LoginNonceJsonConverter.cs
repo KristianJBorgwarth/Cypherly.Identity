@@ -3,9 +3,9 @@ using System.Text.Json.Serialization;
 
 namespace Identity.Application.Caching.LoginNonce;
 
-public class LoginNonceJsonConverter : JsonConverter<Identity.Application.Caching.LoginNonce.LoginNonce>
+public class LoginNonceJsonConverter : JsonConverter<LoginNonce>
 {
-    public override Identity.Application.Caching.LoginNonce.LoginNonce Read(ref Utf8JsonReader reader, Type typeToConvert, JsonSerializerOptions options)
+    public override LoginNonce Read(ref Utf8JsonReader reader, Type typeToConvert, JsonSerializerOptions options)
     {
         var jsonObject = JsonDocument.ParseValue(ref reader).RootElement;
         var id = jsonObject.GetProperty("Id").GetGuid();
@@ -14,9 +14,9 @@ public class LoginNonceJsonConverter : JsonConverter<Identity.Application.Cachin
         var createdAt = jsonObject.GetProperty("CreatedAt").GetDateTime();
         var expiresAt = jsonObject.GetProperty("ExpiresAt").GetDateTime();
 
-        return Identity.Application.Caching.LoginNonce.LoginNonce.FromCache(id, nonceValue, userId, createdAt, expiresAt);
+        return LoginNonce.FromCache(id, nonceValue!, userId, createdAt, expiresAt);
     }
-    public override void Write(Utf8JsonWriter writer, Identity.Application.Caching.LoginNonce.LoginNonce value, JsonSerializerOptions options)
+    public override void Write(Utf8JsonWriter writer, LoginNonce value, JsonSerializerOptions options)
     {
         writer.WriteStartObject();
         writer.WriteString("Id", value.Id);

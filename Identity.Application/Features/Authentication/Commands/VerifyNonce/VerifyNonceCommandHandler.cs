@@ -2,7 +2,7 @@
 using Identity.Application.Abstractions;
 using Identity.Application.Contracts.Cache;
 using Identity.Application.Contracts.Repository;
-using Identity.Application.Features.Authentication.Token;
+using Identity.Application.Interfaces;
 using Identity.Domain.Common;
 using Identity.Domain.Events.User;
 using Microsoft.Extensions.Logging;

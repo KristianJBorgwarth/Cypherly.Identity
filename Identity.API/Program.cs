@@ -1,10 +1,10 @@
 using System.Reflection;
-using Identity.Application.Extensions;
-using Identity.Application.Features.Authentication.Token;
 using Identity.API.Extensions;
 using Identity.Domain.Extensions;
 using Identity.Infrastructure.Extensions;
 using Scalar.AspNetCore;
+using Identity.Application.Settings;
+using Identity.Application.Configuration;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -46,6 +46,7 @@ builder.Services.AddCors(options =>
 });
 
 builder.Services.AddControllers();
+builder.Services.AddEndpoints();
 builder.Services.AddOpenApi();
 
 var app = builder.Build();
@@ -73,6 +74,7 @@ app.UseAuthentication();
 app.UseAuthorization();
 
 app.MapControllers();
+app.RegisterMinimalEndpoints();
 
 app.Run();
 

@@ -4,7 +4,7 @@ using Cypherly.Message.Contracts.Responses.Client;
 using Cypherly.Message.Contracts.Responses.Profile;
 using DotNet.Testcontainers.Builders;
 using DotNet.Testcontainers.Containers;
-using Identity.Application.Features.Authentication.Token;
+using Identity.Application.Settings;
 using Identity.Infrastructure.Settings;
 using Identity.Test.Integration.Setup.Authentication;
 using MassTransit;

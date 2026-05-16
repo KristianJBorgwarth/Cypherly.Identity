@@ -1,10 +1,8 @@
-﻿using System.Diagnostics.CodeAnalysis;
-using System.Text.Json;
+﻿using System.Text.Json;
 using Microsoft.Extensions.Caching.Distributed;
 
 namespace Identity.Infrastructure.Caching;
 
-[SuppressMessage("Design", "CA1068:CancellationToken parameters must come last")]
 public interface IValkeyCacheService
 {
     Task<T?> GetAsync<T>(string key, JsonSerializerOptions? options, CancellationToken cancellationToken);
@@ -40,6 +38,5 @@ internal class ValkeyCacheService(IDistributedCache cache) : IValkeyCacheService
 
     public async Task ClearAllAsync(CancellationToken cancellationToken)
     {
-
     }
 }

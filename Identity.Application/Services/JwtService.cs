@@ -1,12 +1,19 @@
 ﻿using System.Security.Claims;
 using System.Text;
+using Identity.Application.Dtos;
+using Identity.Application.Extensions;
+using Identity.Application.Interfaces;
+using Identity.Application.Settings;
 using Microsoft.Extensions.Options;
 using Microsoft.IdentityModel.JsonWebTokens;
 using Microsoft.IdentityModel.Tokens;
 
-namespace Identity.Application.Features.Authentication.Token;
+namespace Identity.Application.Services;
 
-public class JwtService(IOptions<JwtSettings> jwtSettings) : IJwtService
+internal class JwtService(
+    IJwkCache jwkCache,
+    IOptions<JwtSettings> jwtSettings)
+    : IJwtService
 {
     public string GenerateToken(Guid userId, Guid deviceId)
     {
@@ -33,5 +40,12 @@ public class JwtService(IOptions<JwtSettings> jwtSettings) : IJwtService
         var token = tokenHandler.CreateToken(tokenDescriptor);
 
         return token;
+    }
+
+    public async Task<IReadOnlyList<JwksDto>> GenerateJwks(CancellationToken ct = default)
+    {
+        var jwks = await jwkCache.GetJwks(ct);
+        var jwksDtos = jwks.ToPubKeyDtos();
+        return jwksDtos;
     }
 }

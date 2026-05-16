@@ -1,5 +1,5 @@
 using System.Text;
-using Identity.Application.Features.Authentication.Token;
+using Identity.Application.Settings;
 using Microsoft.IdentityModel.Tokens;
 
 namespace Identity.API.Extensions;

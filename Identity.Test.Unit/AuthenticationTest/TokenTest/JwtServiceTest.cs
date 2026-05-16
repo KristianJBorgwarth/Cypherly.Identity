@@ -1,5 +1,4 @@
 ﻿using System.Security.Claims;
-using Identity.Application.Features.Authentication.Token;
 using FluentAssertions;
 using Identity.Domain.Aggregates;
 using Identity.Domain.Entities;
@@ -7,12 +6,16 @@ using Identity.Domain.Enums;
 using Identity.Domain.ValueObjects;
 using Microsoft.Extensions.Options;
 using Microsoft.IdentityModel.JsonWebTokens;
+using Identity.Application.Services;
+using Identity.Application.Settings;
+using FakeItEasy;
 
 namespace Identity.Test.Unit.AuthenticationTest.TokenTest;
 
 public class JwtServiceTest
 {
     private readonly JwtService _jwtService;
+    private readonly IJwkCache _jwkCache = A.Fake<IJwkCache>();
 
     public JwtServiceTest()
     {
@@ -24,7 +27,7 @@ public class JwtServiceTest
             TokenLifeTimeInMinutes = 10,
         });
 
-        _jwtService = new JwtService(jwtSettings);
+        _jwtService = new JwtService(_jwkCache, jwtSettings);
     }
 
     [Fact]

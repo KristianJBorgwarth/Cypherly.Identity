@@ -20,6 +20,8 @@ internal static class CachingExtensions
             options.InstanceName = "Cypherly.Authentication.API_";
         });
 
+        services.AddHybridCache();
+
         services.AddCacheServices();
     }
 
@@ -28,6 +30,6 @@ internal static class CachingExtensions
         services.AddSingleton<IValkeyCacheService, ValkeyCacheService>();
         services.AddScoped<INonceCacheService, NonceCacheService>();
         services.AddScoped<ILoginNonceCache, LoginNonceCache>();
-
+        services.AddScoped<IJwkCache, JwkCache>();
     }
 }

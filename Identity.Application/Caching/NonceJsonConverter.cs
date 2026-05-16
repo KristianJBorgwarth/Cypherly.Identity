@@ -15,7 +15,7 @@ public class NonceJsonConverter : JsonConverter<Nonce>
         var createdAt = jsonObject.GetProperty("CreatedAt").GetDateTime();
         var expiresAt = jsonObject.GetProperty("ExpiresAt").GetDateTime();
 
-        return Nonce.FromCache(id, nonceValue, userId, deviceId, createdAt, expiresAt);
+        return Nonce.FromCache(id, nonceValue!, userId, deviceId, createdAt, expiresAt);
     }
     public override void Write(Utf8JsonWriter writer, Nonce value, JsonSerializerOptions options)
     {

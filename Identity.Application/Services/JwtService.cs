@@ -33,7 +33,7 @@ internal class JwtService(
             Subject = new(claims),
             Expires = DateTime.UtcNow.AddMinutes(jwtSettings.Value.TokenLifeTimeInMinutes),
             SigningCredentials = creds,
-            Issuer = jwtSettings.Value.Authority,
+            Issuer = jwtSettings.Value.Issuer,
             Audience = jwtSettings.Value.Audience,
         };
 

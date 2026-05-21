@@ -1,4 +1,7 @@
+﻿using Cypherly.Domain.Common;
+using Identity.Domain.Common;
 using FluentValidation;
+using Identity.Application.Features.User.Commands.Update.Verify;
 
 namespace Identity.Application.Features.Authentication.Commands.VerifyLogin;
 
@@ -7,9 +10,9 @@ public sealed class VerifyLoginCommandValidator : AbstractValidator<VerifyLoginC
     public VerifyLoginCommandValidator()
     {
         RuleFor(cmd => cmd.UserId)
-            .NotEmpty().WithMessage($"The value cannot be empty: {nameof(VerifyLoginCommand.UserId)} ");
+            .NotEmpty().WithMessage(Errors.General.ValueIsEmpty(nameof(VerifyUserCommand.UserId)).Message);
 
         RuleFor(cmd => cmd.LoginVerificationCode)
-            .NotEmpty().WithMessage($"The value cannot be empty: {nameof(VerifyLoginCommand.LoginVerificationCode)} ");
+            .NotEmpty().WithMessage(Errors.General.ValueIsEmpty(nameof(VerifyUserCommand.VerificationCode)).Message);
     }
 }

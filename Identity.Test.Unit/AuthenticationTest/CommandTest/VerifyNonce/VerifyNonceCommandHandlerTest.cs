@@ -1,4 +1,4 @@
-using FakeItEasy;
+﻿using FakeItEasy;
 using FluentAssertions;
 using Identity.Application.Caching;
 using Identity.Application.Contracts.Cache;
@@ -55,7 +55,7 @@ public class VerifyNonceCommandHandlerTest
 
         // Assert
         result.Success.Should().BeFalse();
-        result.Error!.Description.Should().Be(Error.NotFound<User>(cmd.UserId.ToString()).Description);
+        result.Error.Message.Should().Be(Errors.General.NotFound(cmd.UserId).Message);
     }
 
     [Fact]
@@ -83,7 +83,7 @@ public class VerifyNonceCommandHandlerTest
 
         // Assert
         result.Success.Should().BeFalse();
-        result.Error!.Description.Should().Be(Error.NotFound<Nonce>(cmd.NonceId.ToString()).Description);
+        result.Error.Message.Should().Be(Errors.General.NotFound(cmd.NonceId).Message);
     }
 
     [Fact]
@@ -115,12 +115,13 @@ public class VerifyNonceCommandHandlerTest
 
         // Assert
         result.Success.Should().BeFalse();
-        result.Error.Should().BeEquivalentTo(Error.Unauthorized());
+        result.Error.Message.Should().Be(Errors.General.Unauthorized().Message);
     }
 
     [Fact]
     public async Task Handle_When_Nonce_Valid_Should_Return_Succesfull_Result()
     {
+        // Arrange
         // Arrange
         var user = new User(Guid.NewGuid(), Email.Create("test@mail.dk"), Password.Create("test=)23kJ00a"), true);
         var device = new Device(Guid.NewGuid(), "doesntmatter", "1.0", DeviceType.Desktop,

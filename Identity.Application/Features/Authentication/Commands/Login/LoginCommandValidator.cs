@@ -1,3 +1,5 @@
+﻿using Cypherly.Domain.Common;
+using Identity.Domain.Common;
 using FluentValidation;
 
 namespace Identity.Application.Features.Authentication.Commands.Login;
@@ -9,13 +11,14 @@ public class LoginCommandValidator : AbstractValidator<LoginCommand>
         RuleLevelCascadeMode = CascadeMode.Stop;
 
         RuleFor(x => x.Email)
-            .NotNull().WithMessage($"Value '{nameof(LoginCommand.Email)}' is required.")
-            .NotEmpty().WithMessage($"The value cannot be empty: {nameof(LoginCommand.Email)} ")
-            .Must(email => email.Length <= 255).WithMessage($"Value '{nameof(LoginCommand.Email)}' should not exceed 255.");
+            .NotNull().WithMessage(Errors.General.ValueIsRequired(nameof(LoginCommand.Email)).Message)
+            .NotEmpty().WithMessage(Errors.General.ValueIsEmpty(nameof(LoginCommand.Email)).Message)
+            .Must(email => email.Length <= 255).WithMessage(Errors.General.ValueTooLarge(nameof(LoginCommand.Email), 255).Message);
 
         RuleFor(x => x.Password)
-            .NotNull().WithMessage($"Value '{nameof(LoginCommand.Password)}' is required.")
-            .NotEmpty().WithMessage($"The value cannot be empty: {nameof(LoginCommand.Password)} ")
-            .Must(pw => pw.Length <= 255).WithMessage($"Value '{nameof(LoginCommand.Password)}' should not exceed 255.");
+            .NotNull().WithMessage(Errors.General.ValueIsRequired(nameof(LoginCommand.Password)).Message)
+            .NotEmpty().WithMessage(Errors.General.ValueIsEmpty(nameof(LoginCommand.Password)).Message)
+            .Must(pw => pw.Length <= 255).WithMessage(Errors.General.ValueTooLarge(nameof(LoginCommand.Password), 255).Message);
+
     }
 }

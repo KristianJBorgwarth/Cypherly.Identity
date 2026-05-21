@@ -1,3 +1,4 @@
+﻿using Cypherly.Domain.Common;
 using Identity.Application.Abstractions;
 using Identity.Application.Contracts.Repository;
 using Identity.Domain.Common;
@@ -17,7 +18,7 @@ public class VerifyUserCommandHandler(
         if (user is null)
         {
             logger.LogWarning("User with ID {UserId} not found during verification process", cmd.UserId);
-            return Result.Fail(Error.NotFound<Domain.Aggregates.User>(cmd.UserId.ToString()));
+            return Result.Fail(Errors.General.NotFound(cmd.UserId));
         }
 
         var result = user.VerifyAccount(cmd.VerificationCode);

@@ -1,3 +1,5 @@
+﻿using Cypherly.Domain.Common;
+using Identity.Domain.Common;
 using FluentValidation;
 
 namespace Identity.Application.Features.Authentication.Commands.RefreshTokens;
@@ -7,12 +9,14 @@ public class RefreshTokensCommandValidator : AbstractValidator<RefreshTokensComm
     public RefreshTokensCommandValidator()
     {
         RuleFor(p => p.RefreshToken)
-            .NotEmpty().WithMessage($"The value cannot be empty: {nameof(RefreshTokensCommand.RefreshToken)} ");
+            .NotEmpty().WithMessage(Errors.General.ValueIsEmpty(nameof(RefreshTokensCommand.RefreshToken)).Message);
 
         RuleFor(p => p.UserId)
-            .NotEmpty().WithMessage($"The value cannot be empty: {nameof(RefreshTokensCommand.UserId)} ");
+            .NotEmpty().
+            WithMessage(Errors.General.ValueIsEmpty(nameof(RefreshTokensCommand.UserId)).Message);
 
         RuleFor(p => p.DeviceId)
-            .NotEmpty().WithMessage($"The value cannot be empty: {nameof(RefreshTokensCommand.DeviceId)} ");
+            .NotEmpty().
+            WithMessage(Errors.General.ValueIsEmpty(nameof(RefreshTokensCommand.DeviceId)).Message);
     }
 }

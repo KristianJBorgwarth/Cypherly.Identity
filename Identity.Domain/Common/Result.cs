@@ -1,25 +1,26 @@
-// ReSharper disable MemberCanBeProtected.Global
-// ReSharper disable MemberCanBePrivate.Global
+﻿using Identity.Domain.ValueObjects;
 
-namespace Identity.Domain.Common;
+namespace Cypherly.Domain.Common;
 
 public class Result
 {
     public bool Success { get; private set; }
-    public Error? Error { get; private set; }
+    public Error Error { get; private set; }
 
-    protected Result(bool success, Error? error)
+    public bool Failure => !Success;
+
+    protected Result(bool success, Error error)
     {
         Success = success;
         Error = error;
     }
 
-    public static Result Fail(Error? error)
+    public static Result Fail(Error error)
     {
         return new Result(false, error);
     }
 
-    public static Result<T> Fail<T>(Error? error)
+    public static Result<T> Fail<T>(Error error)
     {
         return new Result<T>(default, false, error);
     }
@@ -33,36 +34,42 @@ public class Result
     {
         return new Result<T>(value, true, null);
     }
+
+
+    public static Result Combine(params Result[] results)
+    {
+        foreach (var result in results)
+        {
+            if (result.Failure)
+                return result;
+        }
+
+        return Ok();
+    }
+
 }
+
 
 public class Result<T> : Result
 {
     private readonly T? _value;
 
-    /// <summary>
-    /// Gets the value of the Result if it is successful; otherwise, throws an InvalidOperationException.
-    /// </summary>
-    /// <exception cref="InvalidOperationException"></exception>
-    public T? Value => !Success ? throw new InvalidOperationException("Cannot fetch Value on a failed Result") : _value;
-
-    /// <summary>
-    /// Gets the value of the Result, throwing an InvalidOperationException if the value is null.
-    /// </summary>
-    /// <exception cref="InvalidOperationException">In case of accessing failed result</exception>
-    /// <exception cref="NullReferenceException">In case of null _value</exception>
-    public T RequiredValue
+    public T? Value
     {
         get
         {
-            if (!Success) throw new InvalidOperationException("Cannot fetch RequiredValue on a failed Result");
-            return _value ?? throw new NullReferenceException($"RequiredValue is null of type {typeof(T).FullName}");
+            if (!Success) throw new InvalidOperationException("Cannot fetch value on a failed result");
+
+            return _value;
         }
+
+        private init => _value = value;
     }
 
-    protected internal Result(T? value, bool success, Error? error)
+    protected internal Result(T? value, bool success, Error error)
         : base(success, error)
     {
-        _value = value;
+        Value = value;
     }
 
     public static implicit operator Result<T>(T from)
@@ -72,6 +79,6 @@ public class Result<T> : Result
 
     public static implicit operator T(Result<T> from)
     {
-        return from.Value!;
+        return from.Value;
     }
 }

@@ -93,7 +93,7 @@ public class CreateDeviceCommandHandlerTest : IntegrationTestBase
 
         // Assert
         result.Success.Should().BeFalse();
-        result.Error.Should().BeEquivalentTo(Error.NotFound<User>(cmd.UserId.ToString()));
+        result.Error.Should().BeEquivalentTo(Errors.General.NotFound(cmd.UserId));
     }
 
     [Fact]
@@ -126,6 +126,6 @@ public class CreateDeviceCommandHandlerTest : IntegrationTestBase
 
         // Assert
         result.Success.Should().BeFalse();
-        result.Error.Should().BeEquivalentTo(Error.Unauthorized());
+        result.Error.Should().BeEquivalentTo(Errors.General.Unauthorized());
     }
 }

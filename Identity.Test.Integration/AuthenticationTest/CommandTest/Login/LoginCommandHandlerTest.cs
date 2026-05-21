@@ -72,7 +72,7 @@ public class LoginCommandHandlerTest : IntegrationTestBase
         // Assert
         result.Success.Should().BeFalse();
         result.Error.Should().NotBeNull();
-        result.Error!.Description.Should().Be("Invalid Credentials");
+        result.Error.Message.Should().Be("Invalid Credentials");
     }
 
     [Fact]
@@ -97,7 +97,7 @@ public class LoginCommandHandlerTest : IntegrationTestBase
         // Assert
         result.Success.Should().BeFalse();
         result.Error.Should().NotBeNull();
-        result.Error!.Description.Should().Be("Invalid Credentials");
+        result.Error.Message.Should().Be("Invalid Credentials");
     }
 
     [Fact]

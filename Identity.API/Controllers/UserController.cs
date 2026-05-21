@@ -1,4 +1,4 @@
-using Identity.API.Common;
+﻿using Identity.API.Common;
 using Identity.Application.Features.Device.Commands.Create;
 using Identity.Application.Features.Device.Queries.GetConnectionIdByUser;
 using Identity.Application.Features.Device.Queries.GetConnectionIdsByUsers;
@@ -15,7 +15,7 @@ namespace Identity.API.Controllers;
 
 [ApiController]
 [Route("api/[controller]")]
-public class UserController(ISender sender) : ControllerBase
+public class UserController(ISender sender) : BaseController
 {
     [HttpPost]
     [Route("")]
@@ -24,7 +24,7 @@ public class UserController(ISender sender) : ControllerBase
     public async Task<IActionResult> Create([FromBody] CreateUserCommand command)
     {
         var result = await sender.Send(command);
-        return result.Success ? Ok(result.Value) : result.ToProblemDetails();
+        return result.Success ? Ok(result.Value) : Error(result.Error);
     }
 
     [HttpDelete]
@@ -35,7 +35,7 @@ public class UserController(ISender sender) : ControllerBase
     public async Task<IActionResult> Delete()
     {
         var result = await sender.Send(new DeleteUserCommand { Id = User.GetUserId() });
-        return result.Success ? Ok() : result.ToProblemDetails();
+        return result.Success ? Ok() : Error(result.Error);
     }
 
     [HttpPut]
@@ -45,7 +45,7 @@ public class UserController(ISender sender) : ControllerBase
     public async Task<IActionResult> Verify([FromBody] VerifyUserCommand command)
     {
         var result = await sender.Send(command);
-        return result.Success ? Ok() : result.ToProblemDetails();
+        return result.Success ? Ok() : Error(result.Error);
     }
 
     [HttpPut]
@@ -55,7 +55,7 @@ public class UserController(ISender sender) : ControllerBase
     public async Task<IActionResult> ResendVerification([FromBody] ResendVerificationCodeCommand codeCommand)
     {
         var result = await sender.Send(codeCommand);
-        return result.Success ? Ok() : result.ToProblemDetails();
+        return result.Success ? Ok() : Error(result.Error);
     }
 
     [HttpPost]
@@ -65,7 +65,7 @@ public class UserController(ISender sender) : ControllerBase
     public async Task<IActionResult> CreateDevice([FromBody] CreateDeviceCommand command)
     {
         var result = await sender.Send(command);
-        return result.Success ? Ok(result.Value) : result.ToProblemDetails();
+        return result.Success ? Ok(result.Value) : Error(result.Error);
     }
 
     [HttpGet]
@@ -76,7 +76,7 @@ public class UserController(ISender sender) : ControllerBase
     public async Task<IActionResult> GetDevices()
     {
         var result = await sender.Send(new GetDevicesQuery { UserId = User.GetUserId() });
-        return result.Success ? Ok(result.Value) : result.ToProblemDetails();
+        return result.Success ? Ok(result.Value) : Error(result.Error);
     }
 
     [HttpGet]
@@ -89,7 +89,7 @@ public class UserController(ISender sender) : ControllerBase
     {
         var tenantId = User.GetUserId();
         var result = await sender.Send(new GetConnectionIdsByUserQuery { TenantId = tenantId });
-        if (!result.Success) return result.ToProblemDetails();
+        if (result.Success is false) return Error(result.Error);
 
         return result.Value!.ConnectionIds.Count != 0 ? Ok(result.Value) : NoContent();
     }
@@ -102,6 +102,6 @@ public class UserController(ISender sender) : ControllerBase
     public async Task<IActionResult> GetConnectionIds([FromBody] GetConnectionIdsByUsersQuery query)
     {
         var result = await sender.Send(query);
-        return result.Success ? Ok(result.Value) : result.ToProblemDetails();
+        return result.Success ? Ok(result.Value) : Error(result.Error);
     }
 }

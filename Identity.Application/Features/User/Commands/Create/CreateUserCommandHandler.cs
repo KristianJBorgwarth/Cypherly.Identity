@@ -1,3 +1,4 @@
+﻿using Cypherly.Domain.Common;
 using Identity.Domain.Common;
 using Identity.Domain.Services.User;
 using Cypherly.Message.Contracts.Messages.Profile;
@@ -6,6 +7,7 @@ using Identity.Application.Abstractions;
 using Identity.Application.Contracts.Repository;
 using MassTransit;
 using Microsoft.Extensions.Logging;
+
 
 namespace Identity.Application.Features.User.Commands.Create;
 
@@ -20,7 +22,7 @@ public class CreateUserCommandHandler(
     public async Task<Result<CreateUserDto>> Handle(CreateUserCommand cmd, CancellationToken ct)
     {
         if (await DoesEmailExist(cmd.Email, ct))
-            return Result.Fail<CreateUserDto>(Error.BadRequest("account.already.exists", "An account already exists with that email"));
+            return Result.Fail<CreateUserDto>(Errors.General.UnspecifiedError("An account already exists with that email"));
 
         var userResult = userLifeCycleServices.CreateUser(cmd.Email, cmd.Password);
 
@@ -62,6 +64,7 @@ public class CreateUserCommandHandler(
             return Result.Ok();
 
         logger.LogError("Failed to create user profile");
-        return Result.Fail(Error.Failure(response.Message.Error));
+        return Result.Fail(Errors.General.UnspecifiedError(response.Message.Error!));
+
     }
 }

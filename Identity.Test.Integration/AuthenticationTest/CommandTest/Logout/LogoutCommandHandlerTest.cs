@@ -77,6 +77,6 @@ public class LogoutCommandHandlerTest : IntegrationTestBase
 
         // Assert
         result.Success.Should().BeFalse();
-        result.Error.Should().BeEquivalentTo(Error.NotFound<User>(command.Id.ToString()));
+        result.Error.Should().BeEquivalentTo(Errors.General.NotFound(command.Id));
     }
 }

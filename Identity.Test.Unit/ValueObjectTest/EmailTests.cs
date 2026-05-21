@@ -34,6 +34,6 @@ public class EmailTests
 
         // Assert
         result.Success.Should().BeFalse();
-        result.Error!.Description.Should().Be("Invalid email address.");
+        result.Error.Message.Should().Be("Invalid email address.");
     }
 }

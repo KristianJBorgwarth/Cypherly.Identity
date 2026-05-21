@@ -1,3 +1,4 @@
+﻿using Cypherly.Domain.Common;
 using Identity.Domain.Abstractions;
 using Identity.Domain.Common;
 using Identity.Domain.Entities;
@@ -52,6 +53,7 @@ public class User : AggregateRoot
     /// </para>
     /// </summary>
     /// <param name="codeType"><see cref="UserVerificationCodeType"/></param>
+    /// <returns></returns>
     public UserVerificationCode? GetActiveVerificationCode(UserVerificationCodeType codeType)
     {
         return VerificationCodes.Where(vc => vc.CodeType == codeType && !vc.Code.IsUsed && vc.Code.ExpirationDate > DateTime.UtcNow).MaxBy(vc => vc.Code.ExpirationDate);
@@ -72,7 +74,7 @@ public class User : AggregateRoot
             throw new InvalidOperationException("This chat user is already verified");
 
         var userVerificationCode = VerificationCodes.FirstOrDefault(uvc => uvc.Code.Value == verificationCode);
-        if (userVerificationCode is null) return Result.Fail(Error.BadRequest("verification.code.invalid", "Invalid verification code"));
+        if (userVerificationCode is null) return Result.Fail(Errors.General.UnspecifiedError("Invalid verification code"));
 
         var verificationResult = userVerificationCode.Code.Verify(verificationCode);
 
@@ -84,6 +86,7 @@ public class User : AggregateRoot
         AddDomainEvent(new UserVerifiedEvent(Id));
         return Result.Ok();
     }
+
 
     /// <summary>
     /// Verifies the login with the provided verification code.
@@ -97,7 +100,7 @@ public class User : AggregateRoot
             throw new InvalidOperationException("This chat user does not have a verification code");
 
         var userVerificationCode = VerificationCodes.FirstOrDefault(uvc => uvc.Code.Value == loginVerificationCode && uvc.CodeType == UserVerificationCodeType.Login);
-        if (userVerificationCode is null) return Result.Fail(Error.BadRequest("verification.code.invalid", "Invalid verification code"));
+        if (userVerificationCode is null) return Result.Fail(Errors.General.UnspecifiedError("Invalid verification code"));
 
         var verificationResult = userVerificationCode.Code.Verify(loginVerificationCode);
 
@@ -121,6 +124,7 @@ public class User : AggregateRoot
     /// Returns list of all active devices.
     /// Devices where DeletedAt value is null <see cref="Entity.Deleted"/>
     /// </summary>
+    /// <returns></returns>
     public List<Device> GetDevices()
     {
         return [.. Devices.Where(x => x.Deleted is null)];
@@ -130,6 +134,7 @@ public class User : AggregateRoot
     /// Returns the device with the specified deviceId.
     /// </summary>
     /// <param name="deviceId">The ID of the device to retreive</param>
+    /// <returns></returns>
     /// <exception cref="InvalidOperationException">Exception thrown if the device is marked as Deleted</exception>
     public Device GetDevice(Guid deviceId, bool includeDeleted = false)
     {

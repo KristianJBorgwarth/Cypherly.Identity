@@ -1,3 +1,4 @@
+﻿using Cypherly.Domain.Common;
 using Identity.Application.Abstractions;
 using Identity.Application.Contracts.Repository;
 using Identity.Domain.Common;
@@ -14,10 +15,10 @@ public class LoginCommandHandler(
     public async Task<Result<LoginDto>> Handle(LoginCommand cmd, CancellationToken ct)
     {
         var user = await userRepository.GetSinleAsync(new UserByEmailSpec(cmd.Email), ct);
-        if (user is null) return Result.Fail<LoginDto>(Error.BadRequest("invalid.credentials", "Invalid Credentials"));
+        if (user is null) return Result.Fail<LoginDto>(Errors.General.UnspecifiedError("Invalid Credentials"));
 
         var pwResult = user.Password.Verify(cmd.Password);
-        if (!pwResult) return Result.Fail<LoginDto>(Error.BadRequest("invalid.credentials", "Invalid Credentials"));
+        if (!pwResult) return Result.Fail<LoginDto>(Errors.General.UnspecifiedError("Invalid Credentials"));
 
         if (!user.IsVerified) return Result.Ok(new LoginDto { IsVerified = false, UserId = user.Id });
 

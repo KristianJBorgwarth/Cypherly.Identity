@@ -1,4 +1,4 @@
-﻿using Identity.Domain.Common;
+﻿using Cypherly.Domain.Common;
 using MediatR;
 
 namespace Identity.Application.Abstractions;

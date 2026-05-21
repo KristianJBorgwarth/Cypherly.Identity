@@ -1,4 +1,4 @@
-using FakeItEasy;
+﻿using FakeItEasy;
 using FluentAssertions;
 using Identity.Application.Contracts.Repository;
 using Identity.Application.Features.Authentication.Commands.RefreshTokens;
@@ -49,7 +49,7 @@ public class RefreshTokensCommandHandlerTest
 
         // Assert
         result.Success.Should().BeFalse();
-        result.Error!.Description.Should().Be(Error.NotFound<User>(command.UserId.ToString()).Description);
+        result.Error.Message.Should().Match(Errors.General.NotFound(command.UserId).Message);
     }
 
     [Fact]
@@ -72,7 +72,7 @@ public class RefreshTokensCommandHandlerTest
 
         // Assert
         result.Success.Should().BeFalse();
-        result.Error!.Description.Should().Be("Invalid refresh token");
+        result.Error.Message.Should().Match("Invalid refresh token");
     }
 
     [Fact]

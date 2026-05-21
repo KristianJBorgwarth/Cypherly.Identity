@@ -1,4 +1,6 @@
-using System.Text.RegularExpressions;
+﻿using System.Text.RegularExpressions;
+using Cypherly.Domain.Common;
+using Identity.Domain.Common;
 using FluentValidation;
 
 namespace Identity.Application.Features.Device.Commands.Create;
@@ -8,34 +10,46 @@ public class CreateDeviceCommandValidator : AbstractValidator<CreateDeviceComman
     public CreateDeviceCommandValidator()
     {
         RuleLevelCascadeMode = CascadeMode.Stop;
-
         RuleFor(x => x.UserId)
-            .NotEmpty().WithMessage($"The value cannot be empty: {nameof(CreateDeviceCommand.UserId)} ");
+            .NotEmpty()
+            .WithMessage(Errors.General.ValueIsEmpty(nameof(CreateDeviceCommand.UserId)).Message);
 
         RuleFor(x => x.LoginNonceId)
-            .NotEmpty().WithMessage($"The value cannot be empty: {nameof(CreateDeviceCommand.LoginNonceId)} ");
+            .NotEmpty()
+            .WithMessage(Errors.General.ValueIsEmpty(nameof(CreateDeviceCommand.LoginNonceId)).Message);
 
         RuleFor(x => x.LoginNonce)
-            .NotEmpty().WithMessage($"The value cannot be empty: {nameof(CreateDeviceCommand.LoginNonce)} ");
+            .NotEmpty()
+            .WithMessage(Errors.General.ValueIsEmpty(nameof(CreateDeviceCommand.LoginNonce)).Message);
 
         RuleFor(x => x.Base64DevicePublicKey)
-            .NotNull().WithMessage($"Value '{nameof(CreateDeviceCommand.Base64DevicePublicKey)}' is required.")
-            .NotEmpty().WithMessage($"The value cannot be empty: {nameof(CreateDeviceCommand.Base64DevicePublicKey)} ")
-            .Must(x => x.Length <= 100).WithMessage($"Value '{nameof(CreateDeviceCommand.Base64DevicePublicKey)}' should not exceed 100.");
+            .NotNull()
+            .WithMessage(Errors.General.ValueIsRequired(nameof(CreateDeviceCommand.Base64DevicePublicKey)).Message)
+            .NotEmpty()
+            .WithMessage(Errors.General.ValueIsEmpty(nameof(CreateDeviceCommand.Base64DevicePublicKey)).Message)
+            .Must(x => x.Length <= 100).WithMessage(Errors.General.ValueTooLarge(nameof(CreateDeviceCommand.Base64DevicePublicKey), 100).Message);
 
         RuleFor(x => x.DeviceAppVersion)
-            .NotNull().WithMessage($"Value '{nameof(CreateDeviceCommand.DeviceAppVersion)}' is required.")
-            .NotEmpty().WithMessage($"The value cannot be empty: {nameof(CreateDeviceCommand.DeviceAppVersion)} ")
-            .Must(x => x.Length <= 6).WithMessage($"Value '{nameof(CreateDeviceCommand.DeviceAppVersion)}' should not exceed 6.")
-            .Must(BeValidDeviceAppVersion).WithMessage($"Value '{nameof(CreateDeviceCommand.DeviceAppVersion)}' is not valid in this context");
+            .NotNull()
+            .WithMessage(Errors.General.ValueIsRequired(nameof(CreateDeviceCommand.DeviceAppVersion)).Message)
+            .NotEmpty()
+            .WithMessage(Errors.General.ValueIsEmpty(nameof(CreateDeviceCommand.DeviceAppVersion)).Message)
+            .Must(x => x.Length <= 6)
+            .WithMessage(Errors.General.ValueTooLarge(nameof(CreateDeviceCommand.DeviceAppVersion), 6).Message)
+            .Must(BeValidDeviceAppVersion)
+            .WithMessage(Errors.General.UnexpectedValue(nameof(CreateDeviceCommand.DeviceAppVersion)).Message);
 
         RuleFor(x => x.DeviceType)
-            .NotEmpty().WithMessage($"The value cannot be empty: {nameof(CreateDeviceCommand.DeviceType)} ")
-            .IsInEnum().WithMessage($"Value '{nameof(CreateDeviceCommand.DeviceType)}' is not valid in this context");
+            .NotEmpty()
+            .WithMessage(Errors.General.ValueIsEmpty(nameof(CreateDeviceCommand.DeviceType)).Message)
+            .IsInEnum()
+            .WithMessage(Errors.General.UnexpectedValue(nameof(CreateDeviceCommand.DeviceType)).Message);
 
         RuleFor(x => x.DevicePlatform)
-            .NotEmpty().WithMessage($"The value cannot be empty: {nameof(CreateDeviceCommand.DevicePlatform)} ")
-            .IsInEnum().WithMessage($"Value '{nameof(CreateDeviceCommand.DevicePlatform)}' is not valid in this context");
+            .NotEmpty()
+            .WithMessage(Errors.General.ValueIsEmpty(nameof(CreateDeviceCommand.DevicePlatform)).Message)
+            .IsInEnum()
+            .WithMessage(Errors.General.UnexpectedValue(nameof(CreateDeviceCommand.DevicePlatform)).Message);
     }
 
     private static bool BeValidDeviceAppVersion(string appVersion)

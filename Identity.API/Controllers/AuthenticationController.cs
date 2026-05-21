@@ -1,4 +1,4 @@
-using Identity.API.Common;
+﻿using Identity.API.Common;
 using Identity.Application.Features.Authentication.Commands.Login;
 using Identity.Application.Features.Authentication.Commands.Logout;
 using Identity.Application.Features.Authentication.Commands.RefreshTokens;
@@ -13,7 +13,7 @@ namespace Identity.API.Controllers;
 
 [ApiController]
 [Route("api/[controller]")]
-public class AuthenticationController(ISender sender) : ControllerBase
+public class AuthenticationController(ISender sender) : BaseController
 {
     [HttpPost]
     [Route("login")]
@@ -22,7 +22,7 @@ public class AuthenticationController(ISender sender) : ControllerBase
     public async Task<IActionResult> Login([FromBody] LoginCommand command)
     {
         var result = await sender.Send(command);
-        return result.Success ? Ok(result.Value) : result.ToProblemDetails();
+        return result.Success ? Ok(result.Value) : Error(result.Error);
     }
 
     [Authorize]
@@ -33,7 +33,7 @@ public class AuthenticationController(ISender sender) : ControllerBase
     public async Task<IActionResult> Logout()
     {
         var result = await sender.Send(new LogoutCommand { Id = User.GetUserId(), DeviceId = User.GetDeviceId() });
-        return result.Success ? Ok() : result.ToProblemDetails();
+        return result.Success ? Ok() : Error(result.Error);
     }
 
     [HttpPost]
@@ -43,9 +43,8 @@ public class AuthenticationController(ISender sender) : ControllerBase
     public async Task<IActionResult> VerifyLogin([FromBody] VerifyLoginCommand command)
     {
         var result = await sender.Send(command);
-        return result.Success ? Ok(result.Value) : result.ToProblemDetails();
+        return result.Success ? Ok(result.Value) : Error(result.Error);
     }
-
     [HttpGet]
     [Route("nonce")]
     [ProducesResponseType(typeof(GetNonceDto), StatusCodes.Status200OK)]
@@ -53,7 +52,7 @@ public class AuthenticationController(ISender sender) : ControllerBase
     public async Task<IActionResult> GetNonce([FromQuery] GetNonceQuery query)
     {
         var result = await sender.Send(query);
-        return result.Success ? Ok(result.Value) : result.ToProblemDetails();
+        return result.Success ? Ok(result.Value) : Error(result.Error);
     }
 
     [HttpPost]
@@ -63,7 +62,7 @@ public class AuthenticationController(ISender sender) : ControllerBase
     public async Task<IActionResult> VerifyNonce([FromBody] VerifyNonceCommand command)
     {
         var result = await sender.Send(command);
-        return result.Success ? Ok(result.Value) : result.ToProblemDetails();
+        return result.Success ? Ok(result.Value) : Error(result.Error);
     }
 
     [HttpPost]
@@ -73,6 +72,6 @@ public class AuthenticationController(ISender sender) : ControllerBase
     public async Task<IActionResult> RefreshToken([FromBody] RefreshTokensCommand command)
     {
         var result = await sender.Send(command);
-        return result.Success ? Ok(result.Value) : result.ToProblemDetails();
+        return result.Success ? Ok(result.Value) : Error(result.Error);
     }
 }

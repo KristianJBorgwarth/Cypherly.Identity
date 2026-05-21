@@ -1,3 +1,4 @@
+﻿using Cypherly.Domain.Common;
 using Identity.Application.Abstractions;
 using Identity.Application.Contracts.Repository;
 using Identity.Domain.Common;
@@ -19,13 +20,13 @@ public class DeleteUserCommandHandler(
         if (user is null)
         {
             logger.LogError("User not found with id {Id} during delete process", cmd.Id);
-            return Result.Fail(Error.NotFound<Identity.Domain.Aggregates.User>(cmd.Id.ToString()));
+            return Result.Fail(Errors.General.NotFound(cmd.Id));
         }
 
         if (userLifeCycleServices.IsUserDeleted(user))
         {
             logger.LogError("User with id {Id} is already deleted", cmd.Id);
-            return Result.Fail(Error.BadRequest("user.already.deleted", "User is already marked as deleted"));
+            return Result.Fail(Errors.General.UnspecifiedError("User is already marked as deleted"));
         }
 
         userLifeCycleServices.SoftDelete(user);

@@ -1,3 +1,5 @@
+﻿using Cypherly.Domain.Common;
+using Identity.Domain.Common;
 using FluentValidation;
 
 namespace Identity.Application.Features.User.Commands.Update.ResendVerificationCode;
@@ -7,10 +9,13 @@ public class ResendVerificationCodeCommandValidator : AbstractValidator<ResendVe
     public ResendVerificationCodeCommandValidator()
     {
         RuleFor(cmd => cmd.UserId)
-            .NotEmpty().WithMessage($"The value cannot be empty: {nameof(ResendVerificationCodeCommand.UserId)} ");
+            .NotEmpty().WithMessage(Errors.General.ValueIsEmpty(nameof(ResendVerificationCodeCommand.UserId)).Message);
 
         RuleFor(cmd => cmd.CodeType)
-            .NotEmpty().WithMessage($"The value cannot be empty: {nameof(ResendVerificationCodeCommand.CodeType)} ")
-            .IsInEnum().WithMessage($"Value '{nameof(ResendVerificationCodeCommand.CodeType)}' is not valid in this context");
+            .NotEmpty()
+            .WithMessage(Errors.General.ValueIsEmpty(nameof(ResendVerificationCodeCommand.CodeType)).Message)
+            .IsInEnum()
+            .WithMessage(Errors.General.UnexpectedValue(nameof(ResendVerificationCodeCommand.CodeType)).Message);
+
     }
 }

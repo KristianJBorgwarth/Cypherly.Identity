@@ -1,3 +1,4 @@
+﻿using Cypherly.Domain.Common;
 using Identity.Application.Abstractions;
 using Identity.Application.Caching.LoginNonce;
 using Identity.Application.Contracts.Cache;
@@ -20,7 +21,7 @@ public sealed class VerifyLoginCommandHandler(
         if (user is null)
         {
             logger.LogWarning("User with ID {UserId} not found", cmd.UserId);
-            return Result.Fail<VerifyLoginDto>(Error.NotFound<Domain.Aggregates.User>(cmd.UserId.ToString()));
+            return Result.Fail<VerifyLoginDto>(Errors.General.NotFound(cmd.UserId));
         }
 
         var verificationResult = user.VerifyLogin(cmd.LoginVerificationCode);

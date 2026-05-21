@@ -76,6 +76,6 @@ public class GetNonceQueryHandlerTest : IntegrationTestBase
         // Assert
         result.Success.Should().BeFalse();
         result.Error.Should().NotBeNull();
-        result.Error!.Description.Should().Contain("Could not find User with ID");
+        result.Error.Message.Should().Contain("Could not find entity with ID");
     }
 }

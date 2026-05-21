@@ -1,5 +1,6 @@
 ﻿using Identity.Application.Features.Device.Queries.GetConnectionIdsByUsers;
 using FluentAssertions;
+using Identity.Domain.Common;
 
 namespace Cypherly.Authentication.Test.Unit.DeviceTest.QueryTest.GetConnectionIdsByUsersTest;
 
@@ -38,7 +39,7 @@ public class GetConnectionIdsByUsersQueryValidatorTest
         // Assert
         result.IsValid.Should().BeFalse();
         result.Errors.Should().ContainSingle()
-            .Which.ErrorMessage.Should().Be($"The value cannot be empty: {nameof(GetConnectionIdsByUsersQuery.TenantIds)} ");
+            .Which.ErrorMessage.Should().Be(Errors.General.ValueIsEmpty(nameof(GetConnectionIdsByUsersQuery.TenantIds)).Message);
     }
 
     [Fact]
@@ -56,6 +57,6 @@ public class GetConnectionIdsByUsersQueryValidatorTest
         // Assert
         result.IsValid.Should().BeFalse();
         result.Errors.Should().ContainSingle()
-            .Which.ErrorMessage.Should().Be($"The value cannot be empty: {nameof(Guid)} ");
+            .Which.ErrorMessage.Should().Be(Errors.General.ValueIsEmpty(nameof(Guid)).Message);
     }
 }

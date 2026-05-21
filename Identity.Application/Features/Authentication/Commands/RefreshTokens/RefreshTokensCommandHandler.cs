@@ -1,7 +1,6 @@
 using Identity.Application.Abstractions;
 using Identity.Application.Contracts.Repository;
 using Identity.Application.Interfaces;
-using Identity.Domain.Aggregates;
 using Identity.Domain.Common;
 using Identity.Domain.Services.User;
 using Microsoft.Extensions.Logging;
@@ -22,7 +21,7 @@ public class RefreshTokensCommandHandler(
         if (user is null)
         {
             logger.LogCritical("User with {UserId} not found", cmd.UserId);
-            return Result.Fail<RefreshTokensDto>(Error.NotFound<User>(cmd.UserId.ToString()));
+            return Result.Fail<RefreshTokensDto>(Error.NotFound<Domain.Aggregates.User>(cmd.UserId.ToString()));
         }
 
         var isTokenValid = authService.VerifyRefreshToken(user, cmd.DeviceId, cmd.RefreshToken);

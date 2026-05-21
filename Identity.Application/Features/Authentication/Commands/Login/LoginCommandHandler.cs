@@ -1,6 +1,5 @@
 using Identity.Application.Abstractions;
 using Identity.Application.Contracts.Repository;
-using Identity.Domain.Aggregates;
 using Identity.Domain.Common;
 using Identity.Domain.Services.User;
 

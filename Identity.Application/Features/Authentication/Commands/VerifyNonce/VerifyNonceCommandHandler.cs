@@ -3,7 +3,6 @@ using Identity.Application.Caching;
 using Identity.Application.Contracts.Cache;
 using Identity.Application.Contracts.Repository;
 using Identity.Application.Interfaces;
-using Identity.Domain.Aggregates;
 using Identity.Domain.Common;
 using Identity.Domain.Events.User;
 using Microsoft.Extensions.Logging;
@@ -26,7 +25,7 @@ public class VerifyNonceCommandHandler(
         if (user is null)
         {
             logger.LogWarning("User with ID: {ID} not found.", cmd.UserId);
-            return Result.Fail<VerifyNonceDto>(Error.NotFound<User>(cmd.UserId.ToString()));
+            return Result.Fail<VerifyNonceDto>(Error.NotFound<Domain.Aggregates.User>(cmd.UserId.ToString()));
         }
 
         var nonce = await nonceCacheService.GetNonceAsync(cmd.NonceId, cancellationToken);

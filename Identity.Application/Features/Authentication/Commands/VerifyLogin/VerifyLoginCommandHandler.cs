@@ -2,7 +2,6 @@ using Identity.Application.Abstractions;
 using Identity.Application.Caching.LoginNonce;
 using Identity.Application.Contracts.Cache;
 using Identity.Application.Contracts.Repository;
-using Identity.Domain.Aggregates;
 using Identity.Domain.Common;
 using Microsoft.Extensions.Logging;
 
@@ -21,7 +20,7 @@ public sealed class VerifyLoginCommandHandler(
         if (user is null)
         {
             logger.LogWarning("User with ID {UserId} not found", cmd.UserId);
-            return Result.Fail<VerifyLoginDto>(Error.NotFound<User>(cmd.UserId.ToString()));
+            return Result.Fail<VerifyLoginDto>(Error.NotFound<Domain.Aggregates.User>(cmd.UserId.ToString()));
         }
 
         var verificationResult = user.VerifyLogin(cmd.LoginVerificationCode);

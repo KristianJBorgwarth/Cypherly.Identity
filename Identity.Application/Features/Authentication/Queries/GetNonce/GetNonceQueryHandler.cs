@@ -2,7 +2,6 @@ using Identity.Application.Abstractions;
 using Identity.Application.Caching;
 using Identity.Application.Contracts.Cache;
 using Identity.Application.Contracts.Repository;
-using Identity.Domain.Aggregates;
 using Identity.Domain.Common;
 using Microsoft.Extensions.Logging;
 
@@ -21,7 +20,7 @@ public class GetNonceQueryHandler(
         if (user is null)
         {
             logger.LogWarning("User with ID: {ID} not found.", q.UserId);
-            return Result.Fail<GetNonceDto>(Error.NotFound<User>(q.UserId.ToString()));
+            return Result.Fail<GetNonceDto>(Error.NotFound<Identity.Domain.Aggregates.User>(q.UserId.ToString()));
         }
 
         var device = user.GetDevice(q.DeviceId);

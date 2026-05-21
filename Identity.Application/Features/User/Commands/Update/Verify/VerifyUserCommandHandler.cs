@@ -1,6 +1,5 @@
 using Identity.Application.Abstractions;
 using Identity.Application.Contracts.Repository;
-using Identity.Domain.Aggregates;
 using Identity.Domain.Common;
 using Microsoft.Extensions.Logging;
 
@@ -18,7 +17,7 @@ public class VerifyUserCommandHandler(
         if (user is null)
         {
             logger.LogWarning("User with ID {UserId} not found during verification process", cmd.UserId);
-            return Result.Fail(Error.NotFound<User>(cmd.UserId.ToString()));
+            return Result.Fail(Error.NotFound<Domain.Aggregates.User>(cmd.UserId.ToString()));
         }
 
         var result = user.VerifyAccount(cmd.VerificationCode);

@@ -5,7 +5,6 @@ using Cypherly.Message.Contracts.Responses.Client;
 using Identity.Application.Abstractions;
 using Identity.Application.Contracts.Cache;
 using Identity.Application.Contracts.Repository;
-using Identity.Domain.Aggregates;
 using MassTransit;
 using Microsoft.Extensions.Logging;
 
@@ -26,7 +25,7 @@ public class CreateDeviceCommandHandler(
         if (user is null)
         {
             logger.LogWarning("User {UserId} not found", cmd.UserId);
-            return Result.Fail<CreateDeviceDto>(Error.NotFound<User>(cmd.UserId.ToString()));
+            return Result.Fail<CreateDeviceDto>(Error.NotFound<Identity.Domain.Aggregates.User>(cmd.UserId.ToString()));
         }
 
         var loginNonce = await loginNonceCache.GetNonceAsync(cmd.LoginNonceId, ct);

@@ -1,6 +1,5 @@
 using Identity.Application.Abstractions;
 using Identity.Application.Contracts.Repository;
-using Identity.Domain.Aggregates;
 using Identity.Domain.Common;
 using Identity.Domain.Services.User;
 using Microsoft.Extensions.Logging;
@@ -20,7 +19,7 @@ public class DeleteUserCommandHandler(
         if (user is null)
         {
             logger.LogError("User not found with id {Id} during delete process", cmd.Id);
-            return Result.Fail(Error.NotFound<User>(cmd.Id.ToString()));
+            return Result.Fail(Error.NotFound<Identity.Domain.Aggregates.User>(cmd.Id.ToString()));
         }
 
         if (userLifeCycleServices.IsUserDeleted(user))

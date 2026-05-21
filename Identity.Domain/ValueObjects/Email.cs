@@ -24,7 +24,7 @@ public class Email : ValueObject
         }
         catch
         {
-            return Result.Fail<Email>(Error.Failure("Invalid email address."));
+            return Result.Fail<Email>(Error.Validation("Invalid email address."));
         }
     }
 

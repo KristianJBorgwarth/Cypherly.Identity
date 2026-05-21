@@ -1,6 +1,6 @@
-﻿using Cypherly.Domain.Common;
 using Identity.Application.Abstractions;
 using Identity.Application.Contracts.Repository;
+using Identity.Domain.Aggregates;
 using Identity.Domain.Common;
 using Identity.Domain.Services.User;
 using Microsoft.Extensions.Logging;
@@ -20,7 +20,7 @@ public class LogoutCommandHandler(
         if (user is null)
         {
             logger.LogWarning("User with ID {UserId} not found", cmd.Id);
-            return Result.Fail(Errors.General.NotFound(cmd.Id));
+            return Result.Fail(Error.NotFound<User>(cmd.Id.ToString()));
         }
 
         authenticationService.Logout(user, cmd.DeviceId);

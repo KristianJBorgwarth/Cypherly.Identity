@@ -52,7 +52,7 @@ public class CreateUserCommandHandlerTest : IntegrationTestBase
         // Assert
         result.Success.Should().BeFalse();
         result.Error.Should().NotBeNull();
-        result.Error.Message.Should().Be("An account already exists with that email");
+        result.Error!.Description.Should().Be("An account already exists with that email");
         Db.User.Should().HaveCount(1);
         Db.Device.Should().HaveCount(0);
         Db.OutboxMessage.Should().HaveCount(0);
@@ -75,7 +75,7 @@ public class CreateUserCommandHandlerTest : IntegrationTestBase
         // Assert
         result.Success.Should().BeFalse();
         result.Error.Should().NotBeNull();
-        result.Error.Message.Should().Be("Invalid email address.");
+        result.Error!.Description.Should().Be("Invalid email address.");
         Db.User.Should().HaveCount(0);
         Db.Device.Should().HaveCount(0);
         Db.OutboxMessage.Should().HaveCount(0);

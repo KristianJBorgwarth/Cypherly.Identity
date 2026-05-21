@@ -1,5 +1,3 @@
-﻿using Cypherly.Domain.Common;
-using Identity.Domain.Common;
 using FluentValidation;
 
 namespace Identity.Application.Features.Device.Queries.GetConnectionIdsByUsers;
@@ -9,9 +7,9 @@ public class GetConnectionIdsByUsersQueryValidator : AbstractValidator<GetConnec
     public GetConnectionIdsByUsersQueryValidator()
     {
         RuleFor(x => x.TenantIds).NotEmpty()
-            .WithMessage(Errors.General.ValueIsEmpty(nameof(GetConnectionIdsByUsersQuery.TenantIds)).Message);
+            .WithMessage($"The value cannot be empty: {nameof(GetConnectionIdsByUsersQuery.TenantIds)} ");
 
         RuleForEach(x => x.TenantIds).NotEmpty()
-            .WithMessage(Errors.General.ValueIsEmpty(nameof(Guid)).Message);
+            .WithMessage($"The value cannot be empty: {nameof(Guid)} ");
     }
 }

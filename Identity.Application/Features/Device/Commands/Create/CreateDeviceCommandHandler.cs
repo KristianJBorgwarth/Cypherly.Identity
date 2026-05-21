@@ -1,4 +1,3 @@
-﻿using Cypherly.Domain.Common;
 using Identity.Domain.Common;
 using Identity.Domain.Services.User;
 using Cypherly.Message.Contracts.Messages.Client;
@@ -6,6 +5,7 @@ using Cypherly.Message.Contracts.Responses.Client;
 using Identity.Application.Abstractions;
 using Identity.Application.Contracts.Cache;
 using Identity.Application.Contracts.Repository;
+using Identity.Domain.Aggregates;
 using MassTransit;
 using Microsoft.Extensions.Logging;
 
@@ -26,7 +26,7 @@ public class CreateDeviceCommandHandler(
         if (user is null)
         {
             logger.LogWarning("User {UserId} not found", cmd.UserId);
-            return Result.Fail<CreateDeviceDto>(Errors.General.NotFound(cmd.UserId));
+            return Result.Fail<CreateDeviceDto>(Error.NotFound<User>(cmd.UserId.ToString()));
         }
 
         var loginNonce = await loginNonceCache.GetNonceAsync(cmd.LoginNonceId, ct);
@@ -34,7 +34,7 @@ public class CreateDeviceCommandHandler(
         if (loginNonce is null || loginNonce.NonceValue != cmd.LoginNonce)
         {
             logger.LogWarning("Login nonce {LoginNonceId} not found or invalid for user with ID: {ID}", cmd.LoginNonceId, cmd.UserId);
-            return Result.Fail<CreateDeviceDto>(Errors.General.Unauthorized());
+            return Result.Fail<CreateDeviceDto>(Error.Unauthorized());
         }
 
         var device = deviceService.RegisterDevice(user, cmd.Base64DevicePublicKey, cmd.DeviceAppVersion, cmd.DeviceType, cmd.DevicePlatform);
@@ -64,6 +64,6 @@ public class CreateDeviceCommandHandler(
             return Result.Ok();
 
         logger.LogError("Got a fail response from the Chat server attempting to create a Clients for Device with ID {DeviceId}", deviceId);
-        return Result.Fail(Errors.General.UnspecifiedError("Failed to create profile"));
+        return Result.Fail(Error.Failure("Failed to create profile"));
     }
 }

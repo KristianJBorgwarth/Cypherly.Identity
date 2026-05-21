@@ -1,47 +1,38 @@
-﻿using Cypherly.Domain.Common;
 using Identity.Domain.Common;
-using Identity.Domain.ValueObjects;
 using FluentValidation;
-using FluentValidation.Results;
 using MediatR;
 using Microsoft.Extensions.Logging;
+
+// ReSharper disable InvertIf
 
 namespace Identity.Application.Behavior
 {
     public class ValidationBehavior<TRequest, TResponse>(
-        ILogger<ValidationBehavior<TRequest, TResponse>> logger, 
-        IEnumerable<IValidator<TRequest>> validators)
+        ILogger<ValidationBehavior<TRequest, TResponse>> logger,
+        IValidator<TRequest>? validator = null)
         : IPipelineBehavior<TRequest, TResponse>
         where TRequest : IRequest<TResponse>
         where TResponse : Result
     {
         public async Task<TResponse> Handle(TRequest request, RequestHandlerDelegate<TResponse> next, CancellationToken cancellationToken)
         {
-            var validator = validators.FirstOrDefault();
-            if (validator == null)
-            {
+            if (validator is null)
                 return await next(cancellationToken);
-            }
 
             var validationResult = await validator.ValidateAsync(request, cancellationToken);
 
             if (validationResult.IsValid)
-            {
                 return await next(cancellationToken);
-            }
 
-            var error = GenerateErrorMessage(validationResult);
-            logger.LogWarning("Validation failed for {RequestType} with errors: {Errors}", typeof(TRequest).Name, error);
+            var errorMessage = string.Join("; ", validationResult.Errors.Select(e => $"{e.ErrorMessage} ({e.PropertyName})"));
+
+            logger.LogWarning("Validation failed for {RequestType}: {ErrorMessage}", typeof(TRequest).Name, errorMessage);
+
+            var error = Error.Validation("Validation failed: " + errorMessage);
 
             return typeof(TResponse).IsGenericType && typeof(TResponse).GetGenericTypeDefinition() == typeof(Result<>)
                 ? CreateGenericFailResponse(error)
                 : CreateFailResponse(error);
-        }
-
-        private static Error GenerateErrorMessage(ValidationResult validationResult)
-        {
-            var errorMessage = string.Join("; ", validationResult.Errors.Select(x => x.ErrorMessage));
-            return Errors.General.UnspecifiedError("Validation failed: " + errorMessage);
         }
 
         private static TResponse CreateFailResponse(Error error)

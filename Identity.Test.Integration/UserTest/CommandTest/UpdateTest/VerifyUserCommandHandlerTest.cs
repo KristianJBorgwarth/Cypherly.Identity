@@ -94,7 +94,7 @@ public class VerifyUserCommandHandlerTest : IntegrationTestBase
         // Assert
         result.Should().NotBeNull();
         result.Success.Should().BeFalse();
-        result.Error.Message.Should().Contain("Invalid verification code");
+        result.Error!.Description.Should().Contain("Invalid verification code");
         Db.User.AsNoTracking().FirstOrDefault(u => u.Id == user.Id)!.IsVerified.Should().BeFalse();
     }
 }

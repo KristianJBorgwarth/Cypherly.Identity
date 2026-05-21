@@ -1,5 +1,4 @@
-﻿using AutoFixture;
-using Cypherly.Domain.Common;
+using AutoFixture;
 using Cypherly.Message.Contracts.Messages.Profile;
 using Cypherly.Message.Contracts.Responses.Profile;
 using FakeItEasy;
@@ -32,7 +31,6 @@ public class CreateUserCommandHandlerTests
         _fakeRequestClient = A.Fake<IRequestClient<CreateUserProfileMessage>>();
         var fakeLogger = A.Fake<ILogger<CreateUserCommandHandler>>();
 
-
         _sut = new CreateUserCommandHandler(_fakeRepo, _fakeUserLifeCycleServices, _fakeUnitOfWork, _fakeRequestClient, fakeLogger);
     }
 
@@ -45,7 +43,6 @@ public class CreateUserCommandHandlerTests
             Email = "test@mail.dk",
             Password = "password923K=?",
             Username = "validUsername"
-
         };
 
         var user = new User(Guid.NewGuid(), Email.Create(cmd.Email), Password.Create(cmd.Password), isVerified: false);
@@ -55,7 +52,6 @@ public class CreateUserCommandHandlerTests
         A.CallTo(() => _fakeUnitOfWork.SaveChangesAsync(A<CancellationToken>.Ignored)).DoesNothing();
         A.CallTo(() => _fakeRepo.CreateAsync(A<User>.Ignored, A<CancellationToken>._)).DoesNothing();
 
-        // Fake the MassTransit response
         var responseMessage = _fixture.Build<CreateUserProfileResponse>()
             .With(x => x.IsSuccess, true)
             .Create();
@@ -63,7 +59,6 @@ public class CreateUserCommandHandlerTests
         var fakeMassTransitResponse = A.Fake<Response<CreateUserProfileResponse>>();
         A.CallTo(() => fakeMassTransitResponse.Message).Returns(responseMessage);
 
-        // Simulate the response from requestClient for profile creation
         A.CallTo(() => _fakeRequestClient.GetResponse<CreateUserProfileResponse>(A<CreateUserProfileMessage>.Ignored, A<CancellationToken>.Ignored, A<RequestTimeout>.Ignored))
             .Returns(Task.FromResult(fakeMassTransitResponse));
 
@@ -93,7 +88,6 @@ public class CreateUserCommandHandlerTests
             Username = "validUsername"
         };
 
-
         var existingUser = new User(Guid.NewGuid(), Email.Create(cmd.Email), Password.Create(cmd.Password), isVerified: false);
 
         A.CallTo(() => _fakeRepo.GetSinleAsync(A<UserByEmailSpec>._, A<CancellationToken>._)).Returns(existingUser);
@@ -103,7 +97,7 @@ public class CreateUserCommandHandlerTests
 
         // Assert
         result.Success.Should().BeFalse();
-        result.Error.Message.Should().Be("An account already exists with that email");
+        result.Error!.Description.Should().Be("An account already exists with that email");
 
         A.CallTo(() => _fakeRepo.GetSinleAsync(A<UserByEmailSpec>._, A<CancellationToken>._)).MustHaveHappenedOnceExactly();
         A.CallTo(() => _fakeRepo.CreateAsync(A<User>.Ignored, A<CancellationToken>._)).MustNotHaveHappened();
@@ -123,16 +117,15 @@ public class CreateUserCommandHandlerTests
             Username = "validUsername"
         };
 
-
         A.CallTo(() => _fakeRepo.GetSinleAsync(A<UserByEmailSpec>._, A<CancellationToken>._)).Returns<User>(null);
-        A.CallTo(() => _fakeUserLifeCycleServices.CreateUser(cmd.Email, cmd.Password)).Returns(Result.Fail<User>(Errors.General.UnspecifiedError("error")));
+        A.CallTo(() => _fakeUserLifeCycleServices.CreateUser(cmd.Email, cmd.Password)).Returns(Result.Fail<User>(Error.Failure("error")));
 
         // Act
         var result = await _sut.Handle(cmd, CancellationToken.None);
 
         // Assert
         result.Success.Should().BeFalse();
-        result.Error.Message.Should().Be("error");
+        result.Error!.Description.Should().Be("error");
 
         A.CallTo(() => _fakeRepo.GetSinleAsync(A<UserByEmailSpec>._, A<CancellationToken>._)).MustHaveHappenedOnceExactly();
         A.CallTo(() => _fakeUserLifeCycleServices.CreateUser(A<string>.Ignored, A<string>.Ignored)).MustHaveHappenedOnceExactly();

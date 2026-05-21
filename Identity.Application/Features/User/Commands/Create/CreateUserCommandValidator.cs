@@ -1,5 +1,3 @@
-﻿using Cypherly.Domain.Common;
-using Identity.Domain.Common;
 using FluentValidation;
 
 namespace Identity.Application.Features.User.Commands.Create;
@@ -9,12 +7,12 @@ public class CreateUserCommandValidator : AbstractValidator<CreateUserCommand>
     public CreateUserCommandValidator()
     {
         RuleFor(x => x.Email)
-            .NotEmpty().WithMessage(Errors.General.ValueIsEmpty(nameof(CreateUserCommand.Email)).Message);
+            .NotEmpty().WithMessage($"The value cannot be empty: {nameof(CreateUserCommand.Email)} ");
         RuleFor(x => x.Password)
-            .NotEmpty().WithMessage(Errors.General.ValueIsEmpty(nameof(CreateUserCommand.Password)).Message);
+            .NotEmpty().WithMessage($"The value cannot be empty: {nameof(CreateUserCommand.Password)} ");
         RuleFor(x => x.Username)
-            .NotEmpty().WithMessage(Errors.General.ValueIsEmpty(nameof(CreateUserCommand.Username)).Message)
-            .Must(x => x.Length >= 3).WithMessage(Errors.General.ValueTooSmall(nameof(CreateUserCommand.Username), 3).Message)
-            .Must(x => x.Length <= 20).WithMessage(Errors.General.ValueTooLarge(nameof(CreateUserCommand.Username), 20).Message);
+            .NotEmpty().WithMessage($"The value cannot be empty: {nameof(CreateUserCommand.Username)} ")
+            .Must(x => x.Length >= 3).WithMessage($"Value '{nameof(CreateUserCommand.Username)}' should be at least 3.")
+            .Must(x => x.Length <= 20).WithMessage($"Value '{nameof(CreateUserCommand.Username)}' should not exceed 20.");
     }
 }

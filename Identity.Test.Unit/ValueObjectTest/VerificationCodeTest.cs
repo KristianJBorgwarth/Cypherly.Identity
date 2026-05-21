@@ -53,7 +53,7 @@ public class VerificationCodeTest
 
         // Assert
         result.Success.Should().BeFalse();
-        result.Error.Message.Should().Be("Invalid verification code");
+        result.Error!.Description.Should().Be("Invalid verification code");
     }
 
     [Fact]
@@ -69,7 +69,7 @@ public class VerificationCodeTest
 
         // Assert
         result.Success.Should().BeFalse();
-        result.Error.Message.Should().Be("Verification code has expired");
+        result.Error!.Description.Should().Be("Verification code has expired");
     }
 
     [Fact]
@@ -85,7 +85,7 @@ public class VerificationCodeTest
 
         // Assert
         result.Success.Should().BeFalse();
-        result.Error.Message.Should().Be("Invalid verification code");
+        result.Error!.Description.Should().Be("Invalid verification code");
     }
 
     [Fact]

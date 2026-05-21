@@ -1,7 +1,7 @@
-﻿using Cypherly.Domain.Common;
 using Identity.Application.Abstractions;
 using Identity.Application.Contracts.Repository;
 using Identity.Application.Interfaces;
+using Identity.Domain.Aggregates;
 using Identity.Domain.Common;
 using Identity.Domain.Services.User;
 using Microsoft.Extensions.Logging;
@@ -16,18 +16,17 @@ public class RefreshTokensCommandHandler(
     ILogger<RefreshTokensCommandHandler> logger)
     : ICommandHandler<RefreshTokensCommand, RefreshTokensDto>
 {
-
     public async Task<Result<RefreshTokensDto>> Handle(RefreshTokensCommand cmd, CancellationToken ct)
     {
         var user = await userRepository.GetSinleAsync(new UserWithDeviceAndRefreshTokensSpec(cmd.UserId), ct);
         if (user is null)
         {
             logger.LogCritical("User with {UserId} not found", cmd.UserId);
-            return Result.Fail<RefreshTokensDto>(Errors.General.NotFound(cmd.UserId));
+            return Result.Fail<RefreshTokensDto>(Error.NotFound<User>(cmd.UserId.ToString()));
         }
 
         var isTokenValid = authService.VerifyRefreshToken(user, cmd.DeviceId, cmd.RefreshToken);
-        if (!isTokenValid) return Result.Fail<RefreshTokensDto>(Errors.General.UnspecifiedError("Invalid refresh token"));
+        if (!isTokenValid) return Result.Fail<RefreshTokensDto>(Error.BadRequest("invalid.refresh.token", "Invalid refresh token"));
 
         var refreshToken = authService.GenerateRefreshToken(user, cmd.DeviceId);
 

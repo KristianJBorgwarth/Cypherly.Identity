@@ -88,6 +88,6 @@ public class GetDevicesQueryHandlerTest
 
         // Assert
         result.Success.Should().BeFalse();
-        result.Error.Should().NotBeNull().And.BeEquivalentTo(Errors.General.NotFound(query.UserId));
+        result.Error.Should().NotBeNull().And.BeEquivalentTo(Error.NotFound<User>(query.UserId.ToString()));
     }
 }

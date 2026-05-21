@@ -1,5 +1,4 @@
-using Cypherly.Domain.Common;
-using Identity.Domain.ValueObjects;
+using Identity.Domain.Common;
 
 namespace Identity.Application.Behavior;
 

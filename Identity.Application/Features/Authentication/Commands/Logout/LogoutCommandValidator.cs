@@ -1,4 +1,3 @@
-﻿using Identity.Domain.Common;
 using FluentValidation;
 
 namespace Identity.Application.Features.Authentication.Commands.Logout;
@@ -7,13 +6,12 @@ public class LogoutCommandValidator : AbstractValidator<LogoutCommand>
 {
     public LogoutCommandValidator()
     {
-
         RuleFor(x => x.Id)
             .NotEmpty()
-            .WithMessage(Errors.General.ValueIsEmpty(nameof(LogoutCommand.Id)).Message);
+            .WithMessage($"The value cannot be empty: {nameof(LogoutCommand.Id)} ");
 
         RuleFor(x => x.DeviceId)
             .NotEmpty()
-            .WithMessage(Errors.General.ValueIsEmpty(nameof(LogoutCommand.DeviceId)).Message);
+            .WithMessage($"The value cannot be empty: {nameof(LogoutCommand.DeviceId)} ");
     }
 }

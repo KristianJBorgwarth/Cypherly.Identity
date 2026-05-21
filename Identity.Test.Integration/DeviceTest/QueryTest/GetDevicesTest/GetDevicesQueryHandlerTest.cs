@@ -82,7 +82,7 @@ public class GetDevicesQueryHandlerTest : IntegrationTestBase
 
         // Assert
         result.Success.Should().BeFalse();
-        result.Error.Should().BeEquivalentTo(Errors.General.NotFound(query.UserId));
+        result.Error.Should().BeEquivalentTo(Error.NotFound<User>(query.UserId.ToString()));
     }
 
     [Fact]

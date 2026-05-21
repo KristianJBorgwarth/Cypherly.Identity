@@ -1,6 +1,6 @@
-﻿using Cypherly.Domain.Common;
 using Identity.Application.Abstractions;
 using Identity.Application.Contracts.Repository;
+using Identity.Domain.Aggregates;
 using Identity.Domain.Common;
 using Identity.Domain.Enums;
 using Identity.Domain.Services.User;
@@ -21,13 +21,13 @@ public sealed class ResendVerificationCodeCommandHandler(
         if (user is null)
         {
             logger.LogWarning("User {UserId} not found", cmd.UserId);
-            return Result.Fail(Errors.General.NotFound(cmd.UserId));
+            return Result.Fail(Error.NotFound<User>(cmd.UserId.ToString()));
         }
 
         if (user.IsVerified && cmd.CodeType == UserVerificationCodeType.EmailVerification)
         {
             logger.LogWarning("User {UserId} is already verified", cmd.UserId);
-            return Result.Fail(Errors.General.UnspecifiedError("User is already verified"));
+            return Result.Fail(Error.BadRequest("user.already.verified", "User is already verified"));
         }
 
         verificationCodeService.GenerateVerificationCode(user, cmd.CodeType);

@@ -1,4 +1,4 @@
-﻿using FakeItEasy;
+using FakeItEasy;
 using FluentAssertions;
 using Identity.Application.Contracts.Repository;
 using Identity.Application.Features.Authentication.Commands.Logout;
@@ -37,7 +37,7 @@ public class LogoutCommandHandlerTest
 
         // Assert
         result.Success.Should().BeFalse();
-        result.Error.Should().BeEquivalentTo(Errors.General.NotFound(command.Id));
+        result.Error.Should().BeEquivalentTo(Error.NotFound<User>(command.Id.ToString()));
         A.CallTo(() => _fakeRepo.GetSinleAsync(A<UserWithDeviceAndRefreshTokensSpec>._, A<CancellationToken>._)).MustHaveHappenedOnceExactly();
         A.CallTo(() => _fakeAuthService.Logout(A<User>._, A<Guid>._)).MustNotHaveHappened();
     }

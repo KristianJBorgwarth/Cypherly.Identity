@@ -1,4 +1,4 @@
-﻿using Identity.Application.Caching.LoginNonce;
+using Identity.Application.Caching.LoginNonce;
 using Identity.Application.Contracts.Cache;
 using Identity.Application.Contracts.Repository;
 using Identity.Application.Features.Device.Commands.Create;
@@ -57,7 +57,7 @@ public class CreateDeviceCommandHandlerTest
 
         // Assert
         result.Success.Should().BeFalse();
-        result.Error.Should().BeEquivalentTo(Errors.General.NotFound(request.UserId));
+        result.Error.Should().BeEquivalentTo(Error.NotFound<User>(request.UserId.ToString()));
         A.CallTo(() => _fakeUnitOfWork.SaveChangesAsync(CancellationToken.None)).MustNotHaveHappened();
         A.CallTo(() => _fakeDeviceService.RegisterDevice(A<User>._, A<string>._, A<string>._, A<DeviceType>._, A<DevicePlatform>._)).MustNotHaveHappened();
         A.CallTo(() => _fakeLoginNonceCache.GetNonceAsync(A<Guid>._, CancellationToken.None)).MustNotHaveHappened();
@@ -86,7 +86,7 @@ public class CreateDeviceCommandHandlerTest
 
         // Assert
         result.Success.Should().BeFalse();
-        result.Error.Should().BeEquivalentTo(Errors.General.Unauthorized());
+        result.Error.Should().BeEquivalentTo(Error.Unauthorized());
         A.CallTo(() => _fakeUnitOfWork.SaveChangesAsync(CancellationToken.None)).MustNotHaveHappened();
         A.CallTo(() => _fakeDeviceService.RegisterDevice(A<User>._, A<string>._, A<string>._, A<DeviceType>._, A<DevicePlatform>._)).MustNotHaveHappened();
     }
@@ -114,7 +114,7 @@ public class CreateDeviceCommandHandlerTest
 
         // Assert
         result.Success.Should().BeFalse();
-        result.Error.Should().BeEquivalentTo(Errors.General.Unauthorized());
+        result.Error.Should().BeEquivalentTo(Error.Unauthorized());
         A.CallTo(() => _fakeUnitOfWork.SaveChangesAsync(CancellationToken.None)).MustNotHaveHappened();
         A.CallTo(() => _fakeDeviceService.RegisterDevice(A<User>._, A<string>._, A<string>._, A<DeviceType>._, A<DevicePlatform>._)).MustNotHaveHappened();
     }

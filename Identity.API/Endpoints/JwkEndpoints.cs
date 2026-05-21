@@ -15,7 +15,7 @@ internal sealed class JwksEndpoints : IEndpoint
                 var result = await sender.Send(query);
                 return result.Success
                     ? Results.Ok(result.Value)
-                    : Results.Problem(result.Error.Message);
+                    : Results.Problem(result.Error!.Description);
             })
             .WithName("GetJwks")
             .WithDescription("Retrieves the JSON Web Key Set (JWKS) containing the keys used for token validation.")

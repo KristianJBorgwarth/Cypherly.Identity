@@ -1,8 +1,9 @@
-﻿using Cypherly.Domain.Common;
 using Identity.Application.Abstractions;
+using Identity.Application.Caching;
 using Identity.Application.Contracts.Cache;
 using Identity.Application.Contracts.Repository;
 using Identity.Application.Interfaces;
+using Identity.Domain.Aggregates;
 using Identity.Domain.Common;
 using Identity.Domain.Events.User;
 using Microsoft.Extensions.Logging;
@@ -25,7 +26,7 @@ public class VerifyNonceCommandHandler(
         if (user is null)
         {
             logger.LogWarning("User with ID: {ID} not found.", cmd.UserId);
-            return Result.Fail<VerifyNonceDto>(Errors.General.NotFound(cmd.UserId));
+            return Result.Fail<VerifyNonceDto>(Error.NotFound<User>(cmd.UserId.ToString()));
         }
 
         var nonce = await nonceCacheService.GetNonceAsync(cmd.NonceId, cancellationToken);
@@ -33,7 +34,7 @@ public class VerifyNonceCommandHandler(
         if (nonce is null)
         {
             logger.LogWarning("Nonce with ID: {ID} not found.", cmd.NonceId);
-            return Result.Fail<VerifyNonceDto>(Errors.General.NotFound(cmd.NonceId));
+            return Result.Fail<VerifyNonceDto>(Error.NotFound<Nonce>(cmd.NonceId.ToString()));
         }
 
         var device = user.GetDevice(cmd.DeviceId);
@@ -41,7 +42,7 @@ public class VerifyNonceCommandHandler(
         var isNonceValid = verifyNonceService.VerifyNonce(nonce.NonceValue, cmd.Nonce, device.PublicKey);
 
         if (!isNonceValid)
-            return Result.Fail<VerifyNonceDto>(Errors.General.Unauthorized());
+            return Result.Fail<VerifyNonceDto>(Error.Unauthorized());
 
         var token = await jwtService.GenerateTokenAsync(user.Id, cmd.DeviceId);
         device.AddRefreshToken();

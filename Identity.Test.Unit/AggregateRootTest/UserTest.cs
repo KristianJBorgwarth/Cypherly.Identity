@@ -104,7 +104,7 @@ public class UserTest
 
         // Assert
         result.Success.Should().BeFalse();
-        result.Error.Message.Should().Be("Invalid verification code");
+        result.Error!.Description.Should().Be("Invalid verification code");
     }
 
     [Fact]

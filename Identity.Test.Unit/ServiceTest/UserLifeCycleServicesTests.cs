@@ -23,7 +23,7 @@ namespace Cypherly.Authentication.Test.Unit.ServiceTest
 
             // Assert
             result.Success.Should().BeFalse();
-            result.Error.Message.Should().Be("Invalid email address."); // Adjust based on actual message in Email.Create
+            result.Error!.Description.Should().Be("Invalid email address.");
         }
 
         [Fact]
@@ -38,7 +38,7 @@ namespace Cypherly.Authentication.Test.Unit.ServiceTest
 
             // Assert
             result.Success.Should().BeFalse();
-            result.Error.Message.Should().Contain("Incorrect password:");
+            result.Error!.Description.Should().Contain("Incorrect password:");
         }
 
         [Fact]

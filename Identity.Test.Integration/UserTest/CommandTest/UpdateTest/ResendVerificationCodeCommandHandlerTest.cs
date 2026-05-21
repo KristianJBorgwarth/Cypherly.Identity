@@ -115,6 +115,6 @@ public class ResendVerificationCodeCommandHandlerTest : IntegrationTestBase
 
         // Assert
         result.Success.Should().BeFalse();
-        result.Error.Message.Should().Be("User is already verified");
+        result.Error!.Description.Should().Be("User is already verified");
     }
 }

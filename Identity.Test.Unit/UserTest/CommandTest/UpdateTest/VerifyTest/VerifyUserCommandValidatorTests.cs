@@ -1,6 +1,5 @@
 ﻿using FluentValidation.TestHelper;
 using Identity.Application.Features.User.Commands.Update.Verify;
-using Identity.Domain.Common;
 
 namespace Identity.Test.Unit.UserTest.CommandTest.UpdateTest.VerifyTest
 {
@@ -23,7 +22,7 @@ namespace Identity.Test.Unit.UserTest.CommandTest.UpdateTest.VerifyTest
 
             // Assert
             result.ShouldHaveValidationErrorFor(cmd => cmd.UserId)
-                .WithErrorMessage(Errors.General.ValueIsEmpty(nameof(VerifyUserCommand.UserId)).Message);
+                .WithErrorMessage($"The value cannot be empty: {nameof(VerifyUserCommand.UserId)} ");
         }
 
         [Fact]
@@ -41,7 +40,7 @@ namespace Identity.Test.Unit.UserTest.CommandTest.UpdateTest.VerifyTest
 
             // Assert
             result.ShouldHaveValidationErrorFor(cmd => cmd.VerificationCode)
-                .WithErrorMessage(Errors.General.ValueIsEmpty(nameof(VerifyUserCommand.VerificationCode)).Message);
+                .WithErrorMessage($"The value cannot be empty: {nameof(VerifyUserCommand.VerificationCode)} ");
         }
 
         [Fact]

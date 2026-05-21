@@ -1,7 +1,6 @@
 ﻿using FluentAssertions;
 using FluentValidation.TestHelper;
 using Identity.Application.Features.User.Commands.Create;
-using Identity.Domain.Common;
 
 namespace Identity.Test.Unit.UserTest.CommandTest.CreateTest;
 
@@ -44,7 +43,7 @@ public class CreateUserCommandValidatorTests
 
         // Assert
         result.ShouldHaveValidationErrors();
-        result.Errors[0].ErrorMessage.Should().Be(Errors.General.ValueIsEmpty(nameof(CreateUserCommand.Email)).Message);
+        result.Errors[0].ErrorMessage.Should().Be($"The value cannot be empty: {nameof(CreateUserCommand.Email)} ");
     }
 
     [Fact]
@@ -64,7 +63,7 @@ public class CreateUserCommandValidatorTests
         // Assert
         result.ShouldHaveValidationErrors();
         result.Errors[0].ErrorMessage.Should()
-            .Be(Errors.General.ValueIsEmpty(nameof(CreateUserCommand.Password)).Message);
+            .Be($"The value cannot be empty: {nameof(CreateUserCommand.Password)} ");
     }
 
     [Theory]

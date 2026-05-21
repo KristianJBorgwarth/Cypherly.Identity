@@ -33,7 +33,7 @@ public class PasswordTests
 
         // Assert
         result.Success.Should().BeFalse();
-        result.Error.Message.Should().Be("Incorrect password: Must be between 8 and 36 characters, contain one uppercase letter, one lowercase letter, one special character, and no spaces.");
+        result.Error!.Description.Should().Be("Incorrect password: Must be between 8 and 36 characters, contain one uppercase letter, one lowercase letter, one special character, and no spaces.");
     }
 
     [Theory]

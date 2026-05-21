@@ -50,7 +50,7 @@ public class VerifyNonceCommandHandlerTest : IntegrationTestBase
 
         // Assert
         result.Success.Should().BeFalse();
-        result.Error.Should().BeEquivalentTo(Errors.General.NotFound(cmd.UserId));
+        result.Error.Should().BeEquivalentTo(Error.NotFound<User>(cmd.UserId.ToString()));
     }
 
     [Fact]
@@ -74,7 +74,7 @@ public class VerifyNonceCommandHandlerTest : IntegrationTestBase
 
         // Assert
         result.Success.Should().BeFalse();
-        result.Error.Should().BeEquivalentTo(Errors.General.NotFound(cmd.NonceId));
+        result.Error.Should().BeEquivalentTo(Error.NotFound<Nonce>(cmd.NonceId.ToString()));
     }
 
     [Fact]
@@ -111,7 +111,7 @@ public class VerifyNonceCommandHandlerTest : IntegrationTestBase
 
         // Assert
         result.Success.Should().BeFalse();
-        result.Error.Should().BeEquivalentTo(Errors.General.Unauthorized());
+        result.Error.Should().BeEquivalentTo(Error.Unauthorized());
         Db.RefreshToken.Count().Should().Be(0);
     }
 

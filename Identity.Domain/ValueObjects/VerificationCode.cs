@@ -1,4 +1,4 @@
-﻿using Cypherly.Domain.Common;
+using Cypherly.Domain.Common;
 using Identity.Domain.Common;
 
 namespace Identity.Domain.ValueObjects;
@@ -22,11 +22,11 @@ public class VerificationCode : ValueObject
     public Result Verify(string code)
     {
         if (IsUsed)
-            return Result.Fail(Errors.General.UnspecifiedError("Invalid verification code"));
+            return Result.Fail(Error.BadRequest("verification.code.used", "Invalid verification code"));
         if (DateTime.UtcNow > ExpirationDate)
-            return Result.Fail(Errors.General.UnspecifiedError("Verification code has expired"));
+            return Result.Fail(Error.BadRequest("verification.code.expired", "Verification code has expired"));
         if (Value != code)
-            return Result.Fail(Errors.General.UnspecifiedError("Invalid verification code"));
+            return Result.Fail(Error.BadRequest("verification.code.invalid", "Invalid verification code"));
 
         return Result.Ok();
     }
@@ -44,5 +44,4 @@ public class VerificationCode : ValueObject
     {
         yield return Value;
     }
-
 }

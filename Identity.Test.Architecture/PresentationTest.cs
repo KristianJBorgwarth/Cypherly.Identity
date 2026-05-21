@@ -1,4 +1,4 @@
-﻿using Identity.API.Controllers;
+using Identity.API.Controllers;
 using Identity.Test.Architecture.Helpers;
 using NetArchTest.Rules;
 
@@ -25,8 +25,6 @@ public class PresentationTest
         var result = Types.InAssembly(typeof(UserController).Assembly)
             .That()
             .ResideInNamespace("Identity.API.Controllers")
-            .And()
-            .DoNotHaveNameStartingWith("Base")
             .ShouldNot()
             .HaveDependencyOn("Identity.Domain")
             .GetResult();
@@ -40,29 +38,10 @@ public class PresentationTest
         var result = Types.InAssembly(typeof(UserController).Assembly)
             .That()
             .ResideInNamespace("Identity.API.Controllers")
-            .And()
-            .DoNotHaveNameStartingWith("Base")
             .Should()
             .HaveDependencyOn("Identity.Application")
             .GetResult();
 
         result.ShouldBeSuccessful("API project should reference Application project");
-    }
-
-    [Fact]
-    public void All_Controllers_Should_Inherit_From_BaseController()
-    {
-        var result = Types.InAssembly(typeof(UserController).Assembly)
-            .That()
-            .ResideInNamespace("Identity.API")
-            .And()
-            .HaveNameEndingWith("Controller")
-            .And()
-            .DoNotHaveName("BaseController")
-            .Should()
-            .Inherit(typeof(BaseController))
-            .GetResult();
-
-        result.ShouldBeSuccessful("All controllers should inherit from BaseController");
     }
 }

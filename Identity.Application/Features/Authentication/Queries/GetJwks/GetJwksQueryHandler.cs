@@ -1,4 +1,4 @@
-using Cypherly.Domain.Common;
+using Identity.Domain.Common;
 using Identity.Application.Abstractions;
 using Identity.Application.Interfaces;
 

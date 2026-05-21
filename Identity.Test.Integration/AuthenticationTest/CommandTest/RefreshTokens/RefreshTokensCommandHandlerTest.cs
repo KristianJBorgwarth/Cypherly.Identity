@@ -45,7 +45,7 @@ public class RefreshTokensCommandHandlerTest : IntegrationTestBase
 
         // Assert
         result.Success.Should().BeFalse();
-        result.Error.Message.Should().Match(Errors.General.NotFound(request.UserId).Message);
+        result.Error!.Description.Should().Contain("Could not find User with ID");
     }
 
     [Fact]
@@ -72,7 +72,7 @@ public class RefreshTokensCommandHandlerTest : IntegrationTestBase
 
         // Assert
         result.Success.Should().BeFalse();
-        result.Error.Message.Should().Match(Errors.General.UnspecifiedError("Invalid refresh token").Message);
+        result.Error!.Description.Should().Be("Invalid refresh token");
     }
 
     [Fact]

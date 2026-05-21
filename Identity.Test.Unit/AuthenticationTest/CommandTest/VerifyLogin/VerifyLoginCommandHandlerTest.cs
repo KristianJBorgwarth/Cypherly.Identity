@@ -93,7 +93,7 @@ public class VerifyLoginCommandHandlerTest
 
         // Assert
         result.Success.Should().BeFalse();
-        result.Error.Message.Should().Contain("Invalid verification code");
+        result.Error!.Description.Should().Contain("Invalid verification code");
         A.CallTo(() => _fakeNonceCache.AddNonceAsync(A<LoginNonce>._, A<CancellationToken>._)).MustNotHaveHappened();
     }
 }

@@ -1,5 +1,3 @@
-﻿using Cypherly.Domain.Common;
-using Identity.Domain.Common;
 using FluentValidation;
 
 namespace Identity.Application.Features.Authentication.Commands.VerifyNonce;
@@ -9,13 +7,12 @@ public class VerifyNonceCommandValidator : AbstractValidator<VerifyNonceCommand>
     public VerifyNonceCommandValidator()
     {
         RuleFor(x => x.UserId)
-            .NotEmpty().WithMessage(Errors.General.ValueIsEmpty(nameof(VerifyNonceCommand.UserId)).Message);
+            .NotEmpty().WithMessage($"The value cannot be empty: {nameof(VerifyNonceCommand.UserId)} ");
         RuleFor(x => x.NonceId)
-            .NotEmpty().WithMessage(Errors.General.ValueIsEmpty(nameof(VerifyNonceCommand.NonceId)).Message);
+            .NotEmpty().WithMessage($"The value cannot be empty: {nameof(VerifyNonceCommand.NonceId)} ");
         RuleFor(x => x.DeviceId)
-            .NotEmpty().WithMessage(Errors.General.ValueIsEmpty(nameof(VerifyNonceCommand.DeviceId)).Message);
+            .NotEmpty().WithMessage($"The value cannot be empty: {nameof(VerifyNonceCommand.DeviceId)} ");
         RuleFor(x => x.Nonce)
-            .NotEmpty()
-            .WithMessage(Errors.General.ValueIsEmpty(nameof(VerifyNonceCommand.Nonce)).Message);
+            .NotEmpty().WithMessage($"The value cannot be empty: {nameof(VerifyNonceCommand.Nonce)} ");
     }
 }

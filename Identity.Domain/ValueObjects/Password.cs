@@ -1,4 +1,4 @@
-﻿using System.Text.RegularExpressions;
+using System.Text.RegularExpressions;
 using Cypherly.Domain.Common;
 using Identity.Domain.Common;
 
@@ -15,11 +15,6 @@ namespace Identity.Domain.ValueObjects
             HashedPassword = hashedPassword;
         }
 
-        /// <summary>
-        /// Validates and creates a password
-        /// </summary>
-        /// <param name="plainPassword"></param>
-        /// <returns>Result containing the password, if param is valid</returns>
         public static Result<Password> Create(string plainPassword)
         {
             try
@@ -29,30 +24,15 @@ namespace Identity.Domain.ValueObjects
             }
             catch (Exception ex)
             {
-                return Result.Fail<Password>(Errors.General.UnspecifiedError(ex.Message));
+                return Result.Fail<Password>(Error.Failure(ex.Message));
             }
         }
 
-        /// <summary>
-        /// Compares the plain password to the hashed password
-        /// </summary>
-        /// <param name="plainPassword"></param>
-        /// <returns>Boolean value representing the result of the comparison</returns>
         public bool Verify(string plainPassword)
         {
             return BCrypt.Net.BCrypt.Verify(plainPassword, HashedPassword);
         }
 
-        /// <summary>
-        /// Validates the password format:
-        /// Must be between 8 and 36 characters.
-        /// Must contain at least one uppercase letter
-        /// Must contain at least one lowercase letter
-        /// Must contain at least one special character
-        /// Must not contain any spaces
-        /// </summary>
-        /// <param name="pw">the password being validated</param>
-        /// <returns>boolean value representing the validity of password</returns>
         private static void IsPasswordValidFormat(string pw)
         {
             if (!Regex.IsMatch(pw, @"^(?=.*?[A-Z])(?=.*?[a-z])(?=.*?[0-9])(?=.*?[\W_]).{8,36}$"))

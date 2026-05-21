@@ -63,7 +63,7 @@ public class DeleteUserCommandHandlerTest : IntegrationTestBase
 
         // Assert
         result.Success.Should().BeFalse();
-        result.Error.Message.Should().Contain("Could not find entity with ID");
+        result.Error!.Description.Should().Contain("Could not find User with ID");
     }
 
     [Fact]
@@ -85,6 +85,6 @@ public class DeleteUserCommandHandlerTest : IntegrationTestBase
 
         // Assert
         result.Success.Should().BeFalse();
-        result.Error.Message.Should().Contain("User is already marked as deleted");
+        result.Error!.Description.Should().Contain("User is already marked as deleted");
     }
 }

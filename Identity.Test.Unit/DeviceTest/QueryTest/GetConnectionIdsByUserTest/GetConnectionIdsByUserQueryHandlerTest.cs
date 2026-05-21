@@ -1,4 +1,4 @@
-﻿using FakeItEasy;
+using FakeItEasy;
 using FluentAssertions;
 using Identity.Application.Contracts.Repository;
 using Identity.Application.Features.Device.Queries.GetConnectionIdByUser;
@@ -32,7 +32,7 @@ public class GetConnectionIdsByUserQueryHandlerTest
 
         // Assert
         result.Success.Should().BeFalse();
-        result.Error.Should().BeEquivalentTo(Errors.General.NotFound(query.TenantId));
+        result.Error.Should().BeEquivalentTo(Error.NotFound<User>(query.TenantId.ToString()));
     }
 
     [Fact]
@@ -51,7 +51,7 @@ public class GetConnectionIdsByUserQueryHandlerTest
         result.Success.Should().BeTrue();
         result.Value!.ConnectionIds.Should().Contain(x => x == user.Devices.First().ConnectionId);
     }
-    
+
     [Fact]
     public async Task Handle_When_User_Has_No_Devices_Should_Return_EmptyList()
     {

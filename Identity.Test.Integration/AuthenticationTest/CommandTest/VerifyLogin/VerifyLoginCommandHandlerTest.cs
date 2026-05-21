@@ -85,7 +85,7 @@ public class VerifyLoginCommandHandlerTest : IntegrationTestBase
         // Assert
         result.Success.Should().BeFalse();
         result.Error.Should().NotBeNull();
-        result.Error.Message.Should().Contain("Invalid verification code");
+        result.Error!.Description.Should().Contain("Invalid verification code");
     }
 
     [Fact]
@@ -110,7 +110,7 @@ public class VerifyLoginCommandHandlerTest : IntegrationTestBase
         // Assert
         result.Success.Should().BeFalse();
         result.Error.Should().NotBeNull();
-        result.Error.Message.Should().Contain("Could not find entity with ID");
+        result.Error!.Description.Should().Contain("Could not find User with ID");
     }
 
 }

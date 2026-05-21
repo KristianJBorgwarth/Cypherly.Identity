@@ -1,5 +1,3 @@
-﻿using Cypherly.Domain.Common;
-using Identity.Domain.Common;
 using FluentValidation;
 
 namespace Identity.Application.Features.Authentication.Queries.GetNonce;
@@ -9,9 +7,9 @@ public class GetNonceQueryValidator : AbstractValidator<GetNonceQuery>
     public GetNonceQueryValidator()
     {
         RuleFor(x => x.UserId)
-            .NotEmpty().WithMessage(Errors.General.ValueIsEmpty(nameof(GetNonceQuery.UserId)).Message);
+            .NotEmpty().WithMessage($"The value cannot be empty: {nameof(GetNonceQuery.UserId)} ");
 
         RuleFor(x => x.DeviceId)
-            .NotEmpty().WithMessage(Errors.General.ValueIsEmpty(nameof(GetNonceQuery.DeviceId)).Message);
+            .NotEmpty().WithMessage($"The value cannot be empty: {nameof(GetNonceQuery.DeviceId)} ");
     }
 }

@@ -1,4 +1,3 @@
-﻿using Cypherly.Domain.Common;
 using Identity.Application.Abstractions;
 using Identity.Application.Caching;
 using Identity.Application.Contracts.Cache;
@@ -21,7 +20,7 @@ public class GetNonceQueryHandler(
         if (user is null)
         {
             logger.LogWarning("User with ID: {ID} not found.", q.UserId);
-            return Result.Fail<GetNonceDto>(Errors.General.NotFound(q.UserId));
+            return Result.Fail<GetNonceDto>(Error.NotFound<Identity.Domain.Aggregates.User>(q.UserId.ToString()));
         }
 
         var device = user.GetDevice(q.DeviceId);

@@ -12,16 +12,16 @@ COPY nuget.config .
 RUN --mount=type=secret,id=nuget_token \
     sed -i "s|%NUGET_TOKEN%|$(cat /run/secrets/nuget_token)|g" nuget.config
 
-COPY ["Identity.API/Identity.API.csproj", "Identity.API/"]
-COPY ["Identity.Application/Identity.Application.csproj", "Identity.Application/"]
-COPY ["Identity.Domain/Identity.Domain.csproj", "Identity.Domain/"]
-COPY ["Identity.Infrastructure/Identity.Infrastructure.csproj", "Identity.Infrastructure/"]
+COPY ["src/Identity.API/Identity.API.csproj", "src/Identity.API/"]
+COPY ["src/Identity.Application/Identity.Application.csproj", "src/Identity.Application/"]
+COPY ["src/Identity.Domain/Identity.Domain.csproj", "src/Identity.Domain/"]
+COPY ["src/Identity.Infrastructure/Identity.Infrastructure.csproj", "src/Identity.Infrastructure/"]
 
-RUN dotnet restore "Identity.API/Identity.API.csproj" --configfile nuget.config
+RUN dotnet restore "src/Identity.API/Identity.API.csproj" --configfile nuget.config
 
 COPY . .
 
-WORKDIR "/src/Identity.API"
+WORKDIR "/src/src/Identity.API"
 RUN dotnet build "./Identity.API.csproj" -c $BUILD_CONFIGURATION -o /app/build
 
 FROM build AS publish

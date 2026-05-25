@@ -20,11 +20,11 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Identity.Domain", "Identity
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Identity.Infrastructure", "Identity.Infrastructure\Identity.Infrastructure.csproj", "{E2FBFA6D-D8BB-499D-8496-259A48CF499E}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Identity.Test.Architecture", "Identity.Test.Architecture\Identity.Test.Architecture.csproj", "{061164AC-8BFD-49F1-8F9C-8E0841D309E6}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Identity.Test.Architecture", "Test\Identity.Test.Architecture\Identity.Test.Architecture.csproj", "{061164AC-8BFD-49F1-8F9C-8E0841D309E6}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Identity.Test.Integration", "Identity.Test.Integration\Identity.Test.Integration.csproj", "{E6F78DB7-AF25-4F62-9077-E60765A94023}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Identity.Test.Integration", "Test\Identity.Test.Integration\Identity.Test.Integration.csproj", "{E6F78DB7-AF25-4F62-9077-E60765A94023}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Identity.Test.Unit", "Identity.Test.Unit\Identity.Test.Unit.csproj", "{630EE67B-4D31-4541-B388-05426A6B95CE}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Identity.Test.Unit", "Test\Identity.Test.Unit\Identity.Test.Unit.csproj", "{630EE67B-4D31-4541-B388-05426A6B95CE}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution

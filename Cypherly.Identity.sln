@@ -1,6 +1,6 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 12.00
-Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "SolutionItems", "SolutionItems", "{62C991D6-E923-4451-BC43-A72AD8DDD495}"
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "solutionitems", "solutionitems", "{62C991D6-E923-4451-BC43-A72AD8DDD495}"
 	ProjectSection(SolutionItems) = preProject
 		.gitignore = .gitignore
 		nuget.config = nuget.config
@@ -10,21 +10,21 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "SolutionItems", "SolutionIt
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "src", "src", "{0969E7EE-D0B9-4A6F-94EE-1FB3597A1F2A}"
 EndProject
-Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Test", "Test", "{E793673D-FDAE-475E-9B2A-3D6CCB1ED523}"
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "test", "test", "{E793673D-FDAE-475E-9B2A-3D6CCB1ED523}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Identity.API", "Identity.API\Identity.API.csproj", "{E47955AE-DE3D-4B56-BEC0-60C32BD4E5AB}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Identity.API", "src\Identity.API\Identity.API.csproj", "{E47955AE-DE3D-4B56-BEC0-60C32BD4E5AB}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Identity.Application", "Identity.Application\Identity.Application.csproj", "{8BA752D9-2666-48BB-8B6D-E0E59829B458}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Identity.Application", "src\Identity.Application\Identity.Application.csproj", "{8BA752D9-2666-48BB-8B6D-E0E59829B458}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Identity.Domain", "Identity.Domain\Identity.Domain.csproj", "{5FCF7174-0181-43D1-B83F-F8DC6EDBB330}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Identity.Domain", "src\Identity.Domain\Identity.Domain.csproj", "{5FCF7174-0181-43D1-B83F-F8DC6EDBB330}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Identity.Infrastructure", "Identity.Infrastructure\Identity.Infrastructure.csproj", "{E2FBFA6D-D8BB-499D-8496-259A48CF499E}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Identity.Infrastructure", "src\Identity.Infrastructure\Identity.Infrastructure.csproj", "{E2FBFA6D-D8BB-499D-8496-259A48CF499E}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Identity.Test.Architecture", "Test\Identity.Test.Architecture\Identity.Test.Architecture.csproj", "{061164AC-8BFD-49F1-8F9C-8E0841D309E6}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Identity.Test.Architecture", "test\Identity.Test.Architecture\Identity.Test.Architecture.csproj", "{061164AC-8BFD-49F1-8F9C-8E0841D309E6}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Identity.Test.Integration", "Test\Identity.Test.Integration\Identity.Test.Integration.csproj", "{E6F78DB7-AF25-4F62-9077-E60765A94023}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Identity.Test.Integration", "test\Identity.Test.Integration\Identity.Test.Integration.csproj", "{E6F78DB7-AF25-4F62-9077-E60765A94023}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Identity.Test.Unit", "Test\Identity.Test.Unit\Identity.Test.Unit.csproj", "{630EE67B-4D31-4541-B388-05426A6B95CE}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Identity.Test.Unit", "test\Identity.Test.Unit\Identity.Test.Unit.csproj", "{630EE67B-4D31-4541-B388-05426A6B95CE}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution

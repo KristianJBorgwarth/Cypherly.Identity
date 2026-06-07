@@ -24,4 +24,6 @@ public class Error : ValueObject
     {
         return HashCode.Combine(Code);
     }
+
+    public override string ToString() => $"[{Code}] {Message}";
 }

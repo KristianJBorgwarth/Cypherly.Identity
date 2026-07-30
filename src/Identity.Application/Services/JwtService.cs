@@ -1,8 +1,10 @@
 using System.Security.Claims;
-using Identity.Application.Contracts.Security;
+using System.Security.Cryptography;
+using Identity.Application.Contracts.Repository;
 using Identity.Application.Dtos;
 using Identity.Application.Interfaces;
 using Identity.Application.Settings;
+using Identity.Domain.Aggregates;
 using Microsoft.Extensions.Options;
 using Microsoft.IdentityModel.JsonWebTokens;
 using Microsoft.IdentityModel.Tokens;
@@ -10,13 +12,15 @@ using Microsoft.IdentityModel.Tokens;
 namespace Identity.Application.Services;
 
 internal class JwtService(
-    ISigningKeyProvider signingKeyProvider,
+    ISigningKeyRepository signingKeyRepository,
+    TimeProvider timeProvider,
     IOptions<JwtSettings> jwtSettings)
     : IJwtService
 {
     public async Task<string> GenerateTokenAsync(Guid userId, Guid deviceId, CancellationToken ct = default)
     {
-        var signingKey = await signingKeyProvider.GetCurrentAsync(ct);
+        var now = timeProvider.GetUtcNow().UtcDateTime;
+        var signingKey = await GetCurrentKeyAsync(now, ct);
 
         var claims = new List<Claim>
         {
@@ -25,14 +29,12 @@ internal class JwtService(
             new("jti", Guid.NewGuid().ToString()),
         };
 
-        // The key carries its own algorithm, and its kid goes into the header so
-        // validators know which JWKS entry to verify against.
-        var creds = new SigningCredentials(signingKey.Key, signingKey.Alg);
+        var creds = new SigningCredentials(ToSecurityKey(signingKey), signingKey.Alg);
 
         var tokenDescriptor = new SecurityTokenDescriptor
         {
             Subject = new(claims),
-            Expires = DateTime.UtcNow.AddMinutes(jwtSettings.Value.TokenLifeTimeInMinutes),
+            Expires = now.AddMinutes(jwtSettings.Value.TokenLifeTimeInMinutes),
             SigningCredentials = creds,
             Issuer = jwtSettings.Value.Issuer,
             Audience = jwtSettings.Value.Audience,
@@ -44,6 +46,36 @@ internal class JwtService(
         return token;
     }
 
-    public Task<IReadOnlyList<JwksDto>> GenerateJwks(CancellationToken ct = default)
-        => signingKeyProvider.GetPublishedAsync(ct);
+    public async Task<IReadOnlyList<JwksDto>> GenerateJwks(CancellationToken ct = default)
+    {
+        var keys = await signingKeyRepository.GetPublishedAsync(timeProvider.GetUtcNow().UtcDateTime, ct);
+
+        return [.. keys
+            .Select(k => new JwksDto
+            {
+                Kid = k.Kid,
+                N = k.N,
+                E = k.E,
+                Kty = k.Kty,
+                Use = k.Use,
+                Alg = k.Alg,
+            })];
+    }
+
+    private async Task<SigningKey> GetCurrentKeyAsync(DateTime now, CancellationToken ct)
+    {
+        var keys = await signingKeyRepository.GetPublishedAsync(now, ct);
+
+        return keys.SingleOrDefault(k => k.IsCurrent)
+               ?? throw new InvalidOperationException(
+                   "No current signing key exists. The rotation job creates one on startup.");
+    }
+
+    private static RsaSecurityKey ToSecurityKey(SigningKey key)
+    {
+        using var rsa = RSA.Create();
+        rsa.ImportPkcs8PrivateKey(key.PrivateKey, out _);
+
+        return new RsaSecurityKey(rsa.ExportParameters(true)) { KeyId = key.Kid };
+    }
 }

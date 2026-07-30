@@ -8,15 +8,6 @@ using Quartz;
 
 namespace Identity.Infrastructure.Jobs;
 
-/// <summary>
-/// Creates the first signing key, replaces it once it reaches its rotation interval, and
-/// deletes retired keys once no token they signed can still be valid.
-/// <para>
-/// Safe to run on every replica: the persistent job store enforces
-/// <see cref="DisallowConcurrentExecutionAttribute"/> across the cluster, and the partial
-/// unique index on is_current is the backstop if scheduling ever fails to.
-/// </para>
-/// </summary>
 [DisallowConcurrentExecution]
 internal sealed class RotateSigningKeysJob(
     ISigningKeyRepository signingKeyRepository,
@@ -64,7 +55,6 @@ internal sealed class RotateSigningKeysJob(
                     "Purged signing key {Kid}, which left the JWKS at {ExpiresAt:o}.", purgeable.Kid, purgeable.ExpiresAt);
             }
 
-            // One SaveChanges, so retiring the old key and inserting its replacement commit together.
             await unitOfWork.SaveChangesAsync(ct);
         }
         catch (Exception ex)

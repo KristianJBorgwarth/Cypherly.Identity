@@ -14,7 +14,6 @@ internal static class JobExtensions
     {
         services.AddQuartz(configure =>
         {
-            // Each replica needs a distinct instance id, or clustering cannot tell the nodes apart.
             configure.SchedulerId = "AUTO";
 
             var outboxJobKey = new JobKey($"{nameof(ProcessOutboxMessageJob)}-{assembly.GetName()}");
@@ -38,7 +37,6 @@ internal static class JobExtensions
                         ?? throw new InvalidOperationException($"Missing {ConnectionStringName} connection string.");
                 });
 
-                // Quartz only ships a binary serializer, and BinaryFormatter is gone on .NET 9+.
                 store.UseSystemTextJsonSerializer();
                 store.UseClustering();
             });

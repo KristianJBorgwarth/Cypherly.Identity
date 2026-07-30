@@ -16,10 +16,4 @@ public sealed class SigningKeySettings
     /// cannot recover by refetching, because the key is gone rather than merely unknown.
     /// </summary>
     public TimeSpan RetirementGracePeriod { get; set; } = TimeSpan.FromMinutes(20);
-
-    /// <summary>
-    /// How long the in-process key snapshot is served before re-reading the database.
-    /// Not related to how long other services cache the JWKS.
-    /// </summary>
-    public TimeSpan CacheTtl { get; set; } = TimeSpan.FromSeconds(30);
 }

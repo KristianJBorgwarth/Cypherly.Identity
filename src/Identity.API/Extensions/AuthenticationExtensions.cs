@@ -18,8 +18,8 @@ internal static class AuthenticationExtensions
                 options.Authority = jwtSettings.Issuer;
                 options.Audience = jwtSettings.Audience;
 
-                // Default is 12 hours, which is far longer than a rotation can wait for.
-                options.AutomaticRefreshInterval = TimeSpan.FromMinutes(10);
+                // Default is 12 hours. Must stay under the key rotation interval.
+                options.AutomaticRefreshInterval = TimeSpan.FromMinutes(2);
 
                 // Floor on how often an unknown kid can force an early metadata refetch.
                 options.RefreshInterval = TimeSpan.FromMinutes(1);
@@ -32,6 +32,9 @@ internal static class AuthenticationExtensions
                     ValidateIssuerSigningKey = true,
                     ValidIssuer = jwtSettings.Issuer,
                     ValidAudience = jwtSettings.Audience,
+
+                    // Defaults to 5 minutes, which the retirement grace period has to cover.
+                    ClockSkew = TimeSpan.FromMinutes(1),
                 };
             });
 

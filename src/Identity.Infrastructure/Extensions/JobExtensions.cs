@@ -28,7 +28,7 @@ internal static class JobExtensions
             configure.AddJob<RotateSigningKeysJob>(rotationJobKey)
                 .AddTrigger(trigger => trigger.ForJob(rotationJobKey)
                     .StartNow()
-                    .WithSimpleSchedule(schedule => schedule.WithIntervalInMinutes(5).RepeatForever()));
+                    .WithSimpleSchedule(schedule => schedule.WithIntervalInMinutes(1).RepeatForever()));
 
             configure.UsePersistentStore(store =>
             {

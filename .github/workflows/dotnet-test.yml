@@ -20,7 +20,7 @@ jobs:
 
       - name: nuget.config token
         run: |
-          sed -i "s|%NUGET_TOKEN%|${{ github.token }}|g" nuget.config
+          sed -i "s|%NUGET_TOKEN%|${{ secrets.NUGET_TOKEN }}|g" nuget.config
 
       - run: dotnet restore
       - run: dotnet build --no-restore

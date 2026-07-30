@@ -16,6 +16,7 @@ using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.DependencyInjection.Extensions;
 using Microsoft.Extensions.Options;
+using Quartz;
 using Testcontainers.PostgreSql;
 
 // ReSharper disable ClassNeverInstantiated.Global
@@ -58,6 +59,15 @@ public class IntegrationTestFactory<TProgram, TDbContext> : WebApplicationFactor
                 options.UseNpgsql(_dbContainer.GetConnectionString(),
                     b => b.MigrationsAssembly(typeof(TDbContext).Assembly.FullName));
             });
+
+            #endregion
+
+            #region Quartz Extensions
+
+            // Quartz's persistent store reads its connection string from configuration, where
+            // appsettings.json leaves an empty placeholder for the deployment to fill in.
+            services.Configure<QuartzOptions>(options =>
+                options["quartz.dataSource.default.connectionString"] = _dbContainer.GetConnectionString());
 
             #endregion
 
@@ -136,6 +146,17 @@ public class IntegrationTestFactory<TProgram, TDbContext> : WebApplicationFactor
     {
         await _dbContainer.StartAsync();
         await _valkeyContainer.StartAsync();
+
+        // Quartz validates its schema the moment the host starts, so the qrtz_ tables have to be
+        // in place before the first test resolves the factory's services. They only exist in a
+        // migration - EnsureCreated builds from the model and would skip them.
+        var options = new DbContextOptionsBuilder<TDbContext>()
+            .UseNpgsql(_dbContainer.GetConnectionString(),
+                b => b.MigrationsAssembly(typeof(TDbContext).Assembly.FullName))
+            .Options;
+
+        await using var context = (TDbContext)Activator.CreateInstance(typeof(TDbContext), options)!;
+        await context.Database.MigrateAsync();
     }
 
     public new async Task DisposeAsync()

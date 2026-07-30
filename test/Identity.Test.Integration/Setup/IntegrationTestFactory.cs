@@ -45,7 +45,6 @@ public class IntegrationTestFactory<TProgram, TDbContext> : WebApplicationFactor
 
         builder.ConfigureServices(services =>
         {
-            #region Database Extensions
             var descriptor = services.SingleOrDefault(
                 d => d.ServiceType == typeof(DbContextOptions<TDbContext>));
 
@@ -60,18 +59,10 @@ public class IntegrationTestFactory<TProgram, TDbContext> : WebApplicationFactor
                     b => b.MigrationsAssembly(typeof(TDbContext).Assembly.FullName));
             });
 
-            #endregion
-
-            #region Quartz Extensions
-
-            // Quartz's persistent store reads its connection string from configuration, where
-            // appsettings.json leaves an empty placeholder for the deployment to fill in.
             services.Configure<QuartzOptions>(options =>
                 options["quartz.dataSource.default.connectionString"] = _dbContainer.GetConnectionString());
 
-            #endregion
 
-            #region Auth Extensions
             // Mock out authentication and authorization for testing
             services.AddAuthentication("Test")
                 .AddScheme<AuthenticationSchemeOptions, TestAuthHandler>("Test", options => { });
@@ -80,9 +71,6 @@ public class IntegrationTestFactory<TProgram, TDbContext> : WebApplicationFactor
                 .AddPolicy("AdminOnly", policy => policy.RequireAssertion(_ => true))
                 .AddPolicy("User", policy => policy.RequireAssertion(_ => true));
 
-            #endregion
-
-            #region RabbitMq Extensions
 
             var rmgDescriptor = services.SingleOrDefault(d => d.ServiceType == typeof(IBusControl));
 
@@ -108,10 +96,6 @@ public class IntegrationTestFactory<TProgram, TDbContext> : WebApplicationFactor
                 });
             });
 
-            #endregion
-
-            #region Jwt Extensions
-
             services.RemoveAll(typeof(IConfigureOptions<JwtSettings>));
 
             var inMemorySettings = new Dictionary<string, string>()
@@ -128,17 +112,12 @@ public class IntegrationTestFactory<TProgram, TDbContext> : WebApplicationFactor
 
             services.Configure<JwtSettings>(configuration.GetSection("Jwt"));
 
-            #endregion
-
-            #region Valkey Extensions
 
             services.Configure<ValkeySettings>(options =>
             {
                 options.Host = "localhost";  // The test container's host
                 options.Port = 6974;        // The mapped port for the Redis container
             });
-
-            #endregion
         });
     }
 

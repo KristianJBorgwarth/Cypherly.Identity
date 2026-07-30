@@ -1,5 +1,6 @@
-﻿using System.Reflection;
+using System.Reflection;
 using Identity.Infrastructure.Jobs;
+using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Quartz;
 
@@ -7,15 +8,40 @@ namespace Identity.Infrastructure.Extensions;
 
 internal static class JobExtensions
 {
-    internal static void AddOutboxProcessingJob(this IServiceCollection services, Assembly assembly)
+    private const string ConnectionStringName = "IdentityDbConnectionString";
+
+    internal static void AddJobs(this IServiceCollection services, IConfiguration configuration, Assembly assembly)
     {
         services.AddQuartz(configure =>
         {
-            var jobKey = new JobKey($"{nameof(ProcessOutboxMessageJob)}-{assembly.GetName()}");
-            
-            configure.AddJob<ProcessOutboxMessageJob>(jobKey)
-                .AddTrigger(trigger => trigger.ForJob(jobKey)
+            // Each replica needs a distinct instance id, or clustering cannot tell the nodes apart.
+            configure.SchedulerId = "AUTO";
+
+            var outboxJobKey = new JobKey($"{nameof(ProcessOutboxMessageJob)}-{assembly.GetName()}");
+
+            configure.AddJob<ProcessOutboxMessageJob>(outboxJobKey)
+                .AddTrigger(trigger => trigger.ForJob(outboxJobKey)
                     .WithSimpleSchedule(schedule => schedule.WithIntervalInSeconds(10).RepeatForever()));
+
+            var rotationJobKey = new JobKey($"{nameof(RotateSigningKeysJob)}-{assembly.GetName()}");
+
+            configure.AddJob<RotateSigningKeysJob>(rotationJobKey)
+                .AddTrigger(trigger => trigger.ForJob(rotationJobKey)
+                    .StartNow()
+                    .WithSimpleSchedule(schedule => schedule.WithIntervalInMinutes(5).RepeatForever()));
+
+            configure.UsePersistentStore(store =>
+            {
+                store.UsePostgres(options =>
+                {
+                    options.ConnectionString = configuration.GetConnectionString(ConnectionStringName)
+                        ?? throw new InvalidOperationException($"Missing {ConnectionStringName} connection string.");
+                });
+
+                // Quartz only ships a binary serializer, and BinaryFormatter is gone on .NET 9+.
+                store.UseSystemTextJsonSerializer();
+                store.UseClustering();
+            });
         });
 
         services.AddQuartzHostedService();

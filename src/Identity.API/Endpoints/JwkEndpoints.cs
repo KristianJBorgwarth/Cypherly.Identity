@@ -9,13 +9,18 @@ internal sealed class JwksEndpoints : IEndpoint
         var group = routeBuilder.MapGroup("/.well-known")
             .WithTags("JWKS");
 
-        group.MapGet("/jwks.json", async (ISender sender) =>
+        group.MapGet("/jwks.json", async (ISender sender, HttpContext http) =>
             {
                 var query = new GetJwksQuery();
                 var result = await sender.Send(query);
-                return result.Success
-                    ? Results.Ok(result.Value)
-                    : Results.Problem(result.Error.Message);
+
+                if (result.Success is false) return Results.Problem(result.Error.Message);
+
+                // Bounds how stale a consumer's cached key set can be, rather than
+                // leaving it to whatever proxies decide on their own.
+                http.Response.Headers.CacheControl = "public, max-age=300";
+
+                return Results.Ok(result.Value);
             })
             .WithName("GetJwks")
             .WithDescription("Retrieves the JSON Web Key Set (JWKS) containing the keys used for token validation.")

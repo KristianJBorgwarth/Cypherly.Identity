@@ -17,6 +17,13 @@ internal static class AuthenticationExtensions
                 options.RequireHttpsMetadata = false;
                 options.Authority = jwtSettings.Issuer;
                 options.Audience = jwtSettings.Audience;
+
+                // Default is 12 hours, which is far longer than a rotation can wait for.
+                options.AutomaticRefreshInterval = TimeSpan.FromMinutes(10);
+
+                // Floor on how often an unknown kid can force an early metadata refetch.
+                options.RefreshInterval = TimeSpan.FromMinutes(1);
+                options.RefreshOnIssuerKeyNotFound = true;
                 options.TokenValidationParameters = new TokenValidationParameters
                 {
                     ValidateIssuer = true,

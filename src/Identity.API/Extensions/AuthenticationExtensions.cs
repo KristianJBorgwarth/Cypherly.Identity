@@ -18,10 +18,8 @@ internal static class AuthenticationExtensions
                 options.Authority = jwtSettings.Issuer;
                 options.Audience = jwtSettings.Audience;
 
-                // Default is 12 hours. Must stay under the key rotation interval.
-                options.AutomaticRefreshInterval = TimeSpan.FromMinutes(2);
+                options.AutomaticRefreshInterval = TimeSpan.FromMinutes(5);
 
-                // Floor on how often an unknown kid can force an early metadata refetch.
                 options.RefreshInterval = TimeSpan.FromMinutes(1);
                 options.RefreshOnIssuerKeyNotFound = true;
                 options.TokenValidationParameters = new TokenValidationParameters

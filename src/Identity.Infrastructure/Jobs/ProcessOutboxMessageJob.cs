@@ -17,10 +17,6 @@ public class ProcessOutboxMessageJob(
     IUnitOfWork unitOfWork)
     : IJob
 {
-    /// <summary>
-    /// Processes outbox messages by deserializing them and publishing them to a relevant handler through the mediator.
-    /// </summary>
-    /// <param name="context"></param>
     public async Task Execute(IJobExecutionContext context)
     {
         try
@@ -45,11 +41,6 @@ public class ProcessOutboxMessageJob(
         }
     }
 
-    /// <summary>
-    /// Deserializes an outbox message into a domain event.
-    /// </summary>
-    /// <param name="outboxMessage">OutboxMessage to be deserialized</param>
-    /// <returns>IDomainEvent Representing the deserialized <see cref="OutboxMessage"/></returns>
     private IDomainEvent? DeserializeDomainEvent(OutboxMessage outboxMessage)
     {
         var eventType = Type.GetType(outboxMessage.Type);

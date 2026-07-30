@@ -29,8 +29,6 @@ internal class JwtService(
             new("jti", Guid.NewGuid().ToString()),
         };
 
-        // The key carries its own algorithm, and its kid goes into the header so
-        // validators know which JWKS entry to verify against.
         var creds = new SigningCredentials(ToSecurityKey(signingKey), signingKey.Alg);
 
         var tokenDescriptor = new SecurityTokenDescriptor
@@ -52,7 +50,7 @@ internal class JwtService(
     {
         var keys = await signingKeyRepository.GetPublishedAsync(timeProvider.GetUtcNow().UtcDateTime, ct);
 
-        return keys
+        return [.. keys
             .Select(k => new JwksDto
             {
                 Kid = k.Kid,
@@ -61,15 +59,9 @@ internal class JwtService(
                 Kty = k.Kty,
                 Use = k.Use,
                 Alg = k.Alg,
-            })
-            .ToList();
+            })];
     }
 
-    /// <summary>
-    /// Reads through the published set rather than <see cref="ISigningKeyRepository.GetCurrentAsync"/>,
-    /// which returns a tracked entity for the rotation job's benefit. Nothing here mutates the key,
-    /// and private key material has no business in the request's change tracker.
-    /// </summary>
     private async Task<SigningKey> GetCurrentKeyAsync(DateTime now, CancellationToken ct)
     {
         var keys = await signingKeyRepository.GetPublishedAsync(now, ct);
@@ -84,7 +76,6 @@ internal class JwtService(
         using var rsa = RSA.Create();
         rsa.ImportPkcs8PrivateKey(key.PrivateKey, out _);
 
-        // Copy the parameters out so the returned key holds no undisposed RSA handle.
         return new RsaSecurityKey(rsa.ExportParameters(true)) { KeyId = key.Kid };
     }
 }

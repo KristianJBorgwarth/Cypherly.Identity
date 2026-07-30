@@ -16,8 +16,6 @@ internal sealed class JwksEndpoints : IEndpoint
 
                 if (result.Success is false) return Results.Problem(result.Error.Message);
 
-                // Bounds how stale a consumer's cached key set can be, rather than
-                // leaving it to whatever proxies decide on their own.
                 http.Response.Headers.CacheControl = "public, max-age=300";
 
                 return Results.Ok(result.Value);

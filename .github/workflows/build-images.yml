@@ -24,7 +24,7 @@ jobs:
           password: ${{ secrets.DOCKER_PASSWORD }}
 
       - name: Create NuGet token file
-        run: echo "${{ github.token }}" > nuget_token.txt
+        run: echo "${{ secrets.NUGET_TOKEN }}" > nuget_token.txt
       
       - name: Build and Push Docker Image for Cypherly.Identity.API
         run: |

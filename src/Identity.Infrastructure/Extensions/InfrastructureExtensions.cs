@@ -1,5 +1,4 @@
 using System.Reflection;
-using Identity.Application.Contracts.Security;
 using Identity.Infrastructure.Caching;
 using Identity.Infrastructure.Interfaces;
 using Identity.Infrastructure.Services;
@@ -32,8 +31,5 @@ public static class InfrastructureExtensions
     {
         services.AddSingleton(TimeProvider.System);
         services.AddSingleton<IRsaKeyGenerator, RsaKeyGenerator>();
-
-        // Singleton: it holds the signing key snapshot for the life of the process.
-        services.AddSingleton<ISigningKeyProvider, SigningKeyStore>();
     }
 }

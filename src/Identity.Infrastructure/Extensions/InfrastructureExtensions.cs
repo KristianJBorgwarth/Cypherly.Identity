@@ -1,4 +1,6 @@
-﻿using System.Reflection;
+using System.Reflection;
+using Identity.Application.Contracts.Security;
+using Identity.Infrastructure.Caching;
 using Identity.Infrastructure.Interfaces;
 using Identity.Infrastructure.Services;
 using Identity.Infrastructure.Settings;
@@ -11,7 +13,7 @@ public static class InfrastructureExtensions
 {
     public static void AddInfrastructure(this IServiceCollection services, IConfiguration configuration, Assembly assembly)
     {
-        services.AddOutboxProcessingJob(assembly);
+        services.AddJobs(configuration, assembly);
         services.ConfigureSettings(configuration);
         services.AddIdentityPersistence(configuration, assembly);
         services.AddMassTransitRabbitMq();
@@ -23,10 +25,15 @@ public static class InfrastructureExtensions
     {
         services.Configure<ValkeySettings>(configuration.GetSection("Valkey"));
         services.Configure<RabbitMqSettings>(configuration.GetSection("RabbitMq"));
+        services.Configure<SigningKeySettings>(configuration.GetSection("SigningKeys"));
     }
 
     private static void AddServices(this IServiceCollection services)
     {
+        services.AddSingleton(TimeProvider.System);
         services.AddSingleton<IRsaKeyGenerator, RsaKeyGenerator>();
+
+        // Singleton: it holds the signing key snapshot for the life of the process.
+        services.AddSingleton<ISigningKeyProvider, SigningKeyStore>();
     }
 }

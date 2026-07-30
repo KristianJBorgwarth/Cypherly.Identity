@@ -16,6 +16,7 @@ using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.DependencyInjection.Extensions;
 using Microsoft.Extensions.Options;
+using Quartz;
 using Testcontainers.PostgreSql;
 
 // ReSharper disable ClassNeverInstantiated.Global
@@ -44,7 +45,6 @@ public class IntegrationTestFactory<TProgram, TDbContext> : WebApplicationFactor
 
         builder.ConfigureServices(services =>
         {
-            #region Database Extensions
             var descriptor = services.SingleOrDefault(
                 d => d.ServiceType == typeof(DbContextOptions<TDbContext>));
 
@@ -59,9 +59,10 @@ public class IntegrationTestFactory<TProgram, TDbContext> : WebApplicationFactor
                     b => b.MigrationsAssembly(typeof(TDbContext).Assembly.FullName));
             });
 
-            #endregion
+            services.Configure<QuartzOptions>(options =>
+                options["quartz.dataSource.default.connectionString"] = _dbContainer.GetConnectionString());
 
-            #region Auth Extensions
+
             // Mock out authentication and authorization for testing
             services.AddAuthentication("Test")
                 .AddScheme<AuthenticationSchemeOptions, TestAuthHandler>("Test", options => { });
@@ -70,9 +71,6 @@ public class IntegrationTestFactory<TProgram, TDbContext> : WebApplicationFactor
                 .AddPolicy("AdminOnly", policy => policy.RequireAssertion(_ => true))
                 .AddPolicy("User", policy => policy.RequireAssertion(_ => true));
 
-            #endregion
-
-            #region RabbitMq Extensions
 
             var rmgDescriptor = services.SingleOrDefault(d => d.ServiceType == typeof(IBusControl));
 
@@ -98,10 +96,6 @@ public class IntegrationTestFactory<TProgram, TDbContext> : WebApplicationFactor
                 });
             });
 
-            #endregion
-
-            #region Jwt Extensions
-
             services.RemoveAll(typeof(IConfigureOptions<JwtSettings>));
 
             var inMemorySettings = new Dictionary<string, string>()
@@ -118,17 +112,12 @@ public class IntegrationTestFactory<TProgram, TDbContext> : WebApplicationFactor
 
             services.Configure<JwtSettings>(configuration.GetSection("Jwt"));
 
-            #endregion
-
-            #region Valkey Extensions
 
             services.Configure<ValkeySettings>(options =>
             {
                 options.Host = "localhost";  // The test container's host
                 options.Port = 6974;        // The mapped port for the Redis container
             });
-
-            #endregion
         });
     }
 
@@ -136,6 +125,17 @@ public class IntegrationTestFactory<TProgram, TDbContext> : WebApplicationFactor
     {
         await _dbContainer.StartAsync();
         await _valkeyContainer.StartAsync();
+
+        // Quartz validates its schema the moment the host starts, so the qrtz_ tables have to be
+        // in place before the first test resolves the factory's services. They only exist in a
+        // migration - EnsureCreated builds from the model and would skip them.
+        var options = new DbContextOptionsBuilder<TDbContext>()
+            .UseNpgsql(_dbContainer.GetConnectionString(),
+                b => b.MigrationsAssembly(typeof(TDbContext).Assembly.FullName))
+            .Options;
+
+        await using var context = (TDbContext)Activator.CreateInstance(typeof(TDbContext), options)!;
+        await context.Database.MigrateAsync();
     }
 
     public new async Task DisposeAsync()

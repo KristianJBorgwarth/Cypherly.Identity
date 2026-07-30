@@ -30,6 +30,5 @@ internal static class CachingExtensions
         services.AddSingleton<IValkeyCacheService, ValkeyCacheService>();
         services.AddScoped<INonceCacheService, NonceCacheService>();
         services.AddScoped<ILoginNonceCache, LoginNonceCache>();
-        services.AddScoped<IJwkCache, JwkCache>();
     }
 }

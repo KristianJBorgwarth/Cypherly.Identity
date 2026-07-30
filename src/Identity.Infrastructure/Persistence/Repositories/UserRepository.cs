@@ -19,11 +19,6 @@ public class UserRepository(IdentityDbContext context) : IUserRepository
         return await context.User.Include(u => u.Devices).Where(u => ids.Contains(u.Id)).ToListAsync(ct);
     }
 
-    public Task DeleteAsync(User entity, CancellationToken ct = default)
-    {
-        throw new NotImplementedException();
-    }
-
     public async Task<User?> GetByIdAsync(Guid id, CancellationToken ct = default)
     {
         return await context.User.FindAsync([id], ct);
@@ -61,5 +56,10 @@ public class UserRepository(IdentityDbContext context) : IUserRepository
         q = spec.Includes.Aggregate(q, (current, include) => current.Include(include));
 
         return q.ToListAsync(ct);
+    }
+
+    public void Delete(User entity)
+    {
+        throw new NotImplementedException();
     }
 }

@@ -48,6 +48,8 @@ public class CreateDeviceCommandHandler(
 
         var dto = CreateDeviceDto.Map(device);
 
+        await loginNonceCache.DeteleNonceAsync(cmd.LoginNonceId, ct);
+
         return Result.Ok(dto);
     }
 

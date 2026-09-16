@@ -53,6 +53,8 @@ public class VerifyNonceCommandHandler(
 
         await unitOfWork.SaveChangesAsync(cancellationToken);
 
+        await nonceCacheService.DeleteNonceAsync(cmd.NonceId, cancellationToken);
+
         return Result.Ok(dto);
     }
 }

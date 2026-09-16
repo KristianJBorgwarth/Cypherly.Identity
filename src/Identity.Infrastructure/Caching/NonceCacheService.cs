@@ -21,7 +21,7 @@ public class NonceCacheService(IValkeyCacheService valkeyCacheService) : INonceC
         return await valkeyCacheService.GetAsync<Nonce>(nonceId.ToString(), _options, cancellationToken);
     }
 
-    public Task DeteleNonceAsync(Guid nonceId, CancellationToken cancellationToken)
+    public Task DeleteNonceAsync(Guid nonceId, CancellationToken cancellationToken)
     {
         return valkeyCacheService.RemoveAsync(nonceId.ToString(), cancellationToken);
     }

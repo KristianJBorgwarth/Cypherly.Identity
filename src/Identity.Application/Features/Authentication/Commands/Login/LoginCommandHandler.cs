@@ -1,5 +1,6 @@
 ﻿using Cypherly.Domain.Common;
 using Identity.Application.Abstractions;
+using Identity.Application.Contracts.RateLimiting;
 using Identity.Application.Contracts.Repository;
 using Identity.Domain.Common;
 using Identity.Domain.Services.User;
@@ -9,9 +10,13 @@ namespace Identity.Application.Features.Authentication.Commands.Login;
 public class LoginCommandHandler(
     IUserRepository userRepository,
     IAuthenticationService authenticationService,
-    IUnitOfWork unitOfWork)
+    IUnitOfWork unitOfWork,
+    IRateLimiter rateLimiter)
     : ICommandHandler<LoginCommand, LoginDto>
 {
+    private static readonly TimeSpan RateLimitWindow = TimeSpan.FromHours(1);
+    private const int RateLimitCount = 10;
+
     public async Task<Result<LoginDto>> Handle(LoginCommand cmd, CancellationToken ct)
     {
         var user = await userRepository.GetSinleAsync(new UserByEmailSpec(cmd.Email), ct);
@@ -21,6 +26,12 @@ public class LoginCommandHandler(
         if (!pwResult) return Result.Fail<LoginDto>(Errors.General.UnspecifiedError("Invalid Credentials"));
 
         if (!user.IsVerified) return Result.Ok(new LoginDto { IsVerified = false, UserId = user.Id });
+
+        var allowed = await rateLimiter.IsAllowedAsync($"login:issue:{user.Id}", RateLimitCount, RateLimitWindow, ct);
+        if (allowed is false)
+        {
+            return Result.Fail<LoginDto>(Errors.General.TooManyRequests());
+        }
 
         authenticationService.GenerateLoginVerificationCode(user);
 

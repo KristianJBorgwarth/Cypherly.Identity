@@ -2,6 +2,7 @@
 using FluentAssertions;
 using Identity.Application.Caching.LoginNonce;
 using Identity.Application.Contracts.Cache;
+using Identity.Application.Contracts.RateLimiting;
 using Identity.Application.Contracts.Repository;
 using Identity.Application.Features.Authentication.Commands.VerifyLogin;
 using Identity.Domain.Aggregates;
@@ -25,7 +26,8 @@ public class VerifyLoginCommandHandlerTest : IntegrationTestBase
         var cache = scope.ServiceProvider.GetRequiredService<ILoginNonceCache>();
         var logger = scope.ServiceProvider.GetRequiredService<ILogger<VerifyLoginCommandHandler>>();
         var unitOfWork = scope.ServiceProvider.GetRequiredService<IUnitOfWork>();
-        _commandHandler = new VerifyLoginCommandHandler(repo, cache, unitOfWork, logger);
+        var rateLimiter = scope.ServiceProvider.GetRequiredService<IRateLimiter>();
+        _commandHandler = new VerifyLoginCommandHandler(repo, cache, unitOfWork, rateLimiter, logger);
     }
 
     [Fact]

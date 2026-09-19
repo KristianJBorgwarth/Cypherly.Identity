@@ -37,6 +37,10 @@ public class UserVerificationCodeModelConfiguration : BaseModelConfiguration<Use
                 .HasColumnName("is_used")
                 .IsRequired();
 
+            uvc.Property(v => v.FailedAttempts)
+                .HasColumnName("failed_attempts")
+                .IsRequired();
+
             uvc.HasIndex(v => v.Value);
 
             uvc.HasIndex(v => v.ExpirationDate)

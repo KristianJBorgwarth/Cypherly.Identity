@@ -38,7 +38,7 @@ public class BaseController : ControllerBase
 
     protected ActionResult Error(Error error)
     {
-        return BadRequest(Envelope.Error(error.Message + " (" + error.Code + ")"));
+        return StatusCode(error.StatusCode, Envelope.Error(error.Message + " (" + error.Code + ")"));
     }
 
     protected IActionResult FromResult(Result result)

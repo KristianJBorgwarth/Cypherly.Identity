@@ -1,8 +1,11 @@
 ﻿using Identity.Application.Contracts.Cache;
+using Identity.Application.Contracts.RateLimiting;
 using Identity.Infrastructure.Caching;
+using Identity.Infrastructure.RateLimiting;
 using Identity.Infrastructure.Settings;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Options;
+using StackExchange.Redis;
 
 namespace Identity.Infrastructure.Extensions;
 
@@ -20,6 +23,12 @@ internal static class CachingExtensions
             options.InstanceName = "Cypherly.Authentication.API_";
         });
 
+        services.AddSingleton<IConnectionMultiplexer>(sp =>
+        {
+            var valkeySettings = sp.GetRequiredService<IOptions<ValkeySettings>>().Value;
+            return ConnectionMultiplexer.Connect($"{valkeySettings.Host}:{valkeySettings.Port}");
+        });
+
         services.AddHybridCache();
 
         services.AddCacheServices();
@@ -30,5 +39,6 @@ internal static class CachingExtensions
         services.AddSingleton<IValkeyCacheService, ValkeyCacheService>();
         services.AddScoped<INonceCacheService, NonceCacheService>();
         services.AddScoped<ILoginNonceCache, LoginNonceCache>();
+        services.AddSingleton<IRateLimiter, RedisSlidingWindowRateLimiter>();
     }
 }

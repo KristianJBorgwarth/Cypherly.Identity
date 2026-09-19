@@ -1,5 +1,6 @@
 ﻿using FakeItEasy;
 using FluentAssertions;
+using Identity.Application.Contracts.RateLimiting;
 using Identity.Application.Contracts.Repository;
 using Identity.Application.Features.Authentication.Commands.Login;
 using Identity.Domain.Aggregates;
@@ -14,6 +15,7 @@ public class LoginCommandHandlerTest
     private readonly IUserRepository _fakeUserRepository;
     private readonly IUnitOfWork _fakeUnitOfWork;
     private readonly IAuthenticationService _fakeAuthService;
+    private readonly IRateLimiter _fakeRateLimiter;
     private readonly LoginCommandHandler _sut;
 
     public LoginCommandHandlerTest()
@@ -21,8 +23,10 @@ public class LoginCommandHandlerTest
         _fakeUserRepository = A.Fake<IUserRepository>();
         _fakeAuthService = A.Fake<IAuthenticationService>();
         _fakeUnitOfWork = A.Fake<IUnitOfWork>();
+        _fakeRateLimiter = A.Fake<IRateLimiter>();
+        A.CallTo(() => _fakeRateLimiter.IsAllowedAsync(A<string>._, A<int>._, A<TimeSpan>._, A<CancellationToken>._)).Returns(true);
 
-        _sut = new LoginCommandHandler(_fakeUserRepository, _fakeAuthService, _fakeUnitOfWork);
+        _sut = new LoginCommandHandler(_fakeUserRepository, _fakeAuthService, _fakeUnitOfWork, _fakeRateLimiter);
     }
 
     [Fact]
@@ -124,5 +128,30 @@ public class LoginCommandHandlerTest
         A.CallTo(() => _fakeUserRepository.GetSinleAsync(A<UserByEmailSpec>._, A<CancellationToken>._)).MustHaveHappenedOnceExactly();
         A.CallTo(() => _fakeAuthService.GenerateLoginVerificationCode(A<User>._)).MustHaveHappenedOnceExactly();
         A.CallTo(() => _fakeUnitOfWork.SaveChangesAsync(CancellationToken.None)).MustHaveHappenedOnceExactly();
+    }
+
+    [Fact]
+    public async Task Handle_Given_RateLimit_Exceeded_Should_Return_ResultFail()
+    {
+        // Arrange
+        var user = new User(Guid.NewGuid(), Email.Create("Test@mail.dk"), Password.Create("kj9203KKJHSD?23"), true);
+
+        A.CallTo(() => _fakeUserRepository.GetSinleAsync(A<UserByEmailSpec>._, A<CancellationToken>._)).Returns(user);
+        A.CallTo(() => _fakeRateLimiter.IsAllowedAsync(A<string>._, A<int>._, A<TimeSpan>._, A<CancellationToken>._)).Returns(false);
+
+        var cmd = new LoginCommand()
+        {
+            Email = "Test@mail.dk",
+            Password = "kj9203KKJHSD?23",
+        };
+
+        // Act
+        var result = await _sut.Handle(cmd, CancellationToken.None);
+
+        // Assert
+        result.Success.Should().BeFalse();
+        result.Error.Message.Should().Contain("Too many requests");
+        A.CallTo(() => _fakeAuthService.GenerateLoginVerificationCode(A<User>._)).MustNotHaveHappened();
+        A.CallTo(() => _fakeUnitOfWork.SaveChangesAsync(CancellationToken.None)).MustNotHaveHappened();
     }
 }

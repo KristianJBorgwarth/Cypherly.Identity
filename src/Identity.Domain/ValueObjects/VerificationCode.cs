@@ -5,11 +5,15 @@ namespace Identity.Domain.ValueObjects;
 
 public class VerificationCode : ValueObject
 {
+    public const int MaxAttempts = 3;
+
     public string Value { get; } = null!;
 
     public bool IsUsed { get; private set; }
 
     public DateTime ExpirationDate { get; private set; }
+
+    public int FailedAttempts { get; private set; }
 
     public VerificationCode() { } //For EF Core
 
@@ -26,7 +30,13 @@ public class VerificationCode : ValueObject
         if (DateTime.UtcNow > ExpirationDate)
             return Result.Fail(Errors.General.UnspecifiedError("Verification code has expired"));
         if (Value != code)
+        {
+            FailedAttempts++;
+            if (FailedAttempts >= MaxAttempts)
+                IsUsed = true; // Burn the code once the attempt cap is hit so it can no longer be guessed.
+
             return Result.Fail(Errors.General.UnspecifiedError("Invalid verification code"));
+        }
 
         return Result.Ok();
     }

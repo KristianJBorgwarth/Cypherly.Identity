@@ -1,4 +1,5 @@
 ﻿using FluentAssertions;
+using Identity.Application.Contracts.RateLimiting;
 using Identity.Application.Contracts.Repository;
 using Identity.Application.Features.Authentication.Commands.Login;
 using Identity.Domain.Aggregates;
@@ -21,7 +22,8 @@ public class LoginCommandHandlerTest : IntegrationTestBase
         var repo = scope.GetRequiredService<IUserRepository>();
         var unitOfWork = scope.GetRequiredService<IUnitOfWork>();
         var authservice = scope.GetRequiredService<IAuthenticationService>();
-        _sut = new LoginCommandHandler(repo, authservice, unitOfWork);
+        var rateLimiter = scope.GetRequiredService<IRateLimiter>();
+        _sut = new LoginCommandHandler(repo, authservice, unitOfWork, rateLimiter);
     }
 
     [Fact]

@@ -99,7 +99,7 @@ public class User : AggregateRoot
         if (VerificationCodes.Count == 0)
             throw new InvalidOperationException("This chat user does not have a verification code");
 
-        var userVerificationCode = VerificationCodes.FirstOrDefault(uvc => uvc.Code.Value == loginVerificationCode && uvc.CodeType == UserVerificationCodeType.Login);
+        var userVerificationCode = GetActiveVerificationCode(UserVerificationCodeType.Login);
         if (userVerificationCode is null) return Result.Fail(Errors.General.UnspecifiedError("Invalid verification code"));
 
         var verificationResult = userVerificationCode.Code.Verify(loginVerificationCode);

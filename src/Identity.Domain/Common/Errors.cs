@@ -17,5 +17,8 @@ public class Errors
 
         public static Error ValueOutOfRange(string valueName, int minValue, int maxValue) =>
             new Error("value.out.of.Range", $"Value '{valueName}' should be between {minValue} and {maxValue}.");
+
+        public static Error TooManyRequests() =>
+            new Error("too.many.requests", "Too many requests. Please try again later.", statusCode: 429);
     }
 }

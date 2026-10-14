@@ -4,7 +4,7 @@ using Identity.Application.Behavior;
 using Identity.Application.Features.Authentication.Commands.VerifyNonce;
 using Identity.Application.Interfaces;
 using Identity.Application.Services;
-using MediatR;
+using Mediator;
 using Microsoft.Extensions.DependencyInjection;
 
 namespace Identity.Application.Configuration;
@@ -14,12 +14,12 @@ public static class ApplicationExtensions
     public static void AddApplication(this IServiceCollection services, Assembly assembly)
     {
         services.AddValidatorsFromAssembly(assembly);
-        services.AddMediatR(cfg =>
+        // Options are read by the source generator at compile time, so they must stay inline constants
+        services.AddMediator(options =>
         {
-            cfg.RegisterServicesFromAssembly(assembly);
+            options.ServiceLifetime = ServiceLifetime.Scoped;
+            options.PipelineBehaviors = [typeof(ValidationBehavior<,>), typeof(ExceptionBehavior<,>)];
         });
-        services.AddTransient(typeof(IPipelineBehavior<,>), typeof(ValidationBehavior<,>));
-        services.AddTransient(typeof(IPipelineBehavior<,>), typeof(ExceptionBehavior<,>));
         services.AddScoped<IJwtService, JwtService>();
         services.AddScoped<IVerifyNonceService, VerifyNonceService>();
     }

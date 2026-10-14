@@ -3,7 +3,7 @@ using Identity.Domain.Common;
 using Identity.Domain.ValueObjects;
 using FluentValidation;
 using FluentValidation.Results;
-using MediatR;
+using Mediator;
 using Microsoft.Extensions.Logging;
 
 namespace Identity.Application.Behavior
@@ -12,22 +12,22 @@ namespace Identity.Application.Behavior
         ILogger<ValidationBehavior<TRequest, TResponse>> logger, 
         IEnumerable<IValidator<TRequest>> validators)
         : IPipelineBehavior<TRequest, TResponse>
-        where TRequest : IRequest<TResponse>
+        where TRequest : notnull, IMessage
         where TResponse : Result
     {
-        public async Task<TResponse> Handle(TRequest request, RequestHandlerDelegate<TResponse> next, CancellationToken cancellationToken)
+        public async ValueTask<TResponse> Handle(TRequest request, MessageHandlerDelegate<TRequest, TResponse> next, CancellationToken cancellationToken)
         {
             var validator = validators.FirstOrDefault();
             if (validator == null)
             {
-                return await next(cancellationToken);
+                return await next(request, cancellationToken);
             }
 
             var validationResult = await validator.ValidateAsync(request, cancellationToken);
 
             if (validationResult.IsValid)
             {
-                return await next(cancellationToken);
+                return await next(request, cancellationToken);
             }
 
             var error = GenerateErrorMessage(validationResult);

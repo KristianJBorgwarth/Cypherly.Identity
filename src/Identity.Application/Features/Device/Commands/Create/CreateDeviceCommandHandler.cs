@@ -20,7 +20,7 @@ public class CreateDeviceCommandHandler(
     ILogger<CreateDeviceCommandHandler> logger)
     : ICommandHandler<CreateDeviceCommand, CreateDeviceDto>
 {
-    public async Task<Result<CreateDeviceDto>> Handle(CreateDeviceCommand cmd, CancellationToken ct)
+    public async ValueTask<Result<CreateDeviceDto>> Handle(CreateDeviceCommand cmd, CancellationToken ct)
     {
         var user = await userRepository.GetSinleAsync(new UserWithDevicesSpec(cmd.UserId), ct);
         if (user is null)
@@ -53,7 +53,7 @@ public class CreateDeviceCommandHandler(
         return Result.Ok(dto);
     }
 
-    private async Task<Result> CreateClient(Guid deviceId, Guid connectionId)
+    private async ValueTask<Result> CreateClient(Guid deviceId, Guid connectionId)
     {
         var response = await requestClient.GetResponse<CreateClientResponse>(new CreateClientMessage
         {

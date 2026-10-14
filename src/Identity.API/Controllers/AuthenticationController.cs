@@ -5,7 +5,7 @@ using Identity.Application.Features.Authentication.Commands.RefreshTokens;
 using Identity.Application.Features.Authentication.Commands.VerifyLogin;
 using Identity.Application.Features.Authentication.Commands.VerifyNonce;
 using Identity.Application.Features.Authentication.Queries.GetNonce;
-using MediatR;
+using Mediator;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 

@@ -1,5 +1,5 @@
 ﻿using Identity.Domain.Abstractions;
-using MediatR;
+using Mediator;
 
 namespace Identity.Application.Abstractions;
 

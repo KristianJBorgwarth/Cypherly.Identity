@@ -11,7 +11,7 @@ namespace Identity.Application.Features.User.Events
         ILogger<UserLoggedInEventHandler> logger)
         : IDomainEventHandler<UserLoggedInEvent>
     {
-        public async Task Handle(UserLoggedInEvent domainEvent, CancellationToken cancellationToken)
+        public async ValueTask Handle(UserLoggedInEvent domainEvent, CancellationToken cancellationToken)
         {
             try
             {

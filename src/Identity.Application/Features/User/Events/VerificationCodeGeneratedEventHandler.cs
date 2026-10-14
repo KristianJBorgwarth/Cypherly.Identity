@@ -14,7 +14,7 @@ public class VerificationCodeGeneratedEventHandler(
     ILogger<VerificationCodeGeneratedEventHandler> logger)
     : IDomainEventHandler<VerificationCodeGeneratedEvent>
 {
-    public async Task Handle(VerificationCodeGeneratedEvent ntf, CancellationToken ct)
+    public async ValueTask Handle(VerificationCodeGeneratedEvent ntf, CancellationToken ct)
     {
         var user = await userRepository.GetSinleAsync(new UserWithVerificationCodesSpec(ntf.UserId), ct);
         if (user is null)

@@ -14,7 +14,7 @@ public class GetNonceQueryHandler(
     ILogger<GetNonceQueryHandler> logger)
     : IQueryHandler<GetNonceQuery, GetNonceDto>
 {
-    public async Task<Result<GetNonceDto>> Handle(GetNonceQuery q, CancellationToken ct)
+    public async ValueTask<Result<GetNonceDto>> Handle(GetNonceQuery q, CancellationToken ct)
     {
         var user = await userRepository.GetSinleAsync(new UserWithDevicesSpec(q.UserId), ct);
 

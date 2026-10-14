@@ -6,7 +6,7 @@ using Identity.Domain.Events.User;
 using Identity.Infrastructure.Jobs;
 using Identity.Infrastructure.Persistence.Outbox;
 using Identity.Infrastructure.Persistence.Repositories;
-using MediatR;
+using Mediator;
 using Microsoft.Extensions.Logging;
 using Newtonsoft.Json;
 using Quartz;

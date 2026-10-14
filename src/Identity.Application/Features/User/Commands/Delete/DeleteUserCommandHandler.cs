@@ -14,7 +14,7 @@ public class DeleteUserCommandHandler(
     ILogger<DeleteUserCommandHandler> logger)
     : ICommandHandler<DeleteUserCommand>
 {
-    public async Task<Result> Handle(DeleteUserCommand cmd, CancellationToken ct)
+    public async ValueTask<Result> Handle(DeleteUserCommand cmd, CancellationToken ct)
     {
         var user = await userRepository.GetSinleAsync(new UserSpec(cmd.Id), ct);
         if (user is null)

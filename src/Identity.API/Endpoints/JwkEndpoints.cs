@@ -1,6 +1,6 @@
 using Identity.API.Common;
 using Identity.Application.Features.Authentication.Queries.GetJwks;
-using MediatR;
+using Mediator;
 
 internal sealed class JwksEndpoints : IEndpoint
 {

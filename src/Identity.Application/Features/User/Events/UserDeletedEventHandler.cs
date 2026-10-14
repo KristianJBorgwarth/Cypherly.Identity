@@ -11,7 +11,7 @@ public class UserDeletedEventHandler(
     ILogger<UserDeletedEventHandler> logger)
     : IDomainEventHandler<UserDeletedEvent>
 {
-    public async Task Handle(UserDeletedEvent notification, CancellationToken cancellationToken)
+    public async ValueTask Handle(UserDeletedEvent notification, CancellationToken cancellationToken)
     {
         logger.LogInformation("User with id {UserId} and email {Email} has been deleted", notification.UserId, notification.Email);
 

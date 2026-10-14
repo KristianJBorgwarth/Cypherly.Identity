@@ -18,7 +18,7 @@ public class VerifyNonceCommandHandler(
     ILogger<VerifyNonceCommandHandler> logger)
     : ICommandHandler<VerifyNonceCommand, VerifyNonceDto>
 {
-    public async Task<Result<VerifyNonceDto>> Handle(VerifyNonceCommand cmd, CancellationToken cancellationToken)
+    public async ValueTask<Result<VerifyNonceDto>> Handle(VerifyNonceCommand cmd, CancellationToken cancellationToken)
     {
         var user = await userRepository.GetSinleAsync(new UserWithDevicesSpec(cmd.UserId), cancellationToken);
 

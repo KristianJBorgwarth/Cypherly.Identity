@@ -7,7 +7,7 @@ using Identity.Application.Features.User.Commands.Create;
 using Identity.Application.Features.User.Commands.Delete;
 using Identity.Application.Features.User.Commands.Update.ResendVerificationCode;
 using Identity.Application.Features.User.Commands.Update.Verify;
-using MediatR;
+using Mediator;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 

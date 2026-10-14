@@ -1,5 +1,5 @@
 ﻿using Cypherly.Domain.Common;
-using MediatR;
+using Mediator;
 
 namespace Identity.Application.Abstractions;
 

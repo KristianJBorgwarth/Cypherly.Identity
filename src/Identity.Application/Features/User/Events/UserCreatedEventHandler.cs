@@ -14,7 +14,7 @@ public sealed class UserCreatedEventHandler(
     ILogger<UserCreatedEventHandler> logger)
     : IDomainEventHandler<UserCreatedEvent>
 {
-    public async Task Handle(UserCreatedEvent ntf, CancellationToken ct)
+    public async ValueTask Handle(UserCreatedEvent ntf, CancellationToken ct)
     {
         var user = await userRepository.GetSinleAsync(new UserWithVerificationCodesSpec(ntf.UserId), ct);
         if (user is null)

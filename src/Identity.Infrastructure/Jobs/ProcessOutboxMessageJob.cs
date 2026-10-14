@@ -2,7 +2,7 @@
 using Identity.Domain.Abstractions;
 using Identity.Infrastructure.Persistence.Outbox;
 using Identity.Infrastructure.Persistence.Repositories;
-using MediatR;
+using Mediator;
 using Microsoft.Extensions.Logging;
 using Newtonsoft.Json;
 using Quartz;

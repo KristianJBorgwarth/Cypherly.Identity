@@ -17,7 +17,7 @@ public class LoginCommandHandler(
     private static readonly TimeSpan RateLimitWindow = TimeSpan.FromHours(1);
     private const int RateLimitCount = 10;
 
-    public async Task<Result<LoginDto>> Handle(LoginCommand cmd, CancellationToken ct)
+    public async ValueTask<Result<LoginDto>> Handle(LoginCommand cmd, CancellationToken ct)
     {
         var user = await userRepository.GetSinleAsync(new UserByEmailSpec(cmd.Email), ct);
         if (user is null) return Result.Fail<LoginDto>(Errors.General.UnspecifiedError("Invalid Credentials"));

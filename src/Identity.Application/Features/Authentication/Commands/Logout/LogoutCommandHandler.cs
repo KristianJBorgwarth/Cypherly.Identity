@@ -14,7 +14,7 @@ public class LogoutCommandHandler(
     ILogger<LogoutCommandHandler> logger)
     : ICommandHandler<LogoutCommand>
 {
-    public async Task<Result> Handle(LogoutCommand cmd, CancellationToken ct)
+    public async ValueTask<Result> Handle(LogoutCommand cmd, CancellationToken ct)
     {
         var user = await userRepository.GetSinleAsync(new UserWithDeviceAndRefreshTokensSpec(cmd.Id), ct);
         if (user is null)

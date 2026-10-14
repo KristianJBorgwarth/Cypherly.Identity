@@ -13,7 +13,7 @@ public sealed class UserLoggedOutEventHandler(
     ILogger<UserLoggedOutEventHandler> logger)
     : IDomainEventHandler<UserLoggedOutEvent>
 {
-    public async Task Handle(UserLoggedOutEvent ntf, CancellationToken ct)
+    public async ValueTask Handle(UserLoggedOutEvent ntf, CancellationToken ct)
     {
         var user = await userRepository.GetSinleAsync(new UserWithDevicesSpec(ntf.UserId), ct);
         if (user is null)

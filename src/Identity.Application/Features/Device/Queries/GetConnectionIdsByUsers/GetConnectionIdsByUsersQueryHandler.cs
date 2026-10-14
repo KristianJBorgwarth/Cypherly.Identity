@@ -7,7 +7,7 @@ namespace Identity.Application.Features.Device.Queries.GetConnectionIdsByUsers;
 
 public class GetConnectionIdsByUsersQueryHandler(IUserRepository userRepository) : IQueryHandler<GetConnectionIdsByUsersQuery, GetConnectionIdsByUsersDto>
 {
-    public async Task<Result<GetConnectionIdsByUsersDto>> Handle(GetConnectionIdsByUsersQuery q, CancellationToken ct)
+    public async ValueTask<Result<GetConnectionIdsByUsersDto>> Handle(GetConnectionIdsByUsersQuery q, CancellationToken ct)
     {
         var users = await userRepository.GetListAsync(new UsersWithDevicesSpec(q.TenantIds), ct);
 

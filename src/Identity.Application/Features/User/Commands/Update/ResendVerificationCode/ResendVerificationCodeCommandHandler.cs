@@ -15,7 +15,7 @@ public sealed class ResendVerificationCodeCommandHandler(
     ILogger<ResendVerificationCodeCommandHandler> logger)
     : ICommandHandler<ResendVerificationCodeCommand>
 {
-    public async Task<Result> Handle(ResendVerificationCodeCommand cmd, CancellationToken ct)
+    public async ValueTask<Result> Handle(ResendVerificationCodeCommand cmd, CancellationToken ct)
     {
         var user = await userRepository.GetSinleAsync(new UserWithVerificationCodesSpec(cmd.UserId), ct);
         if (user is null)

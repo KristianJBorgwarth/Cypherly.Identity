@@ -12,7 +12,7 @@ public class VerifyUserCommandHandler(
     IUnitOfWork unitOfWork)
     : ICommandHandler<VerifyUserCommand>
 {
-    public async Task<Result> Handle(VerifyUserCommand cmd, CancellationToken ct)
+    public async ValueTask<Result> Handle(VerifyUserCommand cmd, CancellationToken ct)
     {
         var user = await userRepository.GetSinleAsync(new UserWithVerificationCodesSpec(cmd.UserId), ct);
         if (user is null)

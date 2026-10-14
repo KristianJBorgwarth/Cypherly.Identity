@@ -17,7 +17,7 @@ public class RefreshTokensCommandHandler(
     : ICommandHandler<RefreshTokensCommand, RefreshTokensDto>
 {
 
-    public async Task<Result<RefreshTokensDto>> Handle(RefreshTokensCommand cmd, CancellationToken ct)
+    public async ValueTask<Result<RefreshTokensDto>> Handle(RefreshTokensCommand cmd, CancellationToken ct)
     {
         var user = await userRepository.GetSinleAsync(new UserWithDeviceAndRefreshTokensSpec(cmd.UserId), ct);
         if (user is null)

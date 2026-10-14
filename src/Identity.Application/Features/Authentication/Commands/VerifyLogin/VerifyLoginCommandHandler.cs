@@ -20,7 +20,7 @@ public sealed class VerifyLoginCommandHandler(
     private static readonly TimeSpan RateLimitWindow = TimeSpan.FromHours(1);
     private const int RateLimitCount = 10;
 
-    public async Task<Result<VerifyLoginDto>> Handle(VerifyLoginCommand cmd, CancellationToken ct)
+    public async ValueTask<Result<VerifyLoginDto>> Handle(VerifyLoginCommand cmd, CancellationToken ct)
     {
         var allowed = await rateLimiter.IsAllowedAsync($"login:verify:{cmd.UserId}", RateLimitCount, RateLimitWindow, ct);
         if (allowed is false)

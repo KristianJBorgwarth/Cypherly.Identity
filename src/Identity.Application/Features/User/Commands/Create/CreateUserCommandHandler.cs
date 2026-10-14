@@ -19,7 +19,7 @@ public class CreateUserCommandHandler(
     ILogger<CreateUserCommandHandler> logger)
     : ICommandHandler<CreateUserCommand, CreateUserDto>
 {
-    public async Task<Result<CreateUserDto>> Handle(CreateUserCommand cmd, CancellationToken ct)
+    public async ValueTask<Result<CreateUserDto>> Handle(CreateUserCommand cmd, CancellationToken ct)
     {
         if (await DoesEmailExist(cmd.Email, ct))
             return Result.Fail<CreateUserDto>(Errors.General.UnspecifiedError("An account already exists with that email"));
@@ -49,7 +49,7 @@ public class CreateUserCommandHandler(
         return user is not null;
     }
 
-    private async Task<Result> CreateProfile(Guid userId, string username)
+    private async ValueTask<Result> CreateProfile(Guid userId, string username)
     {
         var createProfileRequest = new CreateUserProfileMessage
         {

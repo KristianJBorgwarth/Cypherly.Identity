@@ -64,7 +64,7 @@ public class ProcessOutboxMessageJobTests
             .Returns([message]);
 
         A.CallTo(() => _fakePublisher.Publish(A<UserCreatedEvent>.That.Matches(ev => ev.UserId == userCreatedEvent.UserId), A<CancellationToken>.Ignored))
-            .DoesNothing();
+            .Returns(ValueTask.CompletedTask);
 
         // Act
         await _sut.Execute(_fakeJobContext);

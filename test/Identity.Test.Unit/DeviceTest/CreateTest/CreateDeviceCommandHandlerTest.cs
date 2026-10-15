@@ -118,4 +118,68 @@ public class CreateDeviceCommandHandlerTest
         A.CallTo(() => _fakeUnitOfWork.SaveChangesAsync(CancellationToken.None)).MustNotHaveHappened();
         A.CallTo(() => _fakeDeviceService.RegisterDevice(A<User>._, A<string>._, A<string>._, A<DeviceType>._, A<DevicePlatform>._)).MustNotHaveHappened();
     }
+
+    [Fact]
+    public async Task Handle_WhenLoginNonceBelongsToAnotherUser_ReturnsUnauthorized()
+    {
+        // Arrange
+        var victimId = Guid.NewGuid();
+        var attackerNonce = LoginNonce.Create(Guid.NewGuid());
+
+        var request = new CreateDeviceCommand
+        {
+            UserId = victimId,
+            LoginNonceId = attackerNonce.Id,
+            LoginNonce = attackerNonce.NonceValue,
+            DeviceAppVersion = "1.0",
+            DeviceType = DeviceType.Desktop,
+            DevicePlatform = DevicePlatform.Linux,
+            Base64DevicePublicKey = "key"
+        };
+
+        A.CallTo(() => _fakeRepo.GetSinleAsync(A<UserWithDevicesSpec>._, A<CancellationToken>._)).Returns(new User());
+        A.CallTo(() => _fakeLoginNonceCache.GetNonceAsync(request.LoginNonceId, CancellationToken.None)).Returns(attackerNonce);
+
+        // Act
+        var result = await _sut.Handle(request, CancellationToken.None);
+
+        // Assert
+        result.Success.Should().BeFalse();
+        result.Error.Should().BeEquivalentTo(Errors.General.Unauthorized());
+        A.CallTo(() => _fakeLoginNonceCache.TryClaimNonceAsync(A<Guid>._, A<CancellationToken>._)).MustNotHaveHappened();
+        A.CallTo(() => _fakeUnitOfWork.SaveChangesAsync(CancellationToken.None)).MustNotHaveHappened();
+        A.CallTo(() => _fakeDeviceService.RegisterDevice(A<User>._, A<string>._, A<string>._, A<DeviceType>._, A<DevicePlatform>._)).MustNotHaveHappened();
+    }
+
+    [Fact]
+    public async Task Handle_WhenLoginNonceAlreadyClaimed_ReturnsUnauthorized()
+    {
+        // Arrange
+        var userId = Guid.NewGuid();
+        var loginNonce = LoginNonce.Create(userId);
+
+        var request = new CreateDeviceCommand
+        {
+            UserId = userId,
+            LoginNonceId = loginNonce.Id,
+            LoginNonce = loginNonce.NonceValue,
+            DeviceAppVersion = "1.0",
+            DeviceType = DeviceType.Desktop,
+            DevicePlatform = DevicePlatform.Linux,
+            Base64DevicePublicKey = "key"
+        };
+
+        A.CallTo(() => _fakeRepo.GetSinleAsync(A<UserWithDevicesSpec>._, A<CancellationToken>._)).Returns(new User());
+        A.CallTo(() => _fakeLoginNonceCache.GetNonceAsync(request.LoginNonceId, CancellationToken.None)).Returns(loginNonce);
+        A.CallTo(() => _fakeLoginNonceCache.TryClaimNonceAsync(request.LoginNonceId, CancellationToken.None)).Returns(false);
+
+        // Act
+        var result = await _sut.Handle(request, CancellationToken.None);
+
+        // Assert
+        result.Success.Should().BeFalse();
+        result.Error.Should().BeEquivalentTo(Errors.General.Unauthorized());
+        A.CallTo(() => _fakeUnitOfWork.SaveChangesAsync(CancellationToken.None)).MustNotHaveHappened();
+        A.CallTo(() => _fakeDeviceService.RegisterDevice(A<User>._, A<string>._, A<string>._, A<DeviceType>._, A<DevicePlatform>._)).MustNotHaveHappened();
+    }
 }

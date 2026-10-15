@@ -128,4 +128,71 @@ public class CreateDeviceCommandHandlerTest : IntegrationTestBase
         result.Success.Should().BeFalse();
         result.Error.Should().BeEquivalentTo(Errors.General.Unauthorized());
     }
+
+    [Fact]
+    public async Task Handle_Given_LoginNonce_Of_Another_User_Should_Return_Unauthorized_And_Not_Create_Device()
+    {
+        // Arrange: the attacker holds a valid login nonce for their own account
+        var victim = new User(Guid.NewGuid(), Email.Create("victim@gmail.com"), Password.Create("test=???KKL999"), true);
+        var attacker = new User(Guid.NewGuid(), Email.Create("attacker@gmail.com"), Password.Create("test=???KKL999"), true);
+
+        Db.User.AddRange(victim, attacker);
+        await Db.SaveChangesAsync();
+
+        var attackerNonce = LoginNonce.Create(attacker.Id);
+        await _loginNonceCache.AddNonceAsync(attackerNonce, CancellationToken.None);
+
+        var cmd = new CreateDeviceCommand()
+        {
+            UserId = victim.Id,
+            LoginNonceId = attackerNonce.Id,
+            LoginNonce = attackerNonce.NonceValue,
+            DeviceAppVersion = "1.0",
+            DeviceType = DeviceType.Mobile,
+            DevicePlatform = DevicePlatform.Android,
+            Base64DevicePublicKey = "base64DevicePublicKey",
+        };
+
+        // Act
+        var result = await _sut.Handle(cmd, CancellationToken.None);
+
+        // Assert
+        result.Success.Should().BeFalse();
+        result.Error.Should().BeEquivalentTo(Errors.General.Unauthorized());
+        Db.Device.Count().Should().Be(0);
+    }
+
+    [Fact]
+    public async Task Handle_Given_Used_LoginNonce_Should_Return_Unauthorized_On_Second_Use()
+    {
+        // Arrange
+        var user = new User(Guid.NewGuid(), Email.Create("test@gmail.com"), Password.Create("test=???KKL999"), true);
+
+        Db.User.Add(user);
+        await Db.SaveChangesAsync();
+
+        var loginNonce = LoginNonce.Create(user.Id);
+        await _loginNonceCache.AddNonceAsync(loginNonce, CancellationToken.None);
+
+        var cmd = new CreateDeviceCommand()
+        {
+            UserId = user.Id,
+            LoginNonceId = loginNonce.Id,
+            LoginNonce = loginNonce.NonceValue,
+            DeviceAppVersion = "1.0",
+            DeviceType = DeviceType.Mobile,
+            DevicePlatform = DevicePlatform.Android,
+            Base64DevicePublicKey = "base64DevicePublicKey",
+        };
+
+        // Act
+        var first = await _sut.Handle(cmd, CancellationToken.None);
+        var second = await _sut.Handle(cmd, CancellationToken.None);
+
+        // Assert
+        first.Success.Should().BeTrue();
+        second.Success.Should().BeFalse();
+        second.Error.Should().BeEquivalentTo(Errors.General.Unauthorized());
+        Db.Device.Count().Should().Be(1);
+    }
 }

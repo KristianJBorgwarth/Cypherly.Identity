@@ -1,4 +1,7 @@
-﻿using Cypherly.Domain.Common;
+﻿using System.Security.Cryptography;
+using System.Text;
+using Cypherly.Domain.Common;
+using Identity.Application.Caching.LoginNonce;
 using Identity.Domain.Common;
 using Identity.Domain.Services.User;
 using Cypherly.Message.Contracts.Messages.Client;
@@ -31,9 +34,16 @@ public class CreateDeviceCommandHandler(
 
         var loginNonce = await loginNonceCache.GetNonceAsync(cmd.LoginNonceId, ct);
 
-        if (loginNonce is null || loginNonce.NonceValue != cmd.LoginNonce)
+        // The nonce must have been issued to this user, otherwise anyone's own nonce could add a device to any account.
+        if (loginNonce is null || loginNonce.UserId != cmd.UserId || loginNonce.Exipred || !IsNonceValueValid(loginNonce, cmd.LoginNonce))
         {
             logger.LogWarning("Login nonce {LoginNonceId} not found or invalid for user with ID: {ID}", cmd.LoginNonceId, cmd.UserId);
+            return Result.Fail<CreateDeviceDto>(Errors.General.Unauthorized());
+        }
+
+        if (await loginNonceCache.TryClaimNonceAsync(cmd.LoginNonceId, ct) is false)
+        {
+            logger.LogWarning("Login nonce {LoginNonceId} for user with ID: {ID} is already being used", cmd.LoginNonceId, cmd.UserId);
             return Result.Fail<CreateDeviceDto>(Errors.General.Unauthorized());
         }
 
@@ -42,7 +52,11 @@ public class CreateDeviceCommandHandler(
         var createClientResult = await CreateClient(device.Id, device.ConnectionId);
 
         if (createClientResult.Success is false)
+        {
+            // Nothing was saved, so let the client retry with the same nonce.
+            await loginNonceCache.ReleaseNonceClaimAsync(cmd.LoginNonceId, ct);
             return Result.Fail<CreateDeviceDto>(createClientResult.Error);
+        }
 
         await unitOfWork.SaveChangesAsync(ct);
 
@@ -51,6 +65,13 @@ public class CreateDeviceCommandHandler(
         await loginNonceCache.DeteleNonceAsync(cmd.LoginNonceId, ct);
 
         return Result.Ok(dto);
+    }
+
+    private static bool IsNonceValueValid(LoginNonce loginNonce, string nonceValue)
+    {
+        return CryptographicOperations.FixedTimeEquals(
+            Encoding.UTF8.GetBytes(loginNonce.NonceValue),
+            Encoding.UTF8.GetBytes(nonceValue));
     }
 
     private async ValueTask<Result> CreateClient(Guid deviceId, Guid connectionId)

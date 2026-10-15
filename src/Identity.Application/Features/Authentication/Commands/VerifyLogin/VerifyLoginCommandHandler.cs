@@ -22,6 +22,13 @@ public sealed class VerifyLoginCommandHandler(
 
     public async ValueTask<Result<VerifyLoginDto>> Handle(VerifyLoginCommand cmd, CancellationToken ct)
     {
+        var passwordNonce = await loginNonceCache.GetNonceAsync(cmd.NonceId, ct);
+        if (passwordNonce is null || !passwordNonce.IsValidFor(cmd.UserId, cmd.Nonce, LoginNonceStage.PasswordVerified))
+        {
+            logger.LogWarning("Login nonce {NonceId} not found or invalid for user with ID: {UserId}", cmd.NonceId, cmd.UserId);
+            return Result.Fail<VerifyLoginDto>(Errors.General.Unauthorized());
+        }
+
         var allowed = await rateLimiter.IsAllowedAsync($"login:verify:{cmd.UserId}", RateLimitCount, RateLimitWindow, ct);
         if (allowed is false)
         {
@@ -43,7 +50,9 @@ public sealed class VerifyLoginCommandHandler(
             return Result.Fail<VerifyLoginDto>(verificationResult.Error);
         }
 
-        var loginNonce = LoginNonce.Create(cmd.UserId);
+        await loginNonceCache.DeteleNonceAsync(cmd.NonceId, ct);
+
+        var loginNonce = LoginNonce.Create(cmd.UserId, LoginNonceStage.CodeVerified);
 
         await loginNonceCache.AddNonceAsync(loginNonce, ct);
 

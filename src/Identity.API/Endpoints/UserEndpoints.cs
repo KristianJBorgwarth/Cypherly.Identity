@@ -45,7 +45,8 @@ internal sealed class UserEndpoints : IEndpoint
             })
             .Produces(StatusCodes.Status200OK)
             .ProducesProblem(StatusCodes.Status400BadRequest)
-            .ProducesProblem(StatusCodes.Status404NotFound);
+            .ProducesProblem(StatusCodes.Status404NotFound)
+            .ProducesProblem(StatusCodes.Status429TooManyRequests);
 
         group.MapPut("/resend-verification", async ([FromBody] ResendVerificationCodeCommand cmd, ISender sender) =>
             {
@@ -54,7 +55,9 @@ internal sealed class UserEndpoints : IEndpoint
             })
             .Produces(StatusCodes.Status200OK)
             .ProducesProblem(StatusCodes.Status400BadRequest)
-            .ProducesProblem(StatusCodes.Status404NotFound);
+            .ProducesProblem(StatusCodes.Status401Unauthorized)
+            .ProducesProblem(StatusCodes.Status404NotFound)
+            .ProducesProblem(StatusCodes.Status429TooManyRequests);
 
         group.MapPost("/device", async ([FromBody] CreateDeviceCommand cmd, ISender sender) =>
             {

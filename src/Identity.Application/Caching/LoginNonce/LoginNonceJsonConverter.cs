@@ -11,10 +11,13 @@ public class LoginNonceJsonConverter : JsonConverter<LoginNonce>
         var id = jsonObject.GetProperty("Id").GetGuid();
         var nonceValue = jsonObject.GetProperty("NonceValue").GetString();
         var userId = jsonObject.GetProperty("UserId").GetGuid();
+        var stage = jsonObject.TryGetProperty("Stage", out var stageElement)
+            ? (LoginNonceStage)stageElement.GetInt32()
+            : LoginNonceStage.CodeVerified;
         var createdAt = jsonObject.GetProperty("CreatedAt").GetDateTime();
         var expiresAt = jsonObject.GetProperty("ExpiresAt").GetDateTime();
 
-        return LoginNonce.FromCache(id, nonceValue!, userId, createdAt, expiresAt);
+        return LoginNonce.FromCache(id, nonceValue!, userId, stage, createdAt, expiresAt);
     }
     public override void Write(Utf8JsonWriter writer, LoginNonce value, JsonSerializerOptions options)
     {
@@ -22,6 +25,7 @@ public class LoginNonceJsonConverter : JsonConverter<LoginNonce>
         writer.WriteString("Id", value.Id);
         writer.WriteString("NonceValue", value.NonceValue);
         writer.WriteString("UserId", value.UserId);
+        writer.WriteNumber("Stage", (int)value.Stage);
         writer.WriteString("CreatedAt", value.CreatedAt);
         writer.WriteString("ExpiresAt", value.ExpiresAt);
         writer.WriteEndObject();

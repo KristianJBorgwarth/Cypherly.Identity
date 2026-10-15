@@ -45,6 +45,7 @@ internal sealed class AuthenticationEndpoints : IEndpoint
             })
             .Produces<VerifyLoginDto>()
             .ProducesProblem(StatusCodes.Status400BadRequest)
+            .ProducesProblem(StatusCodes.Status401Unauthorized)
             .ProducesProblem(StatusCodes.Status404NotFound)
             .ProducesProblem(StatusCodes.Status429TooManyRequests);
 

@@ -4,4 +4,6 @@ public sealed record LoginDto
 {
     public required Guid UserId { get; init; }
     public required bool IsVerified { get; init; }
+    public Guid? NonceId { get; init; }
+    public string? Nonce { get; init; }
 }

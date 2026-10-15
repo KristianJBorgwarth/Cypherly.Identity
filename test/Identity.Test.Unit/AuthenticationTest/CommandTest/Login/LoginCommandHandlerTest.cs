@@ -1,5 +1,7 @@
 ﻿using FakeItEasy;
 using FluentAssertions;
+using Identity.Application.Caching.LoginNonce;
+using Identity.Application.Contracts.Cache;
 using Identity.Application.Contracts.RateLimiting;
 using Identity.Application.Contracts.Repository;
 using Identity.Application.Features.Authentication.Commands.Login;
@@ -16,6 +18,7 @@ public class LoginCommandHandlerTest
     private readonly IUnitOfWork _fakeUnitOfWork;
     private readonly IAuthenticationService _fakeAuthService;
     private readonly IRateLimiter _fakeRateLimiter;
+    private readonly ILoginNonceCache _fakeLoginNonceCache;
     private readonly LoginCommandHandler _sut;
 
     public LoginCommandHandlerTest()
@@ -26,7 +29,9 @@ public class LoginCommandHandlerTest
         _fakeRateLimiter = A.Fake<IRateLimiter>();
         A.CallTo(() => _fakeRateLimiter.IsAllowedAsync(A<string>._, A<int>._, A<TimeSpan>._, A<CancellationToken>._)).Returns(true);
 
-        _sut = new LoginCommandHandler(_fakeUserRepository, _fakeAuthService, _fakeUnitOfWork, _fakeRateLimiter);
+        _fakeLoginNonceCache = A.Fake<ILoginNonceCache>();
+
+        _sut = new LoginCommandHandler(_fakeUserRepository, _fakeAuthService, _fakeUnitOfWork, _fakeRateLimiter, _fakeLoginNonceCache);
     }
 
     [Fact]
@@ -99,8 +104,11 @@ public class LoginCommandHandlerTest
         result.Success.Should().BeTrue();
         result.Value.Should().NotBeNull();
         result.Value.IsVerified.Should().BeFalse();
+        result.Value.NonceId.Should().BeNull();
+        result.Value.Nonce.Should().BeNull();
         A.CallTo(() => _fakeUserRepository.GetSinleAsync(A<UserByEmailSpec>._, A<CancellationToken>._)).MustHaveHappenedOnceExactly();
         A.CallTo(() => _fakeAuthService.GenerateLoginVerificationCode(A<User>._)).MustNotHaveHappened();
+        A.CallTo(() => _fakeLoginNonceCache.AddNonceAsync(A<LoginNonce>._, A<CancellationToken>._)).MustNotHaveHappened();
         A.CallTo(() => _fakeUnitOfWork.SaveChangesAsync(CancellationToken.None)).MustNotHaveHappened();
     }
 
@@ -125,9 +133,12 @@ public class LoginCommandHandlerTest
         result.Success.Should().BeTrue();
         result.Value.Should().NotBeNull();
         result.Value.IsVerified.Should().BeTrue();
+        result.Value.NonceId.Should().NotBeNull();
+        result.Value.Nonce.Should().NotBeNullOrEmpty();
         A.CallTo(() => _fakeUserRepository.GetSinleAsync(A<UserByEmailSpec>._, A<CancellationToken>._)).MustHaveHappenedOnceExactly();
         A.CallTo(() => _fakeAuthService.GenerateLoginVerificationCode(A<User>._)).MustHaveHappenedOnceExactly();
         A.CallTo(() => _fakeUnitOfWork.SaveChangesAsync(CancellationToken.None)).MustHaveHappenedOnceExactly();
+        A.CallTo(() => _fakeLoginNonceCache.AddNonceAsync(A<LoginNonce>.That.Matches(n => n.Stage == LoginNonceStage.PasswordVerified && n.UserId == user.Id && n.Id == result.Value.NonceId), A<CancellationToken>._)).MustHaveHappenedOnceExactly();
     }
 
     [Fact]

@@ -44,7 +44,7 @@ public class CreateDeviceCommandHandlerTest : IntegrationTestBase
         await Db.SaveChangesAsync();
 
         // Arrange nonce
-        var loginNonce = LoginNonce.Create(user.Id);
+        var loginNonce = LoginNonce.Create(user.Id, LoginNonceStage.CodeVerified);
         await _loginNonceCache.AddNonceAsync(loginNonce, CancellationToken.None);
 
         // Arrange command
@@ -106,7 +106,7 @@ public class CreateDeviceCommandHandlerTest : IntegrationTestBase
         await Db.SaveChangesAsync();
 
         // Arrange nonce
-        var loginNonce = LoginNonce.Create(user.Id);
+        var loginNonce = LoginNonce.Create(user.Id, LoginNonceStage.CodeVerified);
         await _loginNonceCache.AddNonceAsync(loginNonce, CancellationToken.None);
 
         // Arrange command
@@ -139,7 +139,7 @@ public class CreateDeviceCommandHandlerTest : IntegrationTestBase
         Db.User.AddRange(victim, attacker);
         await Db.SaveChangesAsync();
 
-        var attackerNonce = LoginNonce.Create(attacker.Id);
+        var attackerNonce = LoginNonce.Create(attacker.Id, LoginNonceStage.CodeVerified);
         await _loginNonceCache.AddNonceAsync(attackerNonce, CancellationToken.None);
 
         var cmd = new CreateDeviceCommand()
@@ -171,7 +171,7 @@ public class CreateDeviceCommandHandlerTest : IntegrationTestBase
         Db.User.Add(user);
         await Db.SaveChangesAsync();
 
-        var loginNonce = LoginNonce.Create(user.Id);
+        var loginNonce = LoginNonce.Create(user.Id, LoginNonceStage.CodeVerified);
         await _loginNonceCache.AddNonceAsync(loginNonce, CancellationToken.None);
 
         var cmd = new CreateDeviceCommand()
@@ -194,5 +194,37 @@ public class CreateDeviceCommandHandlerTest : IntegrationTestBase
         second.Success.Should().BeFalse();
         second.Error.Should().BeEquivalentTo(Errors.General.Unauthorized());
         Db.Device.Count().Should().Be(1);
+    }
+
+    [Fact]
+    public async Task Handle_Given_PasswordVerified_Nonce_Should_Return_Unauthorized_And_Not_Create_Device()
+    {
+        // Arrange
+        var user = new User(Guid.NewGuid(), Email.Create("test@gmail.com"), Password.Create("test=???KKL999"), true);
+
+        Db.User.Add(user);
+        await Db.SaveChangesAsync();
+
+        var passwordNonce = LoginNonce.Create(user.Id, LoginNonceStage.PasswordVerified);
+        await _loginNonceCache.AddNonceAsync(passwordNonce, CancellationToken.None);
+
+        var cmd = new CreateDeviceCommand()
+        {
+            UserId = user.Id,
+            LoginNonceId = passwordNonce.Id,
+            LoginNonce = passwordNonce.NonceValue,
+            DeviceAppVersion = "1.0",
+            DeviceType = DeviceType.Mobile,
+            DevicePlatform = DevicePlatform.Android,
+            Base64DevicePublicKey = "base64DevicePublicKey",
+        };
+
+        // Act
+        var result = await _sut.Handle(cmd, CancellationToken.None);
+
+        // Assert
+        result.Success.Should().BeFalse();
+        result.Error.Should().BeEquivalentTo(Errors.General.Unauthorized());
+        Db.Device.Count().Should().Be(0);
     }
 }

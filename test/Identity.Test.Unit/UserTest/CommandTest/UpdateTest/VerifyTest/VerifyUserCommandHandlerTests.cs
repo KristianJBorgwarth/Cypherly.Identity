@@ -1,5 +1,6 @@
 ﻿using FakeItEasy;
 using FluentAssertions;
+using Identity.Application.Contracts.RateLimiting;
 using Identity.Application.Contracts.Repository;
 using Identity.Application.Features.User.Commands.Update.Verify;
 using Identity.Domain.Aggregates;
@@ -14,6 +15,7 @@ namespace Identity.Test.Unit.UserTest.CommandTest.UpdateTest.VerifyTest
     {
         private readonly IUserRepository _fakeUserRepository;
         private readonly IUnitOfWork _fakeUnitOfWork;
+        private readonly IRateLimiter _fakeRateLimiter;
         private readonly VerifyUserCommandHandler _sut;
 
         public VerifyUserCommandHandlerTests()
@@ -22,7 +24,10 @@ namespace Identity.Test.Unit.UserTest.CommandTest.UpdateTest.VerifyTest
             _fakeUserRepository = A.Fake<IUserRepository>();
             _fakeUnitOfWork = A.Fake<IUnitOfWork>();
 
-            _sut = new(fakeLogger, _fakeUserRepository, _fakeUnitOfWork);
+            _fakeRateLimiter = A.Fake<IRateLimiter>();
+            A.CallTo(() => _fakeRateLimiter.IsAllowedAsync(A<string>._, A<int>._, A<TimeSpan>._, A<CancellationToken>._)).Returns(true);
+
+            _sut = new(fakeLogger, _fakeUserRepository, _fakeUnitOfWork, _fakeRateLimiter);
         }
 
         [Fact]
@@ -103,6 +108,29 @@ namespace Identity.Test.Unit.UserTest.CommandTest.UpdateTest.VerifyTest
             result.Success.Should().BeFalse();
             result.Error.Description.Should().Be("Invalid verification code");  // Adjust based on actual message
             A.CallTo(() => _fakeUserRepository.UpdateAsync(A<User>.Ignored, A<CancellationToken>._)).MustNotHaveHappened();
+            A.CallTo(() => _fakeUnitOfWork.SaveChangesAsync(A<CancellationToken>.Ignored)).MustHaveHappenedOnceExactly();
+            user.GetActiveVerificationCode(UserVerificationCodeType.EmailVerification)!.Code.FailedAttempts.Should().Be(1);
+        }
+
+        [Fact]
+        public async Task Handle_Should_Return_TooManyRequests_When_RateLimit_Exceeded()
+        {
+            // Arrange
+            var command = new VerifyUserCommand
+            {
+                UserId = Guid.NewGuid(),
+                VerificationCode = "123456"
+            };
+
+            A.CallTo(() => _fakeRateLimiter.IsAllowedAsync($"verify:account:{command.UserId}", A<int>._, A<TimeSpan>._, A<CancellationToken>._)).Returns(false);
+
+            // Act
+            var result = await _sut.Handle(command, CancellationToken.None);
+
+            // Assert
+            result.Success.Should().BeFalse();
+            result.Error.Should().BeEquivalentTo(Errors.General.TooManyRequests());
+            A.CallTo(() => _fakeUserRepository.GetSinleAsync(A<UserWithVerificationCodesSpec>._, A<CancellationToken>._)).MustNotHaveHappened();
             A.CallTo(() => _fakeUnitOfWork.SaveChangesAsync(A<CancellationToken>.Ignored)).MustNotHaveHappened();
         }
     }

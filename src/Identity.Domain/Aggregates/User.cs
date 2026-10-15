@@ -73,7 +73,7 @@ public class User : AggregateRoot
         if (IsVerified)
             throw new InvalidOperationException("This chat user is already verified");
 
-        var userVerificationCode = VerificationCodes.FirstOrDefault(uvc => uvc.Code.Value == verificationCode);
+        var userVerificationCode = GetActiveVerificationCode(UserVerificationCodeType.EmailVerification);
         if (userVerificationCode is null) return Result.Fail(Errors.General.UnspecifiedError("Invalid verification code"));
 
         var verificationResult = userVerificationCode.Code.Verify(verificationCode);

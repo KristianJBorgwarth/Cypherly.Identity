@@ -1,5 +1,7 @@
 ﻿using Cypherly.Domain.Common;
 using Identity.Application.Abstractions;
+using Identity.Application.Caching.LoginNonce;
+using Identity.Application.Contracts.Cache;
 using Identity.Application.Contracts.RateLimiting;
 using Identity.Application.Contracts.Repository;
 using Identity.Domain.Common;
@@ -11,7 +13,8 @@ public class LoginCommandHandler(
     IUserRepository userRepository,
     IAuthenticationService authenticationService,
     IUnitOfWork unitOfWork,
-    IRateLimiter rateLimiter)
+    IRateLimiter rateLimiter,
+    ILoginNonceCache loginNonceCache)
     : ICommandHandler<LoginCommand, LoginDto>
 {
     private static readonly TimeSpan RateLimitWindow = TimeSpan.FromHours(1);
@@ -49,6 +52,9 @@ public class LoginCommandHandler(
 
         await unitOfWork.SaveChangesAsync(ct);
 
-        return new LoginDto { IsVerified = true, UserId = user.Id };
+        var loginNonce = LoginNonce.Create(user.Id, LoginNonceStage.PasswordVerified);
+        await loginNonceCache.AddNonceAsync(loginNonce, ct);
+
+        return new LoginDto { IsVerified = true, UserId = user.Id, NonceId = loginNonce.Id, Nonce = loginNonce.NonceValue };
     }
 }

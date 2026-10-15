@@ -22,8 +22,6 @@ public class LoginCommandHandler(
 
     public async ValueTask<Result<LoginDto>> Handle(LoginCommand cmd, CancellationToken ct)
     {
-        // Every attempt is counted per email before the password is checked, so concurrent guesses can't slip past the limit.
-        // It is keyed on the email rather than the user, so unknown emails are limited the same way and the 429 doesn't reveal which accounts exist.
         var passwordAttemptKey = $"login:password:{cmd.Email.Trim().ToLowerInvariant()}";
         var attemptAllowed = await rateLimiter.IsAllowedAsync(passwordAttemptKey, PasswordAttemptCount, PasswordAttemptWindow, ct);
         if (attemptAllowed is false)
@@ -37,7 +35,6 @@ public class LoginCommandHandler(
         var pwResult = user.Password.Verify(cmd.Password);
         if (!pwResult) return Result.Fail<LoginDto>(Errors.General.UnspecifiedError("Invalid Credentials"));
 
-        // The password was correct, so only failed attempts are left counting against the limit.
         await rateLimiter.ResetAsync(passwordAttemptKey, ct);
 
         if (!user.IsVerified) return Result.Ok(new LoginDto { IsVerified = false, UserId = user.Id });

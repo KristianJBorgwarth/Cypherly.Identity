@@ -131,7 +131,7 @@ public class LoginCommandHandlerTest : IntegrationTestBase
     [Fact]
     public async Task Handle_Given_Too_Many_Failed_Passwords_Should_Return_TooManyRequests_Even_For_Correct_Password()
     {
-        // Arrange: Valkey isn't flushed between tests, so use an email no other test counts against
+        // Arrange
         var email = $"{Guid.NewGuid():N}@mail.dk";
         var user = new User(Guid.NewGuid(), Email.Create(email), Password.Create("TestPassword?123"), true);
 

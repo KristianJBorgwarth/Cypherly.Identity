@@ -45,7 +45,6 @@ builder.Services.AddCors(options =>
     });
 });
 
-builder.Services.AddControllers();
 builder.Services.AddEndpoints();
 builder.Services.AddOpenApi();
 
@@ -54,7 +53,7 @@ var app = builder.Build();
 app.MapOpenApi();
 app.MapScalarApiReference(options =>
 {
-    options.WithTitle("Social.API V1")
+    options.WithTitle("Identity.API V1")
         .WithTheme(ScalarTheme.Purple)
         .HideDarkModeToggle()
         .WithDefaultHttpClient(ScalarTarget.JavaScript, ScalarClient.Axios);
@@ -73,7 +72,6 @@ app.UseAuthentication();
 
 app.UseAuthorization();
 
-app.MapControllers();
 app.RegisterMinimalEndpoints();
 
 app.Run();

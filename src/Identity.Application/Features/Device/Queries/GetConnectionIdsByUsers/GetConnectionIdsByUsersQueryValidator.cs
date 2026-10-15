@@ -9,9 +9,9 @@ public class GetConnectionIdsByUsersQueryValidator : AbstractValidator<GetConnec
     public GetConnectionIdsByUsersQueryValidator()
     {
         RuleFor(x => x.TenantIds).NotEmpty()
-            .WithMessage(Errors.General.ValueIsEmpty(nameof(GetConnectionIdsByUsersQuery.TenantIds)).Message);
+            .WithMessage(Errors.General.ValueIsEmpty(nameof(GetConnectionIdsByUsersQuery.TenantIds)).Description);
 
         RuleForEach(x => x.TenantIds).NotEmpty()
-            .WithMessage(Errors.General.ValueIsEmpty(nameof(Guid)).Message);
+            .WithMessage(Errors.General.ValueIsEmpty(nameof(Guid)).Description);
     }
 }

@@ -49,7 +49,7 @@ public class RefreshTokensCommandHandlerTest
 
         // Assert
         result.Success.Should().BeFalse();
-        result.Error.Message.Should().Match(Errors.General.NotFound(command.UserId).Message);
+        result.Error.Description.Should().Match(Errors.General.NotFound(command.UserId).Description);
     }
 
     [Fact]
@@ -72,7 +72,7 @@ public class RefreshTokensCommandHandlerTest
 
         // Assert
         result.Success.Should().BeFalse();
-        result.Error.Message.Should().Match("Invalid refresh token");
+        result.Error.Description.Should().Match("Invalid refresh token");
     }
 
     [Fact]

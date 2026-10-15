@@ -97,7 +97,7 @@ public class VerifyLoginCommandHandlerTest
 
         // Assert
         result.Success.Should().BeFalse();
-        result.Error.Message.Should().Contain("Invalid verification code");
+        result.Error.Description.Should().Contain("Invalid verification code");
         A.CallTo(() => _fakeNonceCache.AddNonceAsync(A<LoginNonce>._, A<CancellationToken>._)).MustNotHaveHappened();
         A.CallTo(() => _fakeUnitOfWork.SaveChangesAsync(A<CancellationToken>._)).MustHaveHappenedOnceExactly();
     }
@@ -119,7 +119,7 @@ public class VerifyLoginCommandHandlerTest
 
         // Assert
         result.Success.Should().BeFalse();
-        result.Error.Message.Should().Contain("Too many requests");
+        result.Error.Description.Should().Contain("Too many requests");
         A.CallTo(() => _fakeRepo.GetSinleAsync(A<UserWithVerificationCodesSpec>._, A<CancellationToken>._)).MustNotHaveHappened();
     }
 
@@ -153,6 +153,6 @@ public class VerifyLoginCommandHandlerTest
 
         // Assert - the code is burned even though the correct value is now supplied
         result.Success.Should().BeFalse();
-        result.Error.Message.Should().Contain("Invalid verification code");
+        result.Error.Description.Should().Contain("Invalid verification code");
     }
 }

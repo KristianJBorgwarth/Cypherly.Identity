@@ -12,44 +12,44 @@ public class CreateDeviceCommandValidator : AbstractValidator<CreateDeviceComman
         RuleLevelCascadeMode = CascadeMode.Stop;
         RuleFor(x => x.UserId)
             .NotEmpty()
-            .WithMessage(Errors.General.ValueIsEmpty(nameof(CreateDeviceCommand.UserId)).Message);
+            .WithMessage(Errors.General.ValueIsEmpty(nameof(CreateDeviceCommand.UserId)).Description);
 
         RuleFor(x => x.LoginNonceId)
             .NotEmpty()
-            .WithMessage(Errors.General.ValueIsEmpty(nameof(CreateDeviceCommand.LoginNonceId)).Message);
+            .WithMessage(Errors.General.ValueIsEmpty(nameof(CreateDeviceCommand.LoginNonceId)).Description);
 
         RuleFor(x => x.LoginNonce)
             .NotEmpty()
-            .WithMessage(Errors.General.ValueIsEmpty(nameof(CreateDeviceCommand.LoginNonce)).Message);
+            .WithMessage(Errors.General.ValueIsEmpty(nameof(CreateDeviceCommand.LoginNonce)).Description);
 
         RuleFor(x => x.Base64DevicePublicKey)
             .NotNull()
-            .WithMessage(Errors.General.ValueIsRequired(nameof(CreateDeviceCommand.Base64DevicePublicKey)).Message)
+            .WithMessage(Errors.General.ValueIsRequired(nameof(CreateDeviceCommand.Base64DevicePublicKey)).Description)
             .NotEmpty()
-            .WithMessage(Errors.General.ValueIsEmpty(nameof(CreateDeviceCommand.Base64DevicePublicKey)).Message)
-            .Must(x => x.Length <= 100).WithMessage(Errors.General.ValueTooLarge(nameof(CreateDeviceCommand.Base64DevicePublicKey), 100).Message);
+            .WithMessage(Errors.General.ValueIsEmpty(nameof(CreateDeviceCommand.Base64DevicePublicKey)).Description)
+            .Must(x => x.Length <= 100).WithMessage(Errors.General.ValueTooLarge(nameof(CreateDeviceCommand.Base64DevicePublicKey), 100).Description);
 
         RuleFor(x => x.DeviceAppVersion)
             .NotNull()
-            .WithMessage(Errors.General.ValueIsRequired(nameof(CreateDeviceCommand.DeviceAppVersion)).Message)
+            .WithMessage(Errors.General.ValueIsRequired(nameof(CreateDeviceCommand.DeviceAppVersion)).Description)
             .NotEmpty()
-            .WithMessage(Errors.General.ValueIsEmpty(nameof(CreateDeviceCommand.DeviceAppVersion)).Message)
+            .WithMessage(Errors.General.ValueIsEmpty(nameof(CreateDeviceCommand.DeviceAppVersion)).Description)
             .Must(x => x.Length <= 6)
-            .WithMessage(Errors.General.ValueTooLarge(nameof(CreateDeviceCommand.DeviceAppVersion), 6).Message)
+            .WithMessage(Errors.General.ValueTooLarge(nameof(CreateDeviceCommand.DeviceAppVersion), 6).Description)
             .Must(BeValidDeviceAppVersion)
-            .WithMessage(Errors.General.UnexpectedValue(nameof(CreateDeviceCommand.DeviceAppVersion)).Message);
+            .WithMessage(Errors.General.UnexpectedValue(nameof(CreateDeviceCommand.DeviceAppVersion)).Description);
 
         RuleFor(x => x.DeviceType)
             .NotEmpty()
-            .WithMessage(Errors.General.ValueIsEmpty(nameof(CreateDeviceCommand.DeviceType)).Message)
+            .WithMessage(Errors.General.ValueIsEmpty(nameof(CreateDeviceCommand.DeviceType)).Description)
             .IsInEnum()
-            .WithMessage(Errors.General.UnexpectedValue(nameof(CreateDeviceCommand.DeviceType)).Message);
+            .WithMessage(Errors.General.UnexpectedValue(nameof(CreateDeviceCommand.DeviceType)).Description);
 
         RuleFor(x => x.DevicePlatform)
             .NotEmpty()
-            .WithMessage(Errors.General.ValueIsEmpty(nameof(CreateDeviceCommand.DevicePlatform)).Message)
+            .WithMessage(Errors.General.ValueIsEmpty(nameof(CreateDeviceCommand.DevicePlatform)).Description)
             .IsInEnum()
-            .WithMessage(Errors.General.UnexpectedValue(nameof(CreateDeviceCommand.DevicePlatform)).Message);
+            .WithMessage(Errors.General.UnexpectedValue(nameof(CreateDeviceCommand.DevicePlatform)).Description);
     }
 
     private static bool BeValidDeviceAppVersion(string appVersion)

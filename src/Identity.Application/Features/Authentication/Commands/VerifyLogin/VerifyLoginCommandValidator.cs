@@ -10,9 +10,9 @@ public sealed class VerifyLoginCommandValidator : AbstractValidator<VerifyLoginC
     public VerifyLoginCommandValidator()
     {
         RuleFor(cmd => cmd.UserId)
-            .NotEmpty().WithMessage(Errors.General.ValueIsEmpty(nameof(VerifyUserCommand.UserId)).Message);
+            .NotEmpty().WithMessage(Errors.General.ValueIsEmpty(nameof(VerifyUserCommand.UserId)).Description);
 
         RuleFor(cmd => cmd.LoginVerificationCode)
-            .NotEmpty().WithMessage(Errors.General.ValueIsEmpty(nameof(VerifyUserCommand.VerificationCode)).Message);
+            .NotEmpty().WithMessage(Errors.General.ValueIsEmpty(nameof(VerifyUserCommand.VerificationCode)).Description);
     }
 }

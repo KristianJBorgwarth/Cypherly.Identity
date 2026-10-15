@@ -10,6 +10,6 @@ public class DeleteUserCommandValidator : AbstractValidator<DeleteUserCommand>
     {
         RuleFor(x => x.Id)
             .NotEmpty()
-            .WithMessage(Errors.General.ValueIsEmpty(nameof(DeleteUserCommand.Id)).Message);
+            .WithMessage(Errors.General.ValueIsEmpty(nameof(DeleteUserCommand.Id)).Description);
     }
 }

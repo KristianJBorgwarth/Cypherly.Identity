@@ -10,10 +10,10 @@ public class LogoutCommandValidator : AbstractValidator<LogoutCommand>
 
         RuleFor(x => x.Id)
             .NotEmpty()
-            .WithMessage(Errors.General.ValueIsEmpty(nameof(LogoutCommand.Id)).Message);
+            .WithMessage(Errors.General.ValueIsEmpty(nameof(LogoutCommand.Id)).Description);
 
         RuleFor(x => x.DeviceId)
             .NotEmpty()
-            .WithMessage(Errors.General.ValueIsEmpty(nameof(LogoutCommand.DeviceId)).Message);
+            .WithMessage(Errors.General.ValueIsEmpty(nameof(LogoutCommand.DeviceId)).Description);
     }
 }

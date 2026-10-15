@@ -103,7 +103,7 @@ public class CreateUserCommandHandlerTests
 
         // Assert
         result.Success.Should().BeFalse();
-        result.Error.Message.Should().Be("An account already exists with that email");
+        result.Error.Description.Should().Be("An account already exists with that email");
 
         A.CallTo(() => _fakeRepo.GetSinleAsync(A<UserByEmailSpec>._, A<CancellationToken>._)).MustHaveHappenedOnceExactly();
         A.CallTo(() => _fakeRepo.CreateAsync(A<User>.Ignored, A<CancellationToken>._)).MustNotHaveHappened();
@@ -132,7 +132,7 @@ public class CreateUserCommandHandlerTests
 
         // Assert
         result.Success.Should().BeFalse();
-        result.Error.Message.Should().Be("error");
+        result.Error.Description.Should().Be("error");
 
         A.CallTo(() => _fakeRepo.GetSinleAsync(A<UserByEmailSpec>._, A<CancellationToken>._)).MustHaveHappenedOnceExactly();
         A.CallTo(() => _fakeUserLifeCycleServices.CreateUser(A<string>.Ignored, A<string>.Ignored)).MustHaveHappenedOnceExactly();

@@ -9,9 +9,9 @@ public class VerifyUserCommandValidator : AbstractValidator<VerifyUserCommand>
     public VerifyUserCommandValidator()
     {
         RuleFor(cmd => cmd.UserId)
-            .NotEmpty().WithMessage(Errors.General.ValueIsEmpty(nameof(VerifyUserCommand.UserId)).Message);
+            .NotEmpty().WithMessage(Errors.General.ValueIsEmpty(nameof(VerifyUserCommand.UserId)).Description);
 
         RuleFor(cmd => cmd.VerificationCode)
-            .NotEmpty().WithMessage(Errors.General.ValueIsEmpty(nameof(VerifyUserCommand.VerificationCode)).Message);
+            .NotEmpty().WithMessage(Errors.General.ValueIsEmpty(nameof(VerifyUserCommand.VerificationCode)).Description);
     }
 }

@@ -9,13 +9,13 @@ public class VerifyNonceCommandValidator : AbstractValidator<VerifyNonceCommand>
     public VerifyNonceCommandValidator()
     {
         RuleFor(x => x.UserId)
-            .NotEmpty().WithMessage(Errors.General.ValueIsEmpty(nameof(VerifyNonceCommand.UserId)).Message);
+            .NotEmpty().WithMessage(Errors.General.ValueIsEmpty(nameof(VerifyNonceCommand.UserId)).Description);
         RuleFor(x => x.NonceId)
-            .NotEmpty().WithMessage(Errors.General.ValueIsEmpty(nameof(VerifyNonceCommand.NonceId)).Message);
+            .NotEmpty().WithMessage(Errors.General.ValueIsEmpty(nameof(VerifyNonceCommand.NonceId)).Description);
         RuleFor(x => x.DeviceId)
-            .NotEmpty().WithMessage(Errors.General.ValueIsEmpty(nameof(VerifyNonceCommand.DeviceId)).Message);
+            .NotEmpty().WithMessage(Errors.General.ValueIsEmpty(nameof(VerifyNonceCommand.DeviceId)).Description);
         RuleFor(x => x.Nonce)
             .NotEmpty()
-            .WithMessage(Errors.General.ValueIsEmpty(nameof(VerifyNonceCommand.Nonce)).Message);
+            .WithMessage(Errors.General.ValueIsEmpty(nameof(VerifyNonceCommand.Nonce)).Description);
     }
 }

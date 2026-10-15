@@ -9,13 +9,13 @@ public class ResendVerificationCodeCommandValidator : AbstractValidator<ResendVe
     public ResendVerificationCodeCommandValidator()
     {
         RuleFor(cmd => cmd.UserId)
-            .NotEmpty().WithMessage(Errors.General.ValueIsEmpty(nameof(ResendVerificationCodeCommand.UserId)).Message);
+            .NotEmpty().WithMessage(Errors.General.ValueIsEmpty(nameof(ResendVerificationCodeCommand.UserId)).Description);
 
         RuleFor(cmd => cmd.CodeType)
             .NotEmpty()
-            .WithMessage(Errors.General.ValueIsEmpty(nameof(ResendVerificationCodeCommand.CodeType)).Message)
+            .WithMessage(Errors.General.ValueIsEmpty(nameof(ResendVerificationCodeCommand.CodeType)).Description)
             .IsInEnum()
-            .WithMessage(Errors.General.UnexpectedValue(nameof(ResendVerificationCodeCommand.CodeType)).Message);
+            .WithMessage(Errors.General.UnexpectedValue(nameof(ResendVerificationCodeCommand.CodeType)).Description);
 
     }
 }

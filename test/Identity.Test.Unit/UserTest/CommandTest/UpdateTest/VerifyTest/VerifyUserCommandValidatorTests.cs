@@ -23,7 +23,7 @@ namespace Identity.Test.Unit.UserTest.CommandTest.UpdateTest.VerifyTest
 
             // Assert
             result.ShouldHaveValidationErrorFor(cmd => cmd.UserId)
-                .WithErrorMessage(Errors.General.ValueIsEmpty(nameof(VerifyUserCommand.UserId)).Message);
+                .WithErrorMessage(Errors.General.ValueIsEmpty(nameof(VerifyUserCommand.UserId)).Description);
         }
 
         [Fact]
@@ -41,7 +41,7 @@ namespace Identity.Test.Unit.UserTest.CommandTest.UpdateTest.VerifyTest
 
             // Assert
             result.ShouldHaveValidationErrorFor(cmd => cmd.VerificationCode)
-                .WithErrorMessage(Errors.General.ValueIsEmpty(nameof(VerifyUserCommand.VerificationCode)).Message);
+                .WithErrorMessage(Errors.General.ValueIsEmpty(nameof(VerifyUserCommand.VerificationCode)).Description);
         }
 
         [Fact]

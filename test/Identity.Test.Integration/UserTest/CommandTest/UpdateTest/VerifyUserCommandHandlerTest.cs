@@ -1,4 +1,5 @@
 ﻿using FluentAssertions;
+using Identity.Application.Contracts.RateLimiting;
 using Identity.Application.Contracts.Repository;
 using Identity.Application.Features.User.Commands.Update.Verify;
 using Identity.Domain.Aggregates;
@@ -21,7 +22,8 @@ public class VerifyUserCommandHandlerTest : IntegrationTestBase
         var userRepository = scope.ServiceProvider.GetRequiredService<IUserRepository>();
         var unitOfWork = scope.ServiceProvider.GetRequiredService<IUnitOfWork>();
         var logger = scope.ServiceProvider.GetRequiredService<ILogger<VerifyUserCommandHandler>>();
-        _sut = new(logger, userRepository, unitOfWork);
+        var rateLimiter = scope.ServiceProvider.GetRequiredService<IRateLimiter>();
+        _sut = new(logger, userRepository, unitOfWork, rateLimiter);
     }
 
     [Fact]
@@ -96,5 +98,50 @@ public class VerifyUserCommandHandlerTest : IntegrationTestBase
         result.Success.Should().BeFalse();
         result.Error.Description.Should().Contain("Invalid verification code");
         Db.User.AsNoTracking().FirstOrDefault(u => u.Id == user.Id)!.IsVerified.Should().BeFalse();
+    }
+
+    [Fact]
+    public async Task Handle_Invalid_VerificationCode_Should_Persist_Failed_Attempt()
+    {
+        // Arrange
+        var user = new User(Guid.NewGuid(), Email.Create("test@email.dk"), Password.Create("lolwortks?293K"), false);
+        user.AddVerificationCode(UserVerificationCodeType.EmailVerification);
+        await Db.User.AddAsync(user);
+        await Db.SaveChangesAsync();
+
+        var command = new VerifyUserCommand()
+        {
+            UserId = user.Id,
+            VerificationCode = "InvalidCode"
+        };
+
+        // Act
+        await _sut.Handle(command, CancellationToken.None);
+
+        // Assert
+        Db.VerificationCode.AsNoTracking().First(vc => vc.UserId == user.Id).Code.FailedAttempts.Should().Be(1);
+    }
+
+    [Fact]
+    public async Task Handle_Login_Code_Should_Not_Verify_Account()
+    {
+        // Arrange
+        var user = new User(Guid.NewGuid(), Email.Create("test@email.dk"), Password.Create("lolwortks?293K"), false);
+        user.AddVerificationCode(UserVerificationCodeType.Login);
+        await Db.User.AddAsync(user);
+        await Db.SaveChangesAsync();
+
+        var command = new VerifyUserCommand()
+        {
+            UserId = user.Id,
+            VerificationCode = user.GetActiveVerificationCode(UserVerificationCodeType.Login)!.Code.Value
+        };
+
+        // Act
+        var result = await _sut.Handle(command, CancellationToken.None);
+
+        // Assert
+        result.Success.Should().BeFalse();
+        Db.User.AsNoTracking().First(u => u.Id == user.Id).IsVerified.Should().BeFalse();
     }
 }

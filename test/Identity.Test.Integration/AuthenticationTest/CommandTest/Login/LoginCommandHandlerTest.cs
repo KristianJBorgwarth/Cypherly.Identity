@@ -1,4 +1,6 @@
 ﻿using FluentAssertions;
+using Identity.Application.Caching.LoginNonce;
+using Identity.Application.Contracts.Cache;
 using Identity.Application.Contracts.RateLimiting;
 using Identity.Application.Contracts.Repository;
 using Identity.Application.Features.Authentication.Commands.Login;
@@ -16,6 +18,7 @@ namespace Identity.Test.Integration.AuthenticationTest.CommandTest.Login;
 public class LoginCommandHandlerTest : IntegrationTestBase
 {
     private readonly LoginCommandHandler _sut;
+    private readonly ILoginNonceCache _loginNonceCache;
 
     public LoginCommandHandlerTest(IntegrationTestFactory<Program, IdentityDbContext> factory) : base(factory)
     {
@@ -24,7 +27,8 @@ public class LoginCommandHandlerTest : IntegrationTestBase
         var unitOfWork = scope.GetRequiredService<IUnitOfWork>();
         var authservice = scope.GetRequiredService<IAuthenticationService>();
         var rateLimiter = scope.GetRequiredService<IRateLimiter>();
-        _sut = new LoginCommandHandler(repo, authservice, unitOfWork, rateLimiter);
+        _loginNonceCache = scope.GetRequiredService<ILoginNonceCache>();
+        _sut = new LoginCommandHandler(repo, authservice, unitOfWork, rateLimiter, _loginNonceCache);
     }
 
     [Fact]
@@ -51,6 +55,11 @@ public class LoginCommandHandlerTest : IntegrationTestBase
         Db.VerificationCode.Should().HaveCount(1);
         result.Value.IsVerified.Should().BeTrue();
         result.Value.UserId.Should().NotBeEmpty().And.Be(user.Id);
+
+        var nonce = await _loginNonceCache.GetNonceAsync(result.Value.NonceId!.Value, CancellationToken.None);
+        nonce.Should().NotBeNull();
+        nonce!.Stage.Should().Be(LoginNonceStage.PasswordVerified);
+        nonce.IsValidFor(user.Id, result.Value.Nonce!, LoginNonceStage.PasswordVerified).Should().BeTrue();
     }
 
     [Fact]

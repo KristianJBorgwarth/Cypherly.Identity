@@ -108,6 +108,38 @@ public class UserTest
     }
 
     [Fact]
+    public void Verify_Should_Count_Failed_Attempt_On_Active_EmailVerification_Code()
+    {
+        // Arrange
+        var user = new User(Guid.NewGuid(), Email.Create("test@mail.dk"), Password.Create("kjFis97823??sd"), false);
+        user.AddVerificationCode(UserVerificationCodeType.EmailVerification);
+
+        // Act
+        user.VerifyAccount("wrong");
+
+        // Assert
+        user.GetActiveVerificationCode(UserVerificationCodeType.EmailVerification)!.Code.FailedAttempts.Should().Be(1);
+        user.IsVerified.Should().BeFalse();
+    }
+
+    [Fact]
+    public void Verify_Should_Not_Accept_Login_Code()
+    {
+        // Arrange
+        var user = new User(Guid.NewGuid(), Email.Create("test@mail.dk"), Password.Create("kjFis97823??sd"), false);
+        user.AddVerificationCode(UserVerificationCodeType.Login);
+        var loginCode = user.GetActiveVerificationCode(UserVerificationCodeType.Login)!.Code.Value;
+
+        // Act
+        var result = user.VerifyAccount(loginCode);
+
+        // Assert
+        result.Success.Should().BeFalse();
+        user.IsVerified.Should().BeFalse();
+        user.GetActiveVerificationCode(UserVerificationCodeType.Login)!.Code.IsUsed.Should().BeFalse();
+    }
+
+    [Fact]
     public void Verify_Should_Return_Success_Result_When_Valid_VerificationCode()
     {
         // Arrange

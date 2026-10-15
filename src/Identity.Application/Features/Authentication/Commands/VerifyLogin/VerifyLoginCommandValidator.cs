@@ -14,5 +14,11 @@ public sealed class VerifyLoginCommandValidator : AbstractValidator<VerifyLoginC
 
         RuleFor(cmd => cmd.LoginVerificationCode)
             .NotEmpty().WithMessage(Errors.General.ValueIsEmpty(nameof(VerifyUserCommand.VerificationCode)).Description);
+
+        RuleFor(cmd => cmd.NonceId)
+            .NotEmpty().WithMessage(Errors.General.ValueIsEmpty(nameof(VerifyLoginCommand.NonceId)).Description);
+
+        RuleFor(cmd => cmd.Nonce)
+            .NotEmpty().WithMessage(Errors.General.ValueIsEmpty(nameof(VerifyLoginCommand.Nonce)).Description);
     }
 }

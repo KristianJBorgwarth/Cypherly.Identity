@@ -1,4 +1,5 @@
-﻿using Cypherly.Domain.Common;
+﻿using System.Security.Cryptography;
+using Cypherly.Domain.Common;
 using Identity.Domain.Common;
 
 namespace Identity.Domain.ValueObjects;
@@ -45,8 +46,7 @@ public class VerificationCode : ValueObject
 
     public static VerificationCode Create(DateTime expirationDate)
     {
-        var random = new Random();
-        var code = random.Next(100000, 999999).ToString();
+        var code = RandomNumberGenerator.GetInt32(0, 1_000_000).ToString("D6");
         return new VerificationCode(code, expirationDate);
     }
 

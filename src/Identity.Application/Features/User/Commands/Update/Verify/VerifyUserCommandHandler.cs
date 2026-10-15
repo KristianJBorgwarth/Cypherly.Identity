@@ -1,5 +1,6 @@
 ﻿using Cypherly.Domain.Common;
 using Identity.Application.Abstractions;
+using Identity.Application.Contracts.RateLimiting;
 using Identity.Application.Contracts.Repository;
 using Identity.Domain.Common;
 using Microsoft.Extensions.Logging;
@@ -9,11 +10,21 @@ namespace Identity.Application.Features.User.Commands.Update.Verify;
 public class VerifyUserCommandHandler(
     ILogger<VerifyUserCommandHandler> logger,
     IUserRepository userRepository,
-    IUnitOfWork unitOfWork)
+    IUnitOfWork unitOfWork,
+    IRateLimiter rateLimiter)
     : ICommandHandler<VerifyUserCommand>
 {
+    private static readonly TimeSpan RateLimitWindow = TimeSpan.FromHours(1);
+    private const int RateLimitCount = 10;
+
     public async ValueTask<Result> Handle(VerifyUserCommand cmd, CancellationToken ct)
     {
+        var allowed = await rateLimiter.IsAllowedAsync($"verify:account:{cmd.UserId}", RateLimitCount, RateLimitWindow, ct);
+        if (allowed is false)
+        {
+            return Result.Fail(Errors.General.TooManyRequests());
+        }
+
         var user = await userRepository.GetSinleAsync(new UserWithVerificationCodesSpec(cmd.UserId), ct);
         if (user is null)
         {
@@ -22,7 +33,11 @@ public class VerifyUserCommandHandler(
         }
 
         var result = user.VerifyAccount(cmd.VerificationCode);
-        if (result.Success is false) return Result.Fail(result.Error);
+        if (result.Success is false)
+        {
+            await unitOfWork.SaveChangesAsync(ct);
+            return Result.Fail(result.Error);
+        }
 
         await userRepository.UpdateAsync(user, ct);
         await unitOfWork.SaveChangesAsync(ct);

@@ -10,7 +10,7 @@ public class LoginNonceCache(
     IConnectionMultiplexer connectionMultiplexer)
     : ILoginNonceCache
 {
-    private static readonly TimeSpan NonceLifetime = TimeSpan.FromMinutes(10);
+    private static readonly TimeSpan ClaimLifetime = TimeSpan.FromMinutes(10);
 
     private readonly JsonSerializerOptions _options = new()
     {
@@ -19,14 +19,14 @@ public class LoginNonceCache(
 
     public async Task AddNonceAsync(LoginNonce loginNonce, CancellationToken cancellationToken)
     {
-        await valkeyCacheService.SetAsync(loginNonce.Id.ToString(), loginNonce, cancellationToken, NonceLifetime);
+        await valkeyCacheService.SetAsync(loginNonce.Id.ToString(), loginNonce, cancellationToken, loginNonce.ExpiresAt - DateTime.UtcNow);
     }
 
     public async Task<bool> TryClaimNonceAsync(Guid nonceId, CancellationToken cancellationToken)
     {
         // SET NX is atomic, so exactly one request wins the claim. The claim outlives the nonce, so it can't be reused.
         return await connectionMultiplexer.GetDatabase()
-            .StringSetAsync(ClaimKey(nonceId), "1", NonceLifetime, When.NotExists);
+            .StringSetAsync(ClaimKey(nonceId), "1", ClaimLifetime, When.NotExists);
     }
 
     public async Task ReleaseNonceClaimAsync(Guid nonceId, CancellationToken cancellationToken)

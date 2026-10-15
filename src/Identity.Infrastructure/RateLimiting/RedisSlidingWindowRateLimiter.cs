@@ -43,4 +43,9 @@ public class RedisSlidingWindowRateLimiter(IConnectionMultiplexer connectionMult
 
         return (long)result == 1;
     }
+
+    public async Task ResetAsync(string key, CancellationToken cancellationToken)
+    {
+        await connectionMultiplexer.GetDatabase().KeyDeleteAsync(key);
+    }
 }

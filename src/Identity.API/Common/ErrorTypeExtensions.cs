@@ -1,4 +1,4 @@
-using Identity.Domain.ValueObjects;
+using Identity.Domain.Common;
 
 namespace Identity.API.Common;
 

@@ -1,4 +1,4 @@
-namespace Identity.Domain.ValueObjects;
+namespace Identity.Domain.Common;
 
 /// <summary>
 /// Values must stay in sync with Conduit's ErrorType, as Conduit deserializes the numeric value from ProblemDetails.

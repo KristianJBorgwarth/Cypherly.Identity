@@ -1,5 +1,3 @@
-using Identity.Domain.ValueObjects;
-
 namespace Identity.Domain.Common;
 
 public class Errors

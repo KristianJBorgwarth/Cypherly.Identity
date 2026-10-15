@@ -1,6 +1,5 @@
 ﻿using Cypherly.Domain.Common;
 using Identity.Domain.Common;
-using Identity.Domain.ValueObjects;
 using FluentValidation;
 using FluentValidation.Results;
 using Mediator;

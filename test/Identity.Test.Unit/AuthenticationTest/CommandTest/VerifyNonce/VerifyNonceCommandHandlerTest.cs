@@ -36,46 +36,29 @@ public class VerifyNonceCommandHandlerTest
         _sut = new(_fakeRepo, _fakeCachce, _fakeJwt, _fakeVerify, _fakeUnit, fakeLogger);
     }
 
-    [Fact]
-    public async Task Handle_When_User_Not_Found_Should_Return_ResultFail()
+    private static (User user, Device device) CreateUserWithDevice()
     {
-        // Arrange
-        var cmd = new VerifyNonceCommand
-        {
-            DeviceId = Guid.NewGuid(),
-            Nonce = "nonce",
-            NonceId = Guid.NewGuid(),
-            UserId = Guid.NewGuid()
-        };
-
-        A.CallTo(() => _fakeRepo.GetSinleAsync(A<UserWithDevicesSpec>._, A<CancellationToken>._)).Returns((User)null!);
-
-        // Act
-        var result = await _sut.Handle(cmd, CancellationToken.None);
-
-        // Assert
-        result.Success.Should().BeFalse();
-        result.Error.Description.Should().Be(Errors.General.NotFound(cmd.UserId).Description);
-    }
-
-    [Fact]
-    public async Task Handle_When_Nonce_Not_Found_Should_Return_ResultFail()
-    {
-        // Arrange
         var user = new User(Guid.NewGuid(), Email.Create("test@mail.dk"), Password.Create("test=)23kJ00a"), true);
         var device = new Device(Guid.NewGuid(), "doesntmatter", "1.0", DeviceType.Desktop,
             DevicePlatform.Windows, user.Id);
         user.AddDevice(device);
+        return (user, device);
+    }
 
-        var cmd = new VerifyNonceCommand
-        {
-            DeviceId = device.Id,
-            Nonce = "nonce",
-            NonceId = Guid.NewGuid(),
-            UserId = user.Id
-        };
+    private static VerifyNonceCommand CreateCommand(Guid userId, Guid deviceId, Guid nonceId) => new()
+    {
+        UserId = userId,
+        DeviceId = deviceId,
+        NonceId = nonceId,
+        Nonce = "signature",
+    };
 
-        A.CallTo(() => _fakeRepo.GetSinleAsync(A<UserWithDevicesSpec>._, A<CancellationToken>._)).Returns(user);
+    [Fact]
+    public async Task Handle_When_Nonce_Not_Found_Should_Return_Unauthorized()
+    {
+        // Arrange
+        var cmd = CreateCommand(Guid.NewGuid(), Guid.NewGuid(), Guid.NewGuid());
+
         A.CallTo(() => _fakeCachce.GetNonceAsync(cmd.NonceId, A<CancellationToken>._)).Returns((Nonce)null!);
 
         // Act
@@ -83,31 +66,117 @@ public class VerifyNonceCommandHandlerTest
 
         // Assert
         result.Success.Should().BeFalse();
-        result.Error.Description.Should().Be(Errors.General.NotFound(cmd.NonceId).Description);
+        result.Error.Should().BeEquivalentTo(Errors.General.Unauthorized());
+        A.CallTo(() => _fakeRepo.GetSinleAsync(A<UserWithDevicesSpec>._, A<CancellationToken>._)).MustNotHaveHappened();
     }
 
     [Fact]
-    public async Task Handle_When_Nonce_Invalid_Should_Return_ResultFail()
+    public async Task Handle_When_Nonce_Belongs_To_Another_User_Should_Return_Unauthorized()
     {
         // Arrange
-        var user = new User(Guid.NewGuid(), Email.Create("test@mail.dk"), Password.Create("test=)23kJ00a"), true);
-        var device = new Device(Guid.NewGuid(), "doesntmatter", "1.0", DeviceType.Desktop,
-            DevicePlatform.Windows, user.Id);
-        user.AddDevice(device);
+        var (user, device) = CreateUserWithDevice();
+        var nonce = Nonce.Create(Guid.NewGuid(), device.Id);
+        var cmd = CreateCommand(user.Id, device.Id, nonce.Id);
 
-        var cmd = new VerifyNonceCommand
-        {
-            DeviceId = device.Id,
-            Nonce = "invalid",
-            NonceId = Guid.NewGuid(),
-            UserId = user.Id
-        };
-
-        var nonce = Nonce.Create(user.Id, device.Id);
-
-        A.CallTo(() => _fakeRepo.GetSinleAsync(A<UserWithDevicesSpec>._, A<CancellationToken>._)).Returns(user);
         A.CallTo(() => _fakeCachce.GetNonceAsync(cmd.NonceId, A<CancellationToken>._)).Returns(nonce);
 
+        // Act
+        var result = await _sut.Handle(cmd, CancellationToken.None);
+
+        // Assert
+        result.Success.Should().BeFalse();
+        result.Error.Should().BeEquivalentTo(Errors.General.Unauthorized());
+        A.CallTo(() => _fakeCachce.TryClaimNonceAsync(A<Guid>._, A<CancellationToken>._)).MustNotHaveHappened();
+    }
+
+    [Fact]
+    public async Task Handle_When_Nonce_Belongs_To_Another_Device_Should_Return_Unauthorized()
+    {
+        // Arrange
+        var (user, device) = CreateUserWithDevice();
+        var nonce = Nonce.Create(user.Id, Guid.NewGuid());
+        var cmd = CreateCommand(user.Id, device.Id, nonce.Id);
+
+        A.CallTo(() => _fakeCachce.GetNonceAsync(cmd.NonceId, A<CancellationToken>._)).Returns(nonce);
+
+        // Act
+        var result = await _sut.Handle(cmd, CancellationToken.None);
+
+        // Assert
+        result.Success.Should().BeFalse();
+        result.Error.Should().BeEquivalentTo(Errors.General.Unauthorized());
+        A.CallTo(() => _fakeCachce.TryClaimNonceAsync(A<Guid>._, A<CancellationToken>._)).MustNotHaveHappened();
+    }
+
+    [Fact]
+    public async Task Handle_When_Nonce_Expired_Should_Return_Unauthorized()
+    {
+        // Arrange
+        var (user, device) = CreateUserWithDevice();
+        var nonce = Nonce.FromCache(Guid.NewGuid(), "value", user.Id, device.Id,
+            DateTime.UtcNow.AddMinutes(-10), DateTime.UtcNow.AddMinutes(-5));
+        var cmd = CreateCommand(user.Id, device.Id, nonce.Id);
+
+        A.CallTo(() => _fakeCachce.GetNonceAsync(cmd.NonceId, A<CancellationToken>._)).Returns(nonce);
+
+        // Act
+        var result = await _sut.Handle(cmd, CancellationToken.None);
+
+        // Assert
+        result.Success.Should().BeFalse();
+        result.Error.Should().BeEquivalentTo(Errors.General.Unauthorized());
+    }
+
+    [Fact]
+    public async Task Handle_When_User_Not_Found_Should_Return_Unauthorized()
+    {
+        // Arrange
+        var userId = Guid.NewGuid();
+        var deviceId = Guid.NewGuid();
+        var nonce = Nonce.Create(userId, deviceId);
+        var cmd = CreateCommand(userId, deviceId, nonce.Id);
+
+        A.CallTo(() => _fakeCachce.GetNonceAsync(cmd.NonceId, A<CancellationToken>._)).Returns(nonce);
+        A.CallTo(() => _fakeRepo.GetSinleAsync(A<UserWithDevicesSpec>._, A<CancellationToken>._)).Returns((User)null!);
+
+        // Act
+        var result = await _sut.Handle(cmd, CancellationToken.None);
+
+        // Assert
+        result.Success.Should().BeFalse();
+        result.Error.Should().BeEquivalentTo(Errors.General.Unauthorized());
+    }
+
+    [Fact]
+    public async Task Handle_When_Device_Deleted_Should_Return_Unauthorized()
+    {
+        // Arrange
+        var (user, device) = CreateUserWithDevice();
+        device.SetDelete();
+        var nonce = Nonce.Create(user.Id, device.Id);
+        var cmd = CreateCommand(user.Id, device.Id, nonce.Id);
+
+        A.CallTo(() => _fakeCachce.GetNonceAsync(cmd.NonceId, A<CancellationToken>._)).Returns(nonce);
+        A.CallTo(() => _fakeRepo.GetSinleAsync(A<UserWithDevicesSpec>._, A<CancellationToken>._)).Returns(user);
+
+        // Act
+        var result = await _sut.Handle(cmd, CancellationToken.None);
+
+        // Assert
+        result.Success.Should().BeFalse();
+        result.Error.Should().BeEquivalentTo(Errors.General.Unauthorized());
+    }
+
+    [Fact]
+    public async Task Handle_When_Signature_Invalid_Should_Return_Unauthorized_And_Not_Claim()
+    {
+        // Arrange
+        var (user, device) = CreateUserWithDevice();
+        var nonce = Nonce.Create(user.Id, device.Id);
+        var cmd = CreateCommand(user.Id, device.Id, nonce.Id);
+
+        A.CallTo(() => _fakeCachce.GetNonceAsync(cmd.NonceId, A<CancellationToken>._)).Returns(nonce);
+        A.CallTo(() => _fakeRepo.GetSinleAsync(A<UserWithDevicesSpec>._, A<CancellationToken>._)).Returns(user);
         A.CallTo(() => _fakeVerify.VerifyNonce(nonce.NonceValue, cmd.Nonce, device.PublicKey)).Returns(false);
 
         // Act
@@ -115,38 +184,52 @@ public class VerifyNonceCommandHandlerTest
 
         // Assert
         result.Success.Should().BeFalse();
-        result.Error.Description.Should().Be(Errors.General.Unauthorized().Description);
+        result.Error.Should().BeEquivalentTo(Errors.General.Unauthorized());
+        A.CallTo(() => _fakeCachce.TryClaimNonceAsync(A<Guid>._, A<CancellationToken>._)).MustNotHaveHappened();
+    }
+
+    [Fact]
+    public async Task Handle_When_Nonce_Already_Claimed_Should_Return_Unauthorized_And_Not_Issue_Tokens()
+    {
+        // Arrange
+        var (user, device) = CreateUserWithDevice();
+        var nonce = Nonce.Create(user.Id, device.Id);
+        var cmd = CreateCommand(user.Id, device.Id, nonce.Id);
+
+        A.CallTo(() => _fakeCachce.GetNonceAsync(cmd.NonceId, A<CancellationToken>._)).Returns(nonce);
+        A.CallTo(() => _fakeRepo.GetSinleAsync(A<UserWithDevicesSpec>._, A<CancellationToken>._)).Returns(user);
+        A.CallTo(() => _fakeVerify.VerifyNonce(nonce.NonceValue, cmd.Nonce, device.PublicKey)).Returns(true);
+        A.CallTo(() => _fakeCachce.TryClaimNonceAsync(cmd.NonceId, A<CancellationToken>._)).Returns(false);
+
+        // Act
+        var result = await _sut.Handle(cmd, CancellationToken.None);
+
+        // Assert
+        result.Success.Should().BeFalse();
+        result.Error.Should().BeEquivalentTo(Errors.General.Unauthorized());
+        A.CallTo(() => _fakeJwt.GenerateTokenAsync(A<Guid>._, A<Guid>._, A<CancellationToken>._)).MustNotHaveHappened();
+        A.CallTo(() => _fakeUnit.SaveChangesAsync(A<CancellationToken>._)).MustNotHaveHappened();
     }
 
     [Fact]
     public async Task Handle_When_Nonce_Valid_Should_Return_Succesfull_Result()
     {
         // Arrange
-        // Arrange
-        var user = new User(Guid.NewGuid(), Email.Create("test@mail.dk"), Password.Create("test=)23kJ00a"), true);
-        var device = new Device(Guid.NewGuid(), "doesntmatter", "1.0", DeviceType.Desktop,
-            DevicePlatform.Windows, user.Id);
-        user.AddDevice(device);
-
-        var cmd = new VerifyNonceCommand
-        {
-            DeviceId = device.Id,
-            Nonce = "invalid",
-            NonceId = Guid.NewGuid(),
-            UserId = user.Id
-        };
-
+        var (user, device) = CreateUserWithDevice();
         var nonce = Nonce.Create(user.Id, device.Id);
+        var cmd = CreateCommand(user.Id, device.Id, nonce.Id);
 
-        A.CallTo(() => _fakeRepo.GetSinleAsync(A<UserWithDevicesSpec>._, A<CancellationToken>._)).Returns(user);
         A.CallTo(() => _fakeCachce.GetNonceAsync(cmd.NonceId, A<CancellationToken>._)).Returns(nonce);
-
+        A.CallTo(() => _fakeRepo.GetSinleAsync(A<UserWithDevicesSpec>._, A<CancellationToken>._)).Returns(user);
         A.CallTo(() => _fakeVerify.VerifyNonce(nonce.NonceValue, cmd.Nonce, device.PublicKey)).Returns(true);
+        A.CallTo(() => _fakeCachce.TryClaimNonceAsync(cmd.NonceId, A<CancellationToken>._)).Returns(true);
 
         // Act
         var result = await _sut.Handle(cmd, CancellationToken.None);
 
         // Assert
         result.Success.Should().BeTrue();
+        A.CallTo(() => _fakeUnit.SaveChangesAsync(A<CancellationToken>._)).MustHaveHappenedOnceExactly();
+        A.CallTo(() => _fakeCachce.DeleteNonceAsync(cmd.NonceId, A<CancellationToken>._)).MustHaveHappenedOnceExactly();
     }
 }

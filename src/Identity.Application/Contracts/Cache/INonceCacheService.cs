@@ -7,4 +7,5 @@ public interface INonceCacheService
     Task AddNonceAsync(Nonce nonce, CancellationToken cancellationToken);
     Task<Nonce?> GetNonceAsync(Guid nonceId, CancellationToken cancellationToken);
     Task DeleteNonceAsync(Guid nonceId, CancellationToken cancellationToken);
+    Task<bool> TryClaimNonceAsync(Guid nonceId, CancellationToken cancellationToken);
 }

@@ -65,8 +65,7 @@ internal sealed class AuthenticationEndpoints : IEndpoint
             })
             .Produces<VerifyNonceDto>()
             .ProducesProblem(StatusCodes.Status400BadRequest)
-            .ProducesProblem(StatusCodes.Status401Unauthorized)
-            .ProducesProblem(StatusCodes.Status404NotFound);
+            .ProducesProblem(StatusCodes.Status401Unauthorized);
 
         group.MapPost("/refresh-token", async ([FromBody] RefreshTokensCommand cmd, ISender sender) =>
             {

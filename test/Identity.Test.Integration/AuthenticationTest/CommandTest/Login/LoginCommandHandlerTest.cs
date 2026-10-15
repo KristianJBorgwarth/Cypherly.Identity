@@ -3,6 +3,7 @@ using Identity.Application.Contracts.RateLimiting;
 using Identity.Application.Contracts.Repository;
 using Identity.Application.Features.Authentication.Commands.Login;
 using Identity.Domain.Aggregates;
+using Identity.Domain.Common;
 using Identity.Domain.Services.User;
 using Identity.Domain.ValueObjects;
 using Identity.Infrastructure.Persistence.Context;
@@ -125,5 +126,59 @@ public class LoginCommandHandlerTest : IntegrationTestBase
         result.Value.Should().NotBeNull();
         result.Value.IsVerified.Should().BeFalse();
         Db.RefreshToken.Should().HaveCount(0);
+    }
+
+    [Fact]
+    public async Task Handle_Given_Too_Many_Failed_Passwords_Should_Return_TooManyRequests_Even_For_Correct_Password()
+    {
+        // Arrange
+        var email = $"{Guid.NewGuid():N}@mail.dk";
+        var user = new User(Guid.NewGuid(), Email.Create(email), Password.Create("TestPassword?123"), true);
+
+        Db.User.Add(user);
+        await Db.SaveChangesAsync();
+
+        var wrongPassword = new LoginCommand { Email = email, Password = "this will be invalid" };
+        for (var i = 0; i < 5; i++)
+        {
+            var failed = await _sut.Handle(wrongPassword, CancellationToken.None);
+            failed.Error.Description.Should().Be("Invalid Credentials");
+        }
+
+        // Act
+        var result = await _sut.Handle(new LoginCommand { Email = email, Password = "TestPassword?123" }, CancellationToken.None);
+
+        // Assert
+        result.Success.Should().BeFalse();
+        result.Error.Should().BeEquivalentTo(Errors.General.TooManyRequests());
+        Db.VerificationCode.Should().HaveCount(0);
+    }
+
+    [Fact]
+    public async Task Handle_Given_Correct_Password_Should_Reset_Failed_Attempts()
+    {
+        // Arrange
+        var email = $"{Guid.NewGuid():N}@mail.dk";
+        var user = new User(Guid.NewGuid(), Email.Create(email), Password.Create("TestPassword?123"), true);
+
+        Db.User.Add(user);
+        await Db.SaveChangesAsync();
+
+        var wrongPassword = new LoginCommand { Email = email, Password = "this will be invalid" };
+        var correctPassword = new LoginCommand { Email = email, Password = "TestPassword?123" };
+
+        for (var i = 0; i < 4; i++)
+            await _sut.Handle(wrongPassword, CancellationToken.None);
+
+        (await _sut.Handle(correctPassword, CancellationToken.None)).Success.Should().BeTrue();
+
+        for (var i = 0; i < 4; i++)
+            await _sut.Handle(wrongPassword, CancellationToken.None);
+
+        // Act
+        var result = await _sut.Handle(correctPassword, CancellationToken.None);
+
+        // Assert
+        result.Success.Should().BeTrue();
     }
 }

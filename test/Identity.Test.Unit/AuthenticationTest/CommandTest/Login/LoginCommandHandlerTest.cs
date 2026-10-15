@@ -131,13 +131,97 @@ public class LoginCommandHandlerTest
     }
 
     [Fact]
-    public async Task Handle_Given_RateLimit_Exceeded_Should_Return_ResultFail()
+    public async Task Handle_Given_Password_Attempts_Exceeded_Should_Return_TooManyRequests_Without_Checking_Password()
+    {
+        // Arrange
+        A.CallTo(() => _fakeRateLimiter.IsAllowedAsync(A<string>.That.StartsWith("login:password:"), A<int>._, A<TimeSpan>._, A<CancellationToken>._)).Returns(false);
+
+        var cmd = new LoginCommand()
+        {
+            Email = "Test@mail.dk",
+            Password = "kj9203KKJHSD?23",
+        };
+
+        // Act
+        var result = await _sut.Handle(cmd, CancellationToken.None);
+
+        // Assert
+        result.Success.Should().BeFalse();
+        result.Error.Description.Should().Contain("Too many requests");
+        A.CallTo(() => _fakeUserRepository.GetSinleAsync(A<UserByEmailSpec>._, A<CancellationToken>._)).MustNotHaveHappened();
+        A.CallTo(() => _fakeAuthService.GenerateLoginVerificationCode(A<User>._)).MustNotHaveHappened();
+        A.CallTo(() => _fakeUnitOfWork.SaveChangesAsync(CancellationToken.None)).MustNotHaveHappened();
+    }
+
+    [Fact]
+    public async Task Handle_Should_Count_Password_Attempts_Per_Normalized_Email()
+    {
+        // Arrange
+        A.CallTo(() => _fakeUserRepository.GetSinleAsync(A<UserByEmailSpec>._, A<CancellationToken>._)).Returns((User)null);
+
+        var cmd = new LoginCommand()
+        {
+            Email = " Test@Mail.dk ",
+            Password = "kj9203KKJHSD?23",
+        };
+
+        // Act
+        await _sut.Handle(cmd, CancellationToken.None);
+
+        // Assert
+        A.CallTo(() => _fakeRateLimiter.IsAllowedAsync("login:password:test@mail.dk", A<int>._, A<TimeSpan>._, A<CancellationToken>._)).MustHaveHappenedOnceExactly();
+    }
+
+    [Fact]
+    public async Task Handle_Given_Invalid_Password_Should_Not_Reset_Password_Attempts()
     {
         // Arrange
         var user = new User(Guid.NewGuid(), Email.Create("Test@mail.dk"), Password.Create("kj9203KKJHSD?23"), true);
 
         A.CallTo(() => _fakeUserRepository.GetSinleAsync(A<UserByEmailSpec>._, A<CancellationToken>._)).Returns(user);
-        A.CallTo(() => _fakeRateLimiter.IsAllowedAsync(A<string>._, A<int>._, A<TimeSpan>._, A<CancellationToken>._)).Returns(false);
+
+        var cmd = new LoginCommand()
+        {
+            Email = "Test@mail.dk",
+            Password = "THIS PASSWORD WILL BE INVALID GG",
+        };
+
+        // Act
+        await _sut.Handle(cmd, CancellationToken.None);
+
+        // Assert
+        A.CallTo(() => _fakeRateLimiter.ResetAsync(A<string>._, A<CancellationToken>._)).MustNotHaveHappened();
+    }
+
+    [Fact]
+    public async Task Handle_Given_Valid_Password_Should_Reset_Password_Attempts()
+    {
+        // Arrange
+        var user = new User(Guid.NewGuid(), Email.Create("Test@mail.dk"), Password.Create("kj9203KKJHSD?23"), true);
+
+        A.CallTo(() => _fakeUserRepository.GetSinleAsync(A<UserByEmailSpec>._, A<CancellationToken>._)).Returns(user);
+
+        var cmd = new LoginCommand()
+        {
+            Email = "Test@mail.dk",
+            Password = "kj9203KKJHSD?23",
+        };
+
+        // Act
+        await _sut.Handle(cmd, CancellationToken.None);
+
+        // Assert
+        A.CallTo(() => _fakeRateLimiter.ResetAsync("login:password:test@mail.dk", A<CancellationToken>._)).MustHaveHappenedOnceExactly();
+    }
+
+    [Fact]
+    public async Task Handle_Given_Code_Issue_RateLimit_Exceeded_Should_Return_ResultFail()
+    {
+        // Arrange
+        var user = new User(Guid.NewGuid(), Email.Create("Test@mail.dk"), Password.Create("kj9203KKJHSD?23"), true);
+
+        A.CallTo(() => _fakeUserRepository.GetSinleAsync(A<UserByEmailSpec>._, A<CancellationToken>._)).Returns(user);
+        A.CallTo(() => _fakeRateLimiter.IsAllowedAsync(A<string>.That.StartsWith("login:issue:"), A<int>._, A<TimeSpan>._, A<CancellationToken>._)).Returns(false);
 
         var cmd = new LoginCommand()
         {

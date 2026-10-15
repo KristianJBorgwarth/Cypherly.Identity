@@ -17,13 +17,25 @@ public class LoginCommandHandler(
     private static readonly TimeSpan RateLimitWindow = TimeSpan.FromHours(1);
     private const int RateLimitCount = 10;
 
+    private static readonly TimeSpan PasswordAttemptWindow = TimeSpan.FromMinutes(15);
+    private const int PasswordAttemptCount = 5;
+
     public async ValueTask<Result<LoginDto>> Handle(LoginCommand cmd, CancellationToken ct)
     {
+        var passwordAttemptKey = $"login:password:{cmd.Email.Trim().ToLowerInvariant()}";
+        var attemptAllowed = await rateLimiter.IsAllowedAsync(passwordAttemptKey, PasswordAttemptCount, PasswordAttemptWindow, ct);
+        if (attemptAllowed is false)
+        {
+            return Result.Fail<LoginDto>(Errors.General.TooManyRequests());
+        }
+
         var user = await userRepository.GetSinleAsync(new UserByEmailSpec(cmd.Email), ct);
         if (user is null) return Result.Fail<LoginDto>(Errors.General.UnspecifiedError("Invalid Credentials"));
 
         var pwResult = user.Password.Verify(cmd.Password);
         if (!pwResult) return Result.Fail<LoginDto>(Errors.General.UnspecifiedError("Invalid Credentials"));
+
+        await rateLimiter.ResetAsync(passwordAttemptKey, ct);
 
         if (!user.IsVerified) return Result.Ok(new LoginDto { IsVerified = false, UserId = user.Id });
 

@@ -1,4 +1,3 @@
-﻿using Identity.API.Controllers;
 using Identity.Test.Architecture.Helpers;
 using NetArchTest.Rules;
 
@@ -6,12 +5,14 @@ namespace Identity.Test.Architecture;
 
 public class PresentationTest
 {
+    private const string EndpointsNamespace = "Identity.API.Endpoints";
+
     [Fact]
     public void Presentation_Should_Not_Reference_Infrastructure()
     {
-        var result = Types.InAssembly(typeof(UserController).Assembly)
+        var result = Types.InAssembly(typeof(Program).Assembly)
             .That()
-            .ResideInNamespace("Identity.API.Controllers")
+            .ResideInNamespace(EndpointsNamespace)
             .ShouldNot()
             .HaveDependencyOn("Cypherly.Identity.Persistence")
             .GetResult();
@@ -22,11 +23,9 @@ public class PresentationTest
     [Fact]
     public void Presentation_Should_Not_Reference_Domain()
     {
-        var result = Types.InAssembly(typeof(UserController).Assembly)
+        var result = Types.InAssembly(typeof(Program).Assembly)
             .That()
-            .ResideInNamespace("Identity.API.Controllers")
-            .And()
-            .DoNotHaveNameStartingWith("Base")
+            .ResideInNamespace(EndpointsNamespace)
             .ShouldNot()
             .HaveDependencyOn("Identity.Domain")
             .GetResult();
@@ -37,32 +36,15 @@ public class PresentationTest
     [Fact]
     public void Presentation_Should_Reference_Application()
     {
-        var result = Types.InAssembly(typeof(UserController).Assembly)
+        var result = Types.InAssembly(typeof(Program).Assembly)
             .That()
-            .ResideInNamespace("Identity.API.Controllers")
+            .ResideInNamespace(EndpointsNamespace)
             .And()
-            .DoNotHaveNameStartingWith("Base")
+            .AreNotNested()
             .Should()
             .HaveDependencyOn("Identity.Application")
             .GetResult();
 
         result.ShouldBeSuccessful("API project should reference Application project");
-    }
-
-    [Fact]
-    public void All_Controllers_Should_Inherit_From_BaseController()
-    {
-        var result = Types.InAssembly(typeof(UserController).Assembly)
-            .That()
-            .ResideInNamespace("Identity.API")
-            .And()
-            .HaveNameEndingWith("Controller")
-            .And()
-            .DoNotHaveName("BaseController")
-            .Should()
-            .Inherit(typeof(BaseController))
-            .GetResult();
-
-        result.ShouldBeSuccessful("All controllers should inherit from BaseController");
     }
 }

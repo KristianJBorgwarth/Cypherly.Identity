@@ -55,7 +55,7 @@ public class VerifyNonceCommandHandlerTest
 
         // Assert
         result.Success.Should().BeFalse();
-        result.Error.Message.Should().Be(Errors.General.NotFound(cmd.UserId).Message);
+        result.Error.Description.Should().Be(Errors.General.NotFound(cmd.UserId).Description);
     }
 
     [Fact]
@@ -83,7 +83,7 @@ public class VerifyNonceCommandHandlerTest
 
         // Assert
         result.Success.Should().BeFalse();
-        result.Error.Message.Should().Be(Errors.General.NotFound(cmd.NonceId).Message);
+        result.Error.Description.Should().Be(Errors.General.NotFound(cmd.NonceId).Description);
     }
 
     [Fact]
@@ -115,7 +115,7 @@ public class VerifyNonceCommandHandlerTest
 
         // Assert
         result.Success.Should().BeFalse();
-        result.Error.Message.Should().Be(Errors.General.Unauthorized().Message);
+        result.Error.Description.Should().Be(Errors.General.Unauthorized().Description);
     }
 
     [Fact]

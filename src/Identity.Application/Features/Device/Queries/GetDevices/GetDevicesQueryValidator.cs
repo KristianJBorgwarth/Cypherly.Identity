@@ -10,6 +10,6 @@ public class GetDevicesQueryValidator : AbstractValidator<GetDevicesQuery>
     {
         RuleFor(x => x.UserId)
             .NotEmpty()
-            .WithMessage(Errors.General.ValueIsEmpty(nameof(GetDevicesQuery.UserId)).Message);
+            .WithMessage(Errors.General.ValueIsEmpty(nameof(GetDevicesQuery.UserId)).Description);
     }
 }

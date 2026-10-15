@@ -44,7 +44,7 @@ public class CreateUserCommandValidatorTests
 
         // Assert
         result.ShouldHaveValidationErrors();
-        result.Errors[0].ErrorMessage.Should().Be(Errors.General.ValueIsEmpty(nameof(CreateUserCommand.Email)).Message);
+        result.Errors[0].ErrorMessage.Should().Be(Errors.General.ValueIsEmpty(nameof(CreateUserCommand.Email)).Description);
     }
 
     [Fact]
@@ -64,7 +64,7 @@ public class CreateUserCommandValidatorTests
         // Assert
         result.ShouldHaveValidationErrors();
         result.Errors[0].ErrorMessage.Should()
-            .Be(Errors.General.ValueIsEmpty(nameof(CreateUserCommand.Password)).Message);
+            .Be(Errors.General.ValueIsEmpty(nameof(CreateUserCommand.Password)).Description);
     }
 
     [Theory]

@@ -39,7 +39,7 @@ public class GetConnectionIdsByUsersQueryValidatorTest
         // Assert
         result.IsValid.Should().BeFalse();
         result.Errors.Should().ContainSingle()
-            .Which.ErrorMessage.Should().Be(Errors.General.ValueIsEmpty(nameof(GetConnectionIdsByUsersQuery.TenantIds)).Message);
+            .Which.ErrorMessage.Should().Be(Errors.General.ValueIsEmpty(nameof(GetConnectionIdsByUsersQuery.TenantIds)).Description);
     }
 
     [Fact]
@@ -57,6 +57,6 @@ public class GetConnectionIdsByUsersQueryValidatorTest
         // Assert
         result.IsValid.Should().BeFalse();
         result.Errors.Should().ContainSingle()
-            .Which.ErrorMessage.Should().Be(Errors.General.ValueIsEmpty(nameof(Guid)).Message);
+            .Which.ErrorMessage.Should().Be(Errors.General.ValueIsEmpty(nameof(Guid)).Description);
     }
 }

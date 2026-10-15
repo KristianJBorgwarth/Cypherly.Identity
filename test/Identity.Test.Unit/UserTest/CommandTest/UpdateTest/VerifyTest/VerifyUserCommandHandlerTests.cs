@@ -72,7 +72,7 @@ namespace Identity.Test.Unit.UserTest.CommandTest.UpdateTest.VerifyTest
 
             // Assert
             result.Success.Should().BeFalse();
-            result.Error.Message.Should().Be(Errors.General.NotFound(userId).Message);
+            result.Error.Description.Should().Be(Errors.General.NotFound(userId).Description);
             A.CallTo(() => _fakeUserRepository.UpdateAsync(A<User>.Ignored, A<CancellationToken>._)).MustNotHaveHappened();
             A.CallTo(() => _fakeUnitOfWork.SaveChangesAsync(A<CancellationToken>.Ignored)).MustNotHaveHappened();
         }
@@ -101,7 +101,7 @@ namespace Identity.Test.Unit.UserTest.CommandTest.UpdateTest.VerifyTest
 
             // Assert
             result.Success.Should().BeFalse();
-            result.Error.Message.Should().Be("Invalid verification code");  // Adjust based on actual message
+            result.Error.Description.Should().Be("Invalid verification code");  // Adjust based on actual message
             A.CallTo(() => _fakeUserRepository.UpdateAsync(A<User>.Ignored, A<CancellationToken>._)).MustNotHaveHappened();
             A.CallTo(() => _fakeUnitOfWork.SaveChangesAsync(A<CancellationToken>.Ignored)).MustNotHaveHappened();
         }

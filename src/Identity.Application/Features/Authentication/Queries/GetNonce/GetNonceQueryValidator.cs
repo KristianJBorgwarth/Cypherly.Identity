@@ -9,9 +9,9 @@ public class GetNonceQueryValidator : AbstractValidator<GetNonceQuery>
     public GetNonceQueryValidator()
     {
         RuleFor(x => x.UserId)
-            .NotEmpty().WithMessage(Errors.General.ValueIsEmpty(nameof(GetNonceQuery.UserId)).Message);
+            .NotEmpty().WithMessage(Errors.General.ValueIsEmpty(nameof(GetNonceQuery.UserId)).Description);
 
         RuleFor(x => x.DeviceId)
-            .NotEmpty().WithMessage(Errors.General.ValueIsEmpty(nameof(GetNonceQuery.DeviceId)).Message);
+            .NotEmpty().WithMessage(Errors.General.ValueIsEmpty(nameof(GetNonceQuery.DeviceId)).Description);
     }
 }

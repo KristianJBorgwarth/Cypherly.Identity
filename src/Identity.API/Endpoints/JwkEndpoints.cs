@@ -14,7 +14,7 @@ internal sealed class JwksEndpoints : IEndpoint
                 var query = new GetJwksQuery();
                 var result = await sender.Send(query);
 
-                if (result.Success is false) return Results.Problem(result.Error.Message);
+                if (result.Success is false) return Results.Problem(result.Error.Description);
 
                 http.Response.Headers.CacheControl = "public, max-age=300";
 

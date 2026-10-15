@@ -9,12 +9,12 @@ public class CreateUserCommandValidator : AbstractValidator<CreateUserCommand>
     public CreateUserCommandValidator()
     {
         RuleFor(x => x.Email)
-            .NotEmpty().WithMessage(Errors.General.ValueIsEmpty(nameof(CreateUserCommand.Email)).Message);
+            .NotEmpty().WithMessage(Errors.General.ValueIsEmpty(nameof(CreateUserCommand.Email)).Description);
         RuleFor(x => x.Password)
-            .NotEmpty().WithMessage(Errors.General.ValueIsEmpty(nameof(CreateUserCommand.Password)).Message);
+            .NotEmpty().WithMessage(Errors.General.ValueIsEmpty(nameof(CreateUserCommand.Password)).Description);
         RuleFor(x => x.Username)
-            .NotEmpty().WithMessage(Errors.General.ValueIsEmpty(nameof(CreateUserCommand.Username)).Message)
-            .Must(x => x.Length >= 3).WithMessage(Errors.General.ValueTooSmall(nameof(CreateUserCommand.Username), 3).Message)
-            .Must(x => x.Length <= 20).WithMessage(Errors.General.ValueTooLarge(nameof(CreateUserCommand.Username), 20).Message);
+            .NotEmpty().WithMessage(Errors.General.ValueIsEmpty(nameof(CreateUserCommand.Username)).Description)
+            .Must(x => x.Length >= 3).WithMessage(Errors.General.ValueTooSmall(nameof(CreateUserCommand.Username), 3).Description)
+            .Must(x => x.Length <= 20).WithMessage(Errors.General.ValueTooLarge(nameof(CreateUserCommand.Username), 20).Description);
     }
 }

@@ -1,6 +1,5 @@
 ﻿using Cypherly.Domain.Common;
 using Identity.Domain.Common;
-using Identity.Domain.ValueObjects;
 using FluentValidation;
 using FluentValidation.Results;
 using Mediator;
@@ -41,7 +40,7 @@ namespace Identity.Application.Behavior
         private static Error GenerateErrorMessage(ValidationResult validationResult)
         {
             var errorMessage = string.Join("; ", validationResult.Errors.Select(x => x.ErrorMessage));
-            return Errors.General.UnspecifiedError("Validation failed: " + errorMessage);
+            return Errors.General.Validation("Validation failed: " + errorMessage);
         }
 
         private static TResponse CreateFailResponse(Error error)

@@ -45,6 +45,13 @@ public class Nonce
         };
     }
 
+    public bool IsValidFor(Guid userId, Guid deviceId)
+    {
+        return UserId == userId
+               && DeviceId == deviceId
+               && !Exipred;
+    }
+
     private static string GenerateNonceValue()
     {
         var randomBytes = new byte[32];

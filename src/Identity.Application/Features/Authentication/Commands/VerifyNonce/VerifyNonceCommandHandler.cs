@@ -20,28 +20,33 @@ public class VerifyNonceCommandHandler(
 {
     public async ValueTask<Result<VerifyNonceDto>> Handle(VerifyNonceCommand cmd, CancellationToken cancellationToken)
     {
-        var user = await userRepository.GetSinleAsync(new UserWithDevicesSpec(cmd.UserId), cancellationToken);
-
-        if (user is null)
-        {
-            logger.LogWarning("User with ID: {ID} not found.", cmd.UserId);
-            return Result.Fail<VerifyNonceDto>(Errors.General.NotFound(cmd.UserId));
-        }
-
         var nonce = await nonceCacheService.GetNonceAsync(cmd.NonceId, cancellationToken);
 
-        if (nonce is null)
+        if (nonce is null || !nonce.IsValidFor(cmd.UserId, cmd.DeviceId))
         {
-            logger.LogWarning("Nonce with ID: {ID} not found.", cmd.NonceId);
-            return Result.Fail<VerifyNonceDto>(Errors.General.NotFound(cmd.NonceId));
+            logger.LogWarning("Nonce {NonceId} not found or invalid for user {UserId} and device {DeviceId}", cmd.NonceId, cmd.UserId, cmd.DeviceId);
+            return Result.Fail<VerifyNonceDto>(Errors.General.Unauthorized());
         }
 
-        var device = user.GetDevice(cmd.DeviceId);
+        var user = await userRepository.GetSinleAsync(new UserWithDevicesSpec(cmd.UserId), cancellationToken);
+        var device = user?.GetDevices().FirstOrDefault(d => d.Id == cmd.DeviceId);
+
+        if (user is null || device is null)
+        {
+            logger.LogWarning("User {UserId} or device {DeviceId} not found for nonce {NonceId}", cmd.UserId, cmd.DeviceId, cmd.NonceId);
+            return Result.Fail<VerifyNonceDto>(Errors.General.Unauthorized());
+        }
 
         var isNonceValid = verifyNonceService.VerifyNonce(nonce.NonceValue, cmd.Nonce, device.PublicKey);
 
         if (!isNonceValid)
             return Result.Fail<VerifyNonceDto>(Errors.General.Unauthorized());
+
+        if (await nonceCacheService.TryClaimNonceAsync(cmd.NonceId, cancellationToken) is false)
+        {
+            logger.LogWarning("Nonce {NonceId} for user {UserId} was already used", cmd.NonceId, cmd.UserId);
+            return Result.Fail<VerifyNonceDto>(Errors.General.Unauthorized());
+        }
 
         var token = await jwtService.GenerateTokenAsync(user.Id, cmd.DeviceId);
         device.AddRefreshToken();

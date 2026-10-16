@@ -5,6 +5,7 @@ using Identity.Application.Contracts.Cache;
 using Identity.Application.Contracts.Repository;
 using Identity.Application.Features.Authentication.Queries.GetNonce;
 using Identity.Domain.Aggregates;
+using Identity.Domain.Common;
 using Identity.Domain.Entities;
 using Identity.Domain.Enums;
 using Identity.Domain.ValueObjects;
@@ -75,7 +76,28 @@ public class GetNonceQueryHandlerTest : IntegrationTestBase
 
         // Assert
         result.Success.Should().BeFalse();
-        result.Error.Should().NotBeNull();
-        result.Error.Description.Should().Contain("Could not find entity with ID");
+        result.Error.Should().BeEquivalentTo(Errors.General.Unauthorized());
+    }
+
+    [Fact]
+    public async Task Handle_Given_Unknown_Device_Should_Return_Unauthorized_And_Not_Cache()
+    {
+        // Arrange
+        var user = new User(Guid.NewGuid(), Email.Create("test@mail.dk"), Password.Create("test=?lk293K"), true);
+        Db.User.Add(user);
+        await Db.SaveChangesAsync();
+
+        var query = new GetNonceQuery()
+        {
+            UserId = user.Id,
+            DeviceId = Guid.NewGuid()
+        };
+
+        // Act
+        var result = await _sut.Handle(query, CancellationToken.None);
+
+        // Assert
+        result.Success.Should().BeFalse();
+        result.Error.Should().BeEquivalentTo(Errors.General.Unauthorized());
     }
 }

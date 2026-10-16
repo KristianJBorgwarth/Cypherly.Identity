@@ -17,9 +17,10 @@ internal class JwtService(
     IOptions<JwtSettings> jwtSettings)
     : IJwtService
 {
-    public async Task<string> GenerateTokenAsync(Guid userId, Guid deviceId, CancellationToken ct = default)
+    public async Task<AccessToken> GenerateTokenAsync(Guid userId, Guid deviceId, CancellationToken ct = default)
     {
         var now = timeProvider.GetUtcNow().UtcDateTime;
+        var expiresAt = now.AddMinutes(jwtSettings.Value.TokenLifeTimeInMinutes);
         var signingKey = await GetCurrentKeyAsync(now, ct);
 
         var claims = new List<Claim>
@@ -34,7 +35,7 @@ internal class JwtService(
         var tokenDescriptor = new SecurityTokenDescriptor
         {
             Subject = new(claims),
-            Expires = now.AddMinutes(jwtSettings.Value.TokenLifeTimeInMinutes),
+            Expires = expiresAt,
             SigningCredentials = creds,
             Issuer = jwtSettings.Value.Issuer,
             Audience = jwtSettings.Value.Audience,
@@ -43,7 +44,7 @@ internal class JwtService(
         var tokenHandler = new JsonWebTokenHandler();
         var token = tokenHandler.CreateToken(tokenDescriptor);
 
-        return token;
+        return new AccessToken(token, expiresAt);
     }
 
     public async Task<IReadOnlyList<JwksDto>> GenerateJwks(CancellationToken ct = default)

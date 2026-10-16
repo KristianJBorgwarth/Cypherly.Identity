@@ -1,22 +1,14 @@
-﻿using Identity.Domain.Entities;
+﻿namespace Identity.Application.Features.Authentication.Commands.VerifyNonce;
 
-namespace Identity.Application.Features.Authentication.Commands.VerifyNonce;
-
-public class VerifyNonceDto
+#pragma warning disable IDE0290 // Use primary constructor
+public sealed class VerifyNonceDto
 {
-    public required string Jwt { get; init; }
-    public required string RefreshToken { get; init; }
-    public DateTime ExpiresAt { get; init; }
+    public string Jwt { get; private set; }
+    public DateTime ExpiresAt { get; private set; }
 
-    private VerifyNonceDto() { } // Hide the constructor to force the use of the Map method
-
-    public static VerifyNonceDto Map(string jwt, RefreshToken refreshToken)
+    public VerifyNonceDto(string jwt, DateTime expiresAt)
     {
-        return new VerifyNonceDto()
-        {
-            Jwt = jwt,
-            RefreshToken = refreshToken.Token,
-            ExpiresAt = refreshToken.Expires,
-        };
+        Jwt = jwt;
+        ExpiresAt = expiresAt;
     }
 }

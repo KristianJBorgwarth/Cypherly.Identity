@@ -112,7 +112,6 @@ public class VerifyNonceCommandHandlerTest : IntegrationTestBase
         // Assert
         result.Success.Should().BeFalse();
         result.Error.Should().BeEquivalentTo(Errors.General.Unauthorized());
-        Db.RefreshToken.Count().Should().Be(0);
     }
 
     [Fact]
@@ -142,6 +141,7 @@ public class VerifyNonceCommandHandlerTest : IntegrationTestBase
             DeviceId = device.Id,
             NonceId = nonce.Id,
             Nonce = signature,
+            Announce = true,
         };
 
         // Act
@@ -151,9 +151,43 @@ public class VerifyNonceCommandHandlerTest : IntegrationTestBase
         result.Success.Should().BeTrue();
         result.Value.Should().NotBeNull();
         result.Value.Jwt.Should().NotBeNullOrEmpty();
-        result.Value.RefreshToken.Should().NotBeNullOrEmpty();
-        Db.RefreshToken.Count().Should().Be(1);
+        result.Value.ExpiresAt.Should().BeAfter(DateTime.UtcNow);
+        Db.RefreshToken.Count().Should().Be(0);
         Db.OutboxMessage.Count().Should().Be(1);
+    }
+
+    [Fact]
+    public async Task Handle_Given_Valid_Nonce_Without_Announce_Should_Not_Publish_Login()
+    {
+        // Arrange
+        const string publicKey = "VlmK9Smh3RVtT7CHaHW5rbrYAWeM9ImVdP6WhmnMqK0=";
+        const string privateKey = "mR6AP1dNY1eEp7Z7bn6q0gPiOvcDl3FX4th65LY3Zwg=";
+
+        var user = new User(Guid.NewGuid(), Email.Create("test@mail.dk"), Password.Create("test=?lk293K"), true);
+        var device = new Device(Guid.NewGuid(), publicKey, "1.0", DeviceType.Desktop, DevicePlatform.Windows, user.Id);
+        user.AddDevice(device);
+
+        var nonce = Nonce.Create(user.Id, device.Id);
+        await Cache.SetAsync(nonce.Id.ToString(), nonce, CancellationToken.None, TimeSpan.FromMinutes(10));
+
+        Db.User.Add(user);
+        await Db.SaveChangesAsync();
+
+        var cmd = new VerifyNonceCommand
+        {
+            UserId = user.Id,
+            DeviceId = device.Id,
+            NonceId = nonce.Id,
+            Nonce = Ed25519Helper.SignNonce(nonce.NonceValue, privateKey),
+        };
+
+        // Act
+        var result = await _sut.Handle(cmd, CancellationToken.None);
+
+        // Assert
+        result.Success.Should().BeTrue();
+        result.Value.Jwt.Should().NotBeNullOrEmpty();
+        Db.OutboxMessage.Count().Should().Be(0);
     }
 
     [Fact]
@@ -187,7 +221,6 @@ public class VerifyNonceCommandHandlerTest : IntegrationTestBase
         // Assert
         result.Success.Should().BeFalse();
         result.Error.Should().BeEquivalentTo(Errors.General.Unauthorized());
-        Db.RefreshToken.Count().Should().Be(0);
     }
 
     [Fact]
@@ -223,7 +256,6 @@ public class VerifyNonceCommandHandlerTest : IntegrationTestBase
         // Assert
         result.Success.Should().BeFalse();
         result.Error.Should().BeEquivalentTo(Errors.General.Unauthorized());
-        Db.RefreshToken.Count().Should().Be(0);
     }
 
     [Fact]
@@ -249,6 +281,7 @@ public class VerifyNonceCommandHandlerTest : IntegrationTestBase
             DeviceId = device.Id,
             NonceId = nonce.Id,
             Nonce = Ed25519Helper.SignNonce(nonce.NonceValue, privateKey),
+            Announce = true,
         };
 
         var first = await _sut.Handle(cmd, CancellationToken.None);
@@ -262,6 +295,6 @@ public class VerifyNonceCommandHandlerTest : IntegrationTestBase
         first.Success.Should().BeTrue();
         second.Success.Should().BeFalse();
         second.Error.Should().BeEquivalentTo(Errors.General.Unauthorized());
-        Db.RefreshToken.Count().Should().Be(1);
+        Db.OutboxMessage.Count().Should().Be(1);
     }
 }

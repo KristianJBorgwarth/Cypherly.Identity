@@ -35,7 +35,7 @@ public class RefreshTokensCommandHandler(
 
         var dto = new RefreshTokensDto
         {
-            Jwt = accessToken,
+            Jwt = accessToken.Token,
             RefreshToken = refreshToken.Token,
             ExpiresAt = refreshToken.Expires
         };

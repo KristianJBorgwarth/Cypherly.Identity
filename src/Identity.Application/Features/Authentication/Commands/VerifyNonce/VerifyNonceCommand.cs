@@ -8,4 +8,5 @@ public class VerifyNonceCommand : ICommand<VerifyNonceDto>
     public Guid NonceId { get; init; }
     public Guid DeviceId { get; init; }
     public required string Nonce { get; init; }
+    public bool Announce { get; init; }
 }

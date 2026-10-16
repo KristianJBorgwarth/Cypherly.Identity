@@ -22,9 +22,10 @@ public class JwtServiceTest(IntegrationTestFactory<Program, IdentityDbContext> f
         var token = await _jwtService.GenerateTokenAsync(userId, deviceId);
 
         // Assert
-        token.Should().NotBeNullOrEmpty();
+        token.Token.Should().NotBeNullOrEmpty();
         var handler = new System.IdentityModel.Tokens.Jwt.JwtSecurityTokenHandler();
-        var jwtToken = handler.ReadJwtToken(token);
+        var jwtToken = handler.ReadJwtToken(token.Token);
+        jwtToken.ValidTo.Should().BeCloseTo(token.ExpiresAt, TimeSpan.FromSeconds(1));
         jwtToken.Should().NotBeNull();
         jwtToken.Claims.FirstOrDefault(c => c.Type == ClaimTypes.NameIdentifier)?.Value.Should().Be(userId.ToString());
         jwtToken.Claims.FirstOrDefault(c => c.Type == "device_id")?.Value.Should().Be(deviceId.ToString());

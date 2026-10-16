@@ -49,17 +49,14 @@ public class VerifyNonceCommandHandler(
         }
 
         var token = await jwtService.GenerateTokenAsync(user.Id, cmd.DeviceId);
-        device.AddRefreshToken();
-        var refreshToken = device.GetActiveRefreshToken();
 
-        var dto = VerifyNonceDto.Map(token, refreshToken!);
-
-        user.AddDomainEvent(new UserLoggedInEvent(user.Id, device.Id, device.ConnectionId));
+        if (cmd.Announce)
+            user.AddDomainEvent(new UserLoggedInEvent(user.Id, device.Id, device.ConnectionId));
 
         await unitOfWork.SaveChangesAsync(cancellationToken);
 
         await nonceCacheService.DeleteNonceAsync(cmd.NonceId, cancellationToken);
 
-        return Result.Ok(dto);
+        return Result.Ok(new VerifyNonceDto(token.Token, token.ExpiresAt));
     }
 }

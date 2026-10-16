@@ -1,6 +1,7 @@
 ﻿using FakeItEasy;
 using FluentAssertions;
 using Identity.Application.Contracts.Repository;
+using Identity.Application.Dtos;
 using Identity.Application.Features.Authentication.Commands.RefreshTokens;
 using Identity.Application.Interfaces;
 using Identity.Domain.Aggregates;
@@ -90,7 +91,7 @@ public class RefreshTokensCommandHandlerTest
         A.CallTo(() => _fakeUserRepo.GetSinleAsync(A<UserWithDeviceAndRefreshTokensSpec>._, A<CancellationToken>._)).Returns(user);
         A.CallTo(() => _fakeAuthService.VerifyRefreshToken(user, command.DeviceId, command.RefreshToken)).Returns(true);
         A.CallTo(() => _fakeAuthService.GenerateRefreshToken(user, command.DeviceId)).Returns(new RefreshToken(Guid.NewGuid(), Guid.NewGuid()));
-        A.CallTo(() => _fakeJwtService.GenerateTokenAsync(user.Id, command.DeviceId)).Returns(Guid.NewGuid().ToString());
+        A.CallTo(() => _fakeJwtService.GenerateTokenAsync(user.Id, command.DeviceId)).Returns(new AccessToken(Guid.NewGuid().ToString(), DateTime.UtcNow.AddMinutes(15)));
 
         // Act
         var result = await _sut.Handle(command, CancellationToken.None);

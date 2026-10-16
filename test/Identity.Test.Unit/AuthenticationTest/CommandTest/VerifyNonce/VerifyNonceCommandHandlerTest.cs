@@ -3,12 +3,14 @@ using FluentAssertions;
 using Identity.Application.Caching;
 using Identity.Application.Contracts.Cache;
 using Identity.Application.Contracts.Repository;
+using Identity.Application.Dtos;
 using Identity.Application.Features.Authentication.Commands.VerifyNonce;
 using Identity.Application.Interfaces;
 using Identity.Domain.Aggregates;
 using Identity.Domain.Common;
 using Identity.Domain.Entities;
 using Identity.Domain.Enums;
+using Identity.Domain.Events.User;
 using Identity.Domain.ValueObjects;
 using Microsoft.Extensions.Logging;
 
@@ -45,12 +47,13 @@ public class VerifyNonceCommandHandlerTest
         return (user, device);
     }
 
-    private static VerifyNonceCommand CreateCommand(Guid userId, Guid deviceId, Guid nonceId) => new()
+    private static VerifyNonceCommand CreateCommand(Guid userId, Guid deviceId, Guid nonceId, bool announce = false) => new()
     {
         UserId = userId,
         DeviceId = deviceId,
         NonceId = nonceId,
         Nonce = "signature",
+        Announce = announce,
     };
 
     [Fact]
@@ -211,24 +214,32 @@ public class VerifyNonceCommandHandlerTest
         A.CallTo(() => _fakeUnit.SaveChangesAsync(A<CancellationToken>._)).MustNotHaveHappened();
     }
 
-    [Fact]
-    public async Task Handle_When_Nonce_Valid_Should_Return_Succesfull_Result()
+    [Theory]
+    [InlineData(true)]
+    [InlineData(false)]
+    public async Task Handle_When_Nonce_Valid_Should_Return_Token_And_Announce_Only_When_Asked(bool announce)
     {
         // Arrange
         var (user, device) = CreateUserWithDevice();
         var nonce = Nonce.Create(user.Id, device.Id);
-        var cmd = CreateCommand(user.Id, device.Id, nonce.Id);
+        var cmd = CreateCommand(user.Id, device.Id, nonce.Id, announce);
+        var accessToken = new AccessToken("jwt", DateTime.UtcNow.AddMinutes(15));
 
         A.CallTo(() => _fakeCachce.GetNonceAsync(cmd.NonceId, A<CancellationToken>._)).Returns(nonce);
         A.CallTo(() => _fakeRepo.GetSinleAsync(A<UserWithDevicesSpec>._, A<CancellationToken>._)).Returns(user);
         A.CallTo(() => _fakeVerify.VerifyNonce(nonce.NonceValue, cmd.Nonce, device.PublicKey)).Returns(true);
         A.CallTo(() => _fakeCachce.TryClaimNonceAsync(cmd.NonceId, A<CancellationToken>._)).Returns(true);
+        A.CallTo(() => _fakeJwt.GenerateTokenAsync(user.Id, device.Id, A<CancellationToken>._)).Returns(accessToken);
 
         // Act
         var result = await _sut.Handle(cmd, CancellationToken.None);
 
         // Assert
         result.Success.Should().BeTrue();
+        result.Value.Jwt.Should().Be(accessToken.Token);
+        result.Value.ExpiresAt.Should().Be(accessToken.ExpiresAt);
+        user.DomainEvents.OfType<UserLoggedInEvent>().Should().HaveCount(announce ? 1 : 0);
+        device.RefreshTokens.Should().BeEmpty();
         A.CallTo(() => _fakeUnit.SaveChangesAsync(A<CancellationToken>._)).MustHaveHappenedOnceExactly();
         A.CallTo(() => _fakeCachce.DeleteNonceAsync(cmd.NonceId, A<CancellationToken>._)).MustHaveHappenedOnceExactly();
     }

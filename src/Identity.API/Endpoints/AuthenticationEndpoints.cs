@@ -56,7 +56,7 @@ internal sealed class AuthenticationEndpoints : IEndpoint
             })
             .Produces<GetNonceDto>()
             .ProducesProblem(StatusCodes.Status400BadRequest)
-            .ProducesProblem(StatusCodes.Status404NotFound);
+            .ProducesProblem(StatusCodes.Status401Unauthorized);
 
         group.MapPost("/verify-nonce", async ([FromBody] VerifyNonceCommand cmd, ISender sender) =>
             {

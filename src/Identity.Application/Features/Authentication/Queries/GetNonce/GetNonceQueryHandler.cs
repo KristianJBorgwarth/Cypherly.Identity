@@ -17,14 +17,13 @@ public class GetNonceQueryHandler(
     public async ValueTask<Result<GetNonceDto>> Handle(GetNonceQuery q, CancellationToken ct)
     {
         var user = await userRepository.GetSinleAsync(new UserWithDevicesSpec(q.UserId), ct);
+        var device = user?.GetDevices().FirstOrDefault(d => d.Id == q.DeviceId);
 
-        if (user is null)
+        if (user is null || device is null)
         {
-            logger.LogWarning("User with ID: {ID} not found.", q.UserId);
-            return Result.Fail<GetNonceDto>(Errors.General.NotFound(q.UserId));
+            logger.LogWarning("User {UserId} or device {DeviceId} not found", q.UserId, q.DeviceId);
+            return Result.Fail<GetNonceDto>(Errors.General.Unauthorized());
         }
-
-        var device = user.GetDevice(q.DeviceId);
 
         var nonce = Nonce.Create(user.Id, device.Id);
 

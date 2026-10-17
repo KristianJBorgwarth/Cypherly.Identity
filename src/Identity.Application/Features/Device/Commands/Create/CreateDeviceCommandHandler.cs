@@ -23,10 +23,10 @@ public class CreateDeviceCommandHandler(
 {
     public async ValueTask<Result<CreateDeviceDto>> Handle(CreateDeviceCommand cmd, CancellationToken ct)
     {
-        var user = await userRepository.GetSinleAsync(new UserWithDevicesSpec(cmd.UserId), ct);
+        var user = await userRepository.GetSinleAsync(new UserWithDevicesSpec(cmd.UserId, excludeDeleted: true), ct);
         if (user is null)
         {
-            logger.LogWarning("User {UserId} not found", cmd.UserId);
+            logger.LogWarning("User {UserId} not found or deleted", cmd.UserId);
             return Result.Fail<CreateDeviceDto>(Errors.General.NotFound(cmd.UserId));
         }
 

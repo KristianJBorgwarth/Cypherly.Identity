@@ -130,6 +130,39 @@ public class CreateDeviceCommandHandlerTest : IntegrationTestBase
     }
 
     [Fact]
+    public async Task Handle_Given_Deleted_User_Should_Fail_And_Not_Create_Device()
+    {
+        // Arrange
+        var user = new User(Guid.NewGuid(), Email.Create("deleted@gmail.com"), Password.Create("test=???KKL999"), true);
+        user.SetDelete();
+
+        Db.User.Add(user);
+        await Db.SaveChangesAsync();
+
+        var loginNonce = LoginNonce.Create(user.Id, LoginNonceStage.CodeVerified);
+        await _loginNonceCache.AddNonceAsync(loginNonce, CancellationToken.None);
+
+        var cmd = new CreateDeviceCommand()
+        {
+            UserId = user.Id,
+            LoginNonceId = loginNonce.Id,
+            LoginNonce = loginNonce.NonceValue,
+            DeviceAppVersion = "1.0",
+            DeviceType = DeviceType.Mobile,
+            DevicePlatform = DevicePlatform.Android,
+            Base64DevicePublicKey = "base64DevicePublicKey",
+        };
+
+        // Act
+        var result = await _sut.Handle(cmd, CancellationToken.None);
+
+        // Assert
+        result.Success.Should().BeFalse();
+        result.Error.Should().BeEquivalentTo(Errors.General.NotFound(user.Id));
+        Db.Device.Count().Should().Be(0);
+    }
+
+    [Fact]
     public async Task Handle_Given_LoginNonce_Of_Another_User_Should_Return_Unauthorized_And_Not_Create_Device()
     {
         // Arrange: the attacker holds a valid login nonce for their own account

@@ -32,7 +32,7 @@ public class LoginCommandHandler(
             return Result.Fail<LoginDto>(Errors.General.TooManyRequests());
         }
 
-        var user = await userRepository.GetSinleAsync(new UserByEmailSpec(cmd.Email), ct);
+        var user = await userRepository.GetSinleAsync(new UserByEmailSpec(cmd.Email, excludeDeleted: true), ct);
         if (user is null) return Result.Fail<LoginDto>(Errors.General.UnspecifiedError("Invalid Credentials"));
 
         var pwResult = user.Password.Verify(cmd.Password);

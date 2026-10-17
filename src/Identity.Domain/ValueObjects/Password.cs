@@ -6,6 +6,8 @@ namespace Identity.Domain.ValueObjects
 {
     public class Password : ValueObject
     {
+        private static readonly string DummyHash = BCrypt.Net.BCrypt.HashPassword(Guid.NewGuid().ToString());
+
         public string HashedPassword { get; private set; } = string.Empty;
 
         public Password() { } //For EF Core
@@ -41,6 +43,11 @@ namespace Identity.Domain.ValueObjects
         public bool Verify(string plainPassword)
         {
             return BCrypt.Net.BCrypt.Verify(plainPassword, HashedPassword);
+        }
+
+        public static void VerifyAgainstDummy(string plainPassword)
+        {
+            BCrypt.Net.BCrypt.Verify(plainPassword, DummyHash);
         }
 
         /// <summary>

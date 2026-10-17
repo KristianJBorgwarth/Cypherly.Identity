@@ -19,9 +19,9 @@ public class GetNonceQueryHandler(
         var user = await userRepository.GetSinleAsync(new UserWithDevicesSpec(q.UserId), ct);
         var device = user?.GetDevices().FirstOrDefault(d => d.Id == q.DeviceId);
 
-        if (user is null || device is null)
+        if (user is null || user.Deleted is not null || device is null)
         {
-            logger.LogWarning("User {UserId} or device {DeviceId} not found", q.UserId, q.DeviceId);
+            logger.LogWarning("User {UserId} or device {DeviceId} not found or deleted", q.UserId, q.DeviceId);
             return Result.Fail<GetNonceDto>(Errors.General.Unauthorized());
         }
 

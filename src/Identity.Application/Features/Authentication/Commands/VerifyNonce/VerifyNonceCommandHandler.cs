@@ -31,9 +31,9 @@ public class VerifyNonceCommandHandler(
         var user = await userRepository.GetSinleAsync(new UserWithDevicesSpec(cmd.UserId), cancellationToken);
         var device = user?.GetDevices().FirstOrDefault(d => d.Id == cmd.DeviceId);
 
-        if (user is null || device is null)
+        if (user is null || user.Deleted is not null || device is null)
         {
-            logger.LogWarning("User {UserId} or device {DeviceId} not found for nonce {NonceId}", cmd.UserId, cmd.DeviceId, cmd.NonceId);
+            logger.LogWarning("User {UserId} or device {DeviceId} not found or deleted for nonce {NonceId}", cmd.UserId, cmd.DeviceId, cmd.NonceId);
             return Result.Fail<VerifyNonceDto>(Errors.General.Unauthorized());
         }
 

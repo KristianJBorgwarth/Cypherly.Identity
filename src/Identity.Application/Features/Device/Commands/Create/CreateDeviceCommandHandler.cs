@@ -30,6 +30,12 @@ public class CreateDeviceCommandHandler(
             return Result.Fail<CreateDeviceDto>(Errors.General.NotFound(cmd.UserId));
         }
 
+        if (user.Deleted is not null)
+        {
+            logger.LogWarning("User {UserId} is deleted", cmd.UserId);
+            return Result.Fail<CreateDeviceDto>(Errors.General.Unauthorized());
+        }
+
         var loginNonce = await loginNonceCache.GetNonceAsync(cmd.LoginNonceId, ct);
 
         if (loginNonce is null || !loginNonce.IsValidFor(cmd.UserId, cmd.LoginNonce, LoginNonceStage.CodeVerified))

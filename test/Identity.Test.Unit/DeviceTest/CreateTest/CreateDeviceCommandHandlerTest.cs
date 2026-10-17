@@ -8,6 +8,7 @@ using FluentAssertions;
 using Identity.Domain.Aggregates;
 using Identity.Domain.Common;
 using Identity.Domain.Enums;
+using Identity.Domain.ValueObjects;
 using Identity.Domain.Services.User;
 using MassTransit;
 using Microsoft.Extensions.Logging;
@@ -61,6 +62,36 @@ public class CreateDeviceCommandHandlerTest
         A.CallTo(() => _fakeUnitOfWork.SaveChangesAsync(CancellationToken.None)).MustNotHaveHappened();
         A.CallTo(() => _fakeDeviceService.RegisterDevice(A<User>._, A<string>._, A<string>._, A<DeviceType>._, A<DevicePlatform>._)).MustNotHaveHappened();
         A.CallTo(() => _fakeLoginNonceCache.GetNonceAsync(A<Guid>._, CancellationToken.None)).MustNotHaveHappened();
+    }
+
+    [Fact]
+    public async Task Handle_WhenUserDeleted_ReturnsUnauthorized()
+    {
+        // Arrange
+        var user = new User(Guid.NewGuid(), Email.Create("test@mail.dk"), Password.Create("kjash)023+23?JK"), true);
+        user.SetDelete();
+
+        var request = new CreateDeviceCommand
+        {
+            UserId = user.Id,
+            LoginNonceId = Guid.Empty,
+            LoginNonce = null,
+            DeviceAppVersion = null,
+            DeviceType = 0,
+            DevicePlatform = 0,
+            Base64DevicePublicKey = null
+        };
+
+        A.CallTo(() => _fakeRepo.GetSinleAsync(A<UserWithDevicesSpec>._, A<CancellationToken>._)).Returns(user);
+
+        // Act
+        var result = await _sut.Handle(request, CancellationToken.None);
+
+        // Assert
+        result.Success.Should().BeFalse();
+        result.Error.Should().BeEquivalentTo(Errors.General.Unauthorized());
+        A.CallTo(() => _fakeDeviceService.RegisterDevice(A<User>._, A<string>._, A<string>._, A<DeviceType>._, A<DevicePlatform>._)).MustNotHaveHappened();
+        A.CallTo(() => _fakeLoginNonceCache.TryClaimNonceAsync(A<Guid>._, A<CancellationToken>._)).MustNotHaveHappened();
     }
 
     [Fact]

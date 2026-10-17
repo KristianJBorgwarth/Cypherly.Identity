@@ -151,6 +151,28 @@ public class VerifyNonceCommandHandlerTest
     }
 
     [Fact]
+    public async Task Handle_When_User_Deleted_Should_Return_Unauthorized()
+    {
+        // Arrange
+        var (user, device) = CreateUserWithDevice();
+        user.SetDelete();
+        var nonce = Nonce.Create(user.Id, device.Id);
+        var cmd = CreateCommand(user.Id, device.Id, nonce.Id);
+
+        A.CallTo(() => _fakeCachce.GetNonceAsync(cmd.NonceId, A<CancellationToken>._)).Returns(nonce);
+        A.CallTo(() => _fakeRepo.GetSinleAsync(A<UserWithDevicesSpec>._, A<CancellationToken>._)).Returns(user);
+
+        // Act
+        var result = await _sut.Handle(cmd, CancellationToken.None);
+
+        // Assert
+        result.Success.Should().BeFalse();
+        result.Error.Should().BeEquivalentTo(Errors.General.Unauthorized());
+        A.CallTo(() => _fakeCachce.TryClaimNonceAsync(A<Guid>._, A<CancellationToken>._)).MustNotHaveHappened();
+        A.CallTo(() => _fakeJwt.GenerateTokenAsync(A<Guid>._, A<Guid>._, A<CancellationToken>._)).MustNotHaveHappened();
+    }
+
+    [Fact]
     public async Task Handle_When_Device_Deleted_Should_Return_Unauthorized()
     {
         // Arrange

@@ -84,6 +84,31 @@ public class LoginCommandHandlerTest
     }
 
     [Fact]
+    public async Task Handle_Given_Deleted_User_Should_Return_InvalidCredentials()
+    {
+        // Arrange
+        var user = new User(Guid.NewGuid(), Email.Create("Test@mail.dk"), Password.Create("kj9203KKJHSD?23"), true);
+        user.SetDelete();
+
+        A.CallTo(() => _fakeUserRepository.GetSinleAsync(A<UserByEmailSpec>._, A<CancellationToken>._)).Returns(user);
+
+        var cmd = new LoginCommand()
+        {
+            Email = "Test@mail.dk",
+            Password = "kj9203KKJHSD?23",
+        };
+
+        // Act
+        var result = await _sut.Handle(cmd, CancellationToken.None);
+
+        // Assert
+        result.Success.Should().BeFalse();
+        result.Error.Description.Should().Contain("Invalid Credentials");
+        A.CallTo(() => _fakeAuthService.GenerateLoginVerificationCode(A<User>._)).MustNotHaveHappened();
+        A.CallTo(() => _fakeUnitOfWork.SaveChangesAsync(CancellationToken.None)).MustNotHaveHappened();
+    }
+
+    [Fact]
     public async Task Handle_Given_Unverified_User_Should_Return_LoginDto_With_IsVerified_False()
     {
         // Arrange

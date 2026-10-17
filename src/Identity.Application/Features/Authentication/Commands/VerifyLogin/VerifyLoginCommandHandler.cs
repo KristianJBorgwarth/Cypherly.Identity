@@ -42,6 +42,12 @@ public sealed class VerifyLoginCommandHandler(
             return Result.Fail<VerifyLoginDto>(Errors.General.NotFound(cmd.UserId));
         }
 
+        if (user.Deleted is not null)
+        {
+            logger.LogWarning("User with ID {UserId} is deleted", cmd.UserId);
+            return Result.Fail<VerifyLoginDto>(Errors.General.Unauthorized());
+        }
+
         var verificationResult = user.VerifyLogin(cmd.LoginVerificationCode);
         if (verificationResult.Success is false)
         {

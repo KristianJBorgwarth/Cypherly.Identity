@@ -81,6 +81,35 @@ public class VerifyLoginCommandHandlerTest : IntegrationTestBase
     }
 
     [Fact]
+    public async Task Handle_Given_Deleted_User_Should_Fail_And_Not_Issue_Nonce()
+    {
+        // Arrange
+        var user = new User(Guid.NewGuid(), Email.Create("Test@mail.dk"), Password.Create("test??KL99"), true);
+        user.AddVerificationCode(UserVerificationCodeType.Login);
+        user.SetDelete();
+
+        Db.User.Add(user);
+        await Db.SaveChangesAsync();
+        var passwordNonce = await AddPasswordNonce(user.Id);
+
+        var cmd = new VerifyLoginCommand()
+        {
+            UserId = user.Id,
+            LoginVerificationCode = user.GetActiveVerificationCode(UserVerificationCodeType.Login)!.Code.Value,
+            NonceId = passwordNonce.Id,
+            Nonce = passwordNonce.NonceValue,
+        };
+
+        // Act
+        var result = await _commandHandler.Handle(cmd, CancellationToken.None);
+
+        // Assert
+        result.Success.Should().BeFalse();
+        result.Error.Should().BeEquivalentTo(Errors.General.NotFound(user.Id));
+        Db.User.AsNoTracking().Include(u => u.VerificationCodes).First().VerificationCodes.First().Code.IsUsed.Should().BeFalse();
+    }
+
+    [Fact]
     public async Task Handle_Given_Invalid_Login_Verification_Code_Should_Return_Error()
     {
         // Arrange

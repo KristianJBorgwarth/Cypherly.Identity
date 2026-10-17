@@ -95,34 +95,6 @@ public class VerifyLoginCommandHandlerTest
     }
 
     [Fact]
-    public async Task Handle_Given_Deleted_User_Should_Return_Unauthorized()
-    {
-        // Arrange
-        var user = new User(Guid.NewGuid(), Email.Create("test@mail.dk"), Password.Create("kjash)023+23?JK"), true);
-        user.AddVerificationCode(UserVerificationCodeType.Login);
-        user.SetDelete();
-
-        A.CallTo(() => _fakeRepo.GetSinleAsync(A<UserWithVerificationCodesSpec>._, A<CancellationToken>._)).Returns(user);
-        var passwordNonce = ArrangePasswordNonce(user.Id);
-
-        var command = new VerifyLoginCommand()
-        {
-            UserId = user.Id,
-            LoginVerificationCode = user.GetActiveVerificationCode(UserVerificationCodeType.Login)!.Code.Value,
-            NonceId = passwordNonce.Id,
-            Nonce = passwordNonce.NonceValue,
-        };
-
-        // Act
-        var result = await _sut.Handle(command, CancellationToken.None);
-
-        // Assert
-        result.Success.Should().BeFalse();
-        result.Error.Should().BeEquivalentTo(Errors.General.Unauthorized());
-        A.CallTo(() => _fakeNonceCache.AddNonceAsync(A<LoginNonce>._, A<CancellationToken>._)).MustNotHaveHappened();
-    }
-
-    [Fact]
     public async Task Handle_Given_Invalid_VerificationCode_Should_Return_ResultFail()
     {
         // Arrange

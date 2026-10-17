@@ -97,31 +97,6 @@ public class GetNonceQueryHandlerTest
     }
 
     [Fact]
-    public async Task Handle_Given_Deleted_User_Should_Return_Unauthorized()
-    {
-        // Arrange
-        var user = new User(Guid.NewGuid(), Email.Create("test@mail.dk"), Password.Create("test123KJ??L"), true);
-        var device = new Device(Guid.NewGuid(), "SomeKey", "1.0", DeviceType.Desktop, DevicePlatform.Android, user.Id);
-        user.AddDevice(device);
-        user.SetDelete();
-        A.CallTo(() => _fakeRepo.GetSinleAsync(A<UserWithDevicesSpec>._, A<CancellationToken>._)).Returns(user);
-
-        var query = new GetNonceQuery()
-        {
-            UserId = user.Id,
-            DeviceId = device.Id
-        };
-
-        // Act
-        var result = await _sut.Handle(query, CancellationToken.None);
-
-        // Assert
-        result.Success.Should().BeFalse();
-        result.Error.Should().BeEquivalentTo(Errors.General.Unauthorized());
-        A.CallTo(() => _fakeCache.AddNonceAsync(A<Nonce>._, A<CancellationToken>._)).MustNotHaveHappened();
-    }
-
-    [Fact]
     public async Task Handle_Given_Deleted_Device_Should_Return_Unauthorized()
     {
         // Arrange

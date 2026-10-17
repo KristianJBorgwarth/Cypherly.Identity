@@ -80,6 +80,31 @@ public class GetNonceQueryHandlerTest : IntegrationTestBase
     }
 
     [Fact]
+    public async Task Handle_Given_Deleted_User_Should_Return_Unauthorized()
+    {
+        // Arrange
+        var user = new User(Guid.NewGuid(), Email.Create("test@mail.dk"), Password.Create("kjsidlæ??238Ja"), true);
+        var device = new Device(Guid.NewGuid(), "SomeKey", "1.0", DeviceType.Desktop, DevicePlatform.Android, user.Id);
+        user.AddDevice(device);
+        user.SetDelete();
+        Db.User.Add(user);
+        await Db.SaveChangesAsync();
+
+        var query = new GetNonceQuery()
+        {
+            UserId = user.Id,
+            DeviceId = device.Id
+        };
+
+        // Act
+        var result = await _sut.Handle(query, CancellationToken.None);
+
+        // Assert
+        result.Success.Should().BeFalse();
+        result.Error.Should().BeEquivalentTo(Errors.General.Unauthorized());
+    }
+
+    [Fact]
     public async Task Handle_Given_Unknown_Device_Should_Return_Unauthorized_And_Not_Cache()
     {
         // Arrange

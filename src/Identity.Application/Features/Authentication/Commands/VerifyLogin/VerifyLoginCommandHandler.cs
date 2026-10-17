@@ -35,17 +35,11 @@ public sealed class VerifyLoginCommandHandler(
             return Result.Fail<VerifyLoginDto>(Errors.General.TooManyRequests());
         }
 
-        var user = await userRepository.GetSinleAsync(new UserWithVerificationCodesSpec(cmd.UserId), ct);
+        var user = await userRepository.GetSinleAsync(new UserWithVerificationCodesSpec(cmd.UserId, excludeDeleted: true), ct);
         if (user is null)
         {
-            logger.LogWarning("User with ID {UserId} not found", cmd.UserId);
+            logger.LogWarning("User with ID {UserId} not found or deleted", cmd.UserId);
             return Result.Fail<VerifyLoginDto>(Errors.General.NotFound(cmd.UserId));
-        }
-
-        if (user.Deleted is not null)
-        {
-            logger.LogWarning("User with ID {UserId} is deleted", cmd.UserId);
-            return Result.Fail<VerifyLoginDto>(Errors.General.Unauthorized());
         }
 
         var verificationResult = user.VerifyLogin(cmd.LoginVerificationCode);

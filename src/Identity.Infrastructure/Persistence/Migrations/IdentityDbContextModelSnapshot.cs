@@ -195,53 +195,6 @@ namespace Identity.Infrastructure.Persistence.Migrations
                     b.ToTable("device", (string)null);
                 });
 
-            modelBuilder.Entity("Identity.Domain.Entities.RefreshToken", b =>
-                {
-                    b.Property<Guid>("Id")
-                        .HasColumnType("uuid")
-                        .HasColumnName("id");
-
-                    b.Property<DateTime>("Created")
-                        .HasColumnType("timestamp with time zone")
-                        .HasColumnName("created");
-
-                    b.Property<DateTime?>("Deleted")
-                        .HasColumnType("timestamp with time zone")
-                        .HasColumnName("deleted");
-
-                    b.Property<Guid>("DeviceId")
-                        .HasColumnType("uuid")
-                        .HasColumnName("device_id");
-
-                    b.Property<DateTime>("Expires")
-                        .HasColumnType("timestamp with time zone")
-                        .HasColumnName("expires");
-
-                    b.Property<DateTime?>("Revoked")
-                        .HasColumnType("timestamp with time zone")
-                        .HasColumnName("revoked");
-
-                    b.Property<string>("Token")
-                        .IsRequired()
-                        .HasMaxLength(128)
-                        .HasColumnType("character varying(128)")
-                        .HasColumnName("token");
-
-                    b.Property<DateTime>("Updated")
-                        .HasColumnType("timestamp with time zone")
-                        .HasColumnName("updated");
-
-                    b.HasKey("Id");
-
-                    b.HasIndex("DeviceId");
-
-                    b.HasIndex("Token")
-                        .IsUnique()
-                        .HasDatabaseName("idx_token");
-
-                    b.ToTable("refresh_token", (string)null);
-                });
-
             modelBuilder.Entity("Identity.Domain.Entities.UserVerificationCode", b =>
                 {
                     b.Property<Guid>("Id")
@@ -371,17 +324,6 @@ namespace Identity.Infrastructure.Persistence.Migrations
                         .IsRequired();
                 });
 
-            modelBuilder.Entity("Identity.Domain.Entities.RefreshToken", b =>
-                {
-                    b.HasOne("Identity.Domain.Entities.Device", "Device")
-                        .WithMany("RefreshTokens")
-                        .HasForeignKey("DeviceId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.Navigation("Device");
-                });
-
             modelBuilder.Entity("Identity.Domain.Entities.UserVerificationCode", b =>
                 {
                     b.HasOne("Identity.Domain.Aggregates.User", null)
@@ -435,11 +377,6 @@ namespace Identity.Infrastructure.Persistence.Migrations
                     b.Navigation("Devices");
 
                     b.Navigation("VerificationCodes");
-                });
-
-            modelBuilder.Entity("Identity.Domain.Entities.Device", b =>
-                {
-                    b.Navigation("RefreshTokens");
                 });
 #pragma warning restore 612, 618
         }

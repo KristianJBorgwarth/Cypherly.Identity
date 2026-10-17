@@ -56,6 +56,5 @@ public class LoginEndpointTest(IntegrationTestFactory<Program, IdentityDbContext
 
         // Assert
         response.StatusCode.Should().Be(HttpStatusCode.BadRequest);
-        Db.RefreshToken.Should().HaveCount(0);
     }
 }

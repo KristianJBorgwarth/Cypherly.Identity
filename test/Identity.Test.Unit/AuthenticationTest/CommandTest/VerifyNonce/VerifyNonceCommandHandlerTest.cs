@@ -239,7 +239,6 @@ public class VerifyNonceCommandHandlerTest
         result.Value.Jwt.Should().Be(accessToken.Token);
         result.Value.ExpiresAt.Should().Be(accessToken.ExpiresAt);
         user.DomainEvents.OfType<UserLoggedInEvent>().Should().HaveCount(announce ? 1 : 0);
-        device.RefreshTokens.Should().BeEmpty();
         A.CallTo(() => _fakeUnit.SaveChangesAsync(A<CancellationToken>._)).MustHaveHappenedOnceExactly();
         A.CallTo(() => _fakeCachce.DeleteNonceAsync(cmd.NonceId, A<CancellationToken>._)).MustHaveHappenedOnceExactly();
     }

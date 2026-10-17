@@ -152,7 +152,6 @@ public class VerifyNonceCommandHandlerTest : IntegrationTestBase
         result.Value.Should().NotBeNull();
         result.Value.Jwt.Should().NotBeNullOrEmpty();
         result.Value.ExpiresAt.Should().BeAfter(DateTime.UtcNow);
-        Db.RefreshToken.Count().Should().Be(0);
         Db.OutboxMessage.Count().Should().Be(1);
     }
 

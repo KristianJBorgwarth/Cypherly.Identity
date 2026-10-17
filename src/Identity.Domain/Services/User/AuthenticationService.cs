@@ -1,43 +1,16 @@
-﻿using Identity.Domain.Entities;
-using Identity.Domain.Enums;
+﻿using Identity.Domain.Enums;
 using Identity.Domain.Events.User;
 
 namespace Identity.Domain.Services.User;
 
 public interface IAuthenticationService
 {
-    RefreshToken GenerateRefreshToken(Aggregates.User user, Guid deviceId);
-    bool VerifyRefreshToken(Aggregates.User user, Guid deviceId, string refreshToken);
     void GenerateLoginVerificationCode(Aggregates.User user);
     void Logout(Aggregates.User user, Guid deviceId);
 }
 
 public class AuthenticationService : IAuthenticationService
 {
-    public RefreshToken GenerateRefreshToken(Aggregates.User user, Guid deviceId)
-    {
-        var device = user.GetDevice(deviceId);
-
-        var token = device.GetActiveRefreshToken();
-
-        if (token is null)
-        {
-            var newToken = device.AddRefreshToken();
-            return newToken;
-        }
-
-        token.Revoke();
-        var refreshedToken = device.AddRefreshToken();
-        return refreshedToken;
-    }
-
-    public bool VerifyRefreshToken(Aggregates.User user, Guid deviceId, string refreshToken)
-    {
-        var device = user.GetDevice(deviceId);
-        var token = device.GetActiveRefreshToken();
-        return token?.Token == refreshToken;
-    }
-
     public void GenerateLoginVerificationCode(Aggregates.User user)
     {
         user.AddVerificationCode(UserVerificationCodeType.Login);
@@ -49,7 +22,6 @@ public class AuthenticationService : IAuthenticationService
         user.AddDomainEvent(new UserLoggedOutEvent(user.Id, deviceId));
         var device = user.GetDevice(deviceId);
 
-        device.RevokeRefreshTokens();
         device.SetLastSeen();
         device.SetDelete();
     }

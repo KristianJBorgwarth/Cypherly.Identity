@@ -15,9 +15,6 @@ public class Device : Entity
     public string AppVersion { get; private set; } = null!;
     public Guid UserId { get; private set; }
 
-    private readonly List<RefreshToken> _refreshTokens = [];
-    public IReadOnlyCollection<RefreshToken> RefreshTokens => _refreshTokens;
-
     public Device() : base(Guid.Empty) { } // For EF Core
 
     public Device(Guid id,
@@ -62,32 +59,5 @@ public class Device : Entity
     public void SetLastSeen()
     {
         LastSeen = DateTime.UtcNow;
-    }
-
-    /// <summary>
-    /// Adds a valid refresh token <see cref="RefreshToken"/> to the device.
-    /// </summary>
-    public RefreshToken AddRefreshToken()
-    {
-        var token = new RefreshToken(Guid.NewGuid(), deviceId: Id);
-        _refreshTokens.Add(token);
-        return token;
-    }
-
-    /// <summary>
-    /// Returns the most recent active refresh token.
-    /// </summary>
-    /// <returns><see cref="RefreshToken"/></returns>
-    public RefreshToken? GetActiveRefreshToken()
-    {
-        return RefreshTokens.Where(rt => rt.IsValid()).MaxBy(rt => rt.Expires);
-    }
-
-    /// <summary>
-    /// Revoke all refresh tokens for the device.
-    /// </summary>
-    public void RevokeRefreshTokens()
-    {
-        RefreshTokens.Where(t => !t.IsRevoked).ToList().ForEach(t => t.Revoke());
     }
 }

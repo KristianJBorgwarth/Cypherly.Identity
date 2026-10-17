@@ -16,7 +16,7 @@ public class LogoutCommandHandler(
 {
     public async ValueTask<Result> Handle(LogoutCommand cmd, CancellationToken ct)
     {
-        var user = await userRepository.GetSinleAsync(new UserWithDeviceAndRefreshTokensSpec(cmd.Id), ct);
+        var user = await userRepository.GetSinleAsync(new UserWithDevicesSpec(cmd.Id), ct);
         if (user is null)
         {
             logger.LogWarning("User with ID {UserId} not found", cmd.Id);

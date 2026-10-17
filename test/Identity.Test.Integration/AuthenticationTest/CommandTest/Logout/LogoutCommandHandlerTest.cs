@@ -30,16 +30,12 @@ public class LogoutCommandHandlerTest : IntegrationTestBase
     }
 
     [Fact]
-    public async Task Handle_Given_Valid_Command_Should_Logout_User_Delete_Device_And_Related_Tokens()
+    public async Task Handle_Given_Valid_Command_Should_Logout_User_And_Delete_Device()
     {
         // Arrange
         var user = new User(Guid.NewGuid(), Email.Create("test@mail.dk"), Password.Create("Test98??KLadds"), true);
 
         var device = new Device(Guid.NewGuid(), "testKey", "1.0", DeviceType.Desktop, DevicePlatform.Windows, user.Id);
-
-        device.AddRefreshToken();
-        device.AddRefreshToken();
-        device.AddRefreshToken();
 
         user.AddDevice(device);
 
@@ -58,7 +54,6 @@ public class LogoutCommandHandlerTest : IntegrationTestBase
         // Assert
         result.Success.Should().BeTrue();
         Db.Device.AsNoTracking().FirstOrDefault()!.Deleted.Should().NotBeNull();
-        Db.RefreshToken.AsNoTracking().FirstOrDefault()!.IsRevoked.Should().BeTrue();
         Db.OutboxMessage.Count().Should().Be(1);
     }
 

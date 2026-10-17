@@ -134,7 +134,6 @@ public class LoginCommandHandlerTest : IntegrationTestBase
         result.Success.Should().BeTrue();
         result.Value.Should().NotBeNull();
         result.Value.IsVerified.Should().BeFalse();
-        Db.RefreshToken.Should().HaveCount(0);
     }
 
     [Fact]

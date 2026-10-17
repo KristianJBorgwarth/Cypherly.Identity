@@ -1,7 +1,6 @@
 using Identity.API.Common;
 using Identity.Application.Features.Authentication.Commands.Login;
 using Identity.Application.Features.Authentication.Commands.Logout;
-using Identity.Application.Features.Authentication.Commands.RefreshTokens;
 using Identity.Application.Features.Authentication.Commands.VerifyLogin;
 using Identity.Application.Features.Authentication.Commands.VerifyNonce;
 using Identity.Application.Features.Authentication.Queries.GetNonce;
@@ -66,14 +65,5 @@ internal sealed class AuthenticationEndpoints : IEndpoint
             .Produces<VerifyNonceDto>()
             .ProducesProblem(StatusCodes.Status400BadRequest)
             .ProducesProblem(StatusCodes.Status401Unauthorized);
-
-        group.MapPost("/refresh-token", async ([FromBody] RefreshTokensCommand cmd, ISender sender) =>
-            {
-                var result = await sender.Send(cmd);
-                return result.Success ? Results.Ok(result.Value) : result.ToProblemDetails();
-            })
-            .Produces<RefreshTokensDto>()
-            .ProducesProblem(StatusCodes.Status400BadRequest)
-            .ProducesProblem(StatusCodes.Status404NotFound);
     }
 }

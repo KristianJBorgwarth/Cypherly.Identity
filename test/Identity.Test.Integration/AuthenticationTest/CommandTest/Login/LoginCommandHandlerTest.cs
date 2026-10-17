@@ -83,7 +83,7 @@ public class LoginCommandHandlerTest : IntegrationTestBase
 
         // Assert
         result.Success.Should().BeFalse();
-        result.Error.Description.Should().Contain("Invalid Credentials");
+        result.Error.Should().BeEquivalentTo(Errors.General.Unauthorized());
         Db.VerificationCode.Should().HaveCount(0);
     }
 
@@ -109,7 +109,7 @@ public class LoginCommandHandlerTest : IntegrationTestBase
         // Assert
         result.Success.Should().BeFalse();
         result.Error.Should().NotBeNull();
-        result.Error.Description.Should().Be("Invalid Credentials");
+        result.Error.Should().BeEquivalentTo(Errors.General.Unauthorized());
     }
 
     [Fact]
@@ -134,7 +134,7 @@ public class LoginCommandHandlerTest : IntegrationTestBase
         // Assert
         result.Success.Should().BeFalse();
         result.Error.Should().NotBeNull();
-        result.Error.Description.Should().Be("Invalid Credentials");
+        result.Error.Should().BeEquivalentTo(Errors.General.Unauthorized());
     }
 
     [Fact]
@@ -175,7 +175,7 @@ public class LoginCommandHandlerTest : IntegrationTestBase
         for (var i = 0; i < 5; i++)
         {
             var failed = await _sut.Handle(wrongPassword, CancellationToken.None);
-            failed.Error.Description.Should().Be("Invalid Credentials");
+            failed.Error.Should().BeEquivalentTo(Errors.General.Unauthorized());
         }
 
         // Act

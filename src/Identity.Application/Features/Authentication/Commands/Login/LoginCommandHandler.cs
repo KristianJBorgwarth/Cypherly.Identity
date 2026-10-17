@@ -6,6 +6,7 @@ using Identity.Application.Contracts.RateLimiting;
 using Identity.Application.Contracts.Repository;
 using Identity.Domain.Common;
 using Identity.Domain.Services.User;
+using Identity.Domain.ValueObjects;
 
 namespace Identity.Application.Features.Authentication.Commands.Login;
 
@@ -33,10 +34,14 @@ public class LoginCommandHandler(
         }
 
         var user = await userRepository.GetSinleAsync(new UserByEmailSpec(cmd.Email, excludeDeleted: true), ct);
-        if (user is null) return Result.Fail<LoginDto>(Errors.General.UnspecifiedError("Invalid Credentials"));
+        if (user is null)
+        {
+            Password.VerifyAgainstDummy(cmd.Password);
+            return Result.Fail<LoginDto>(Errors.General.Unauthorized());
+        }
 
         var pwResult = user.Password.Verify(cmd.Password);
-        if (!pwResult) return Result.Fail<LoginDto>(Errors.General.UnspecifiedError("Invalid Credentials"));
+        if (!pwResult) return Result.Fail<LoginDto>(Errors.General.Unauthorized());
 
         await rateLimiter.ResetAsync(passwordAttemptKey, ct);
 

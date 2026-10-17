@@ -23,6 +23,7 @@ internal sealed class AuthenticationEndpoints : IEndpoint
             })
             .Produces<LoginDto>()
             .ProducesProblem(StatusCodes.Status400BadRequest)
+            .ProducesProblem(StatusCodes.Status401Unauthorized)
             .ProducesProblem(StatusCodes.Status429TooManyRequests);
 
         group.MapPost("/logout", async (ISender sender, HttpContext ctx) =>

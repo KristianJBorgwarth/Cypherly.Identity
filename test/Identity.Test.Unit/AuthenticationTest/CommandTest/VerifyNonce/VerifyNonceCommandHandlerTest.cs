@@ -210,7 +210,7 @@ public class VerifyNonceCommandHandlerTest
         // Assert
         result.Success.Should().BeFalse();
         result.Error.Should().BeEquivalentTo(Errors.General.Unauthorized());
-        A.CallTo(() => _fakeJwt.GenerateTokenAsync(A<Guid>._, A<Guid>._, A<CancellationToken>._)).MustNotHaveHappened();
+        A.CallTo(() => _fakeJwt.GenerateTokenAsync(A<Guid>._, A<Guid>._, A<Guid>._, A<CancellationToken>._)).MustNotHaveHappened();
         A.CallTo(() => _fakeUnit.SaveChangesAsync(A<CancellationToken>._)).MustNotHaveHappened();
     }
 
@@ -229,7 +229,7 @@ public class VerifyNonceCommandHandlerTest
         A.CallTo(() => _fakeRepo.GetSinleAsync(A<UserWithDevicesSpec>._, A<CancellationToken>._)).Returns(user);
         A.CallTo(() => _fakeVerify.VerifyNonce(nonce.NonceValue, cmd.Nonce, device.PublicKey)).Returns(true);
         A.CallTo(() => _fakeCachce.TryClaimNonceAsync(cmd.NonceId, A<CancellationToken>._)).Returns(true);
-        A.CallTo(() => _fakeJwt.GenerateTokenAsync(user.Id, device.Id, A<CancellationToken>._)).Returns(accessToken);
+        A.CallTo(() => _fakeJwt.GenerateTokenAsync(user.Id, device.Id, device.ConnectionId, A<CancellationToken>._)).Returns(accessToken);
 
         // Act
         var result = await _sut.Handle(cmd, CancellationToken.None);

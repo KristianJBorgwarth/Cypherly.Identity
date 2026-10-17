@@ -17,9 +17,10 @@ public class JwtServiceTest(IntegrationTestFactory<Program, IdentityDbContext> f
         // Arrange
         var userId = Guid.NewGuid();
         var deviceId = Guid.NewGuid();
+        var connectionId = Guid.NewGuid();
 
         // Act
-        var token = await _jwtService.GenerateTokenAsync(userId, deviceId);
+        var token = await _jwtService.GenerateTokenAsync(userId, deviceId, connectionId);
 
         // Assert
         token.Token.Should().NotBeNullOrEmpty();
@@ -29,6 +30,7 @@ public class JwtServiceTest(IntegrationTestFactory<Program, IdentityDbContext> f
         jwtToken.Should().NotBeNull();
         jwtToken.Claims.FirstOrDefault(c => c.Type == ClaimTypes.NameIdentifier)?.Value.Should().Be(userId.ToString());
         jwtToken.Claims.FirstOrDefault(c => c.Type == "device_id")?.Value.Should().Be(deviceId.ToString());
+        jwtToken.Claims.FirstOrDefault(c => c.Type == "connection_id")?.Value.Should().Be(connectionId.ToString());
     }
 
 }

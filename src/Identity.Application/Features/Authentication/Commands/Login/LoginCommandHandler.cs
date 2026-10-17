@@ -37,11 +37,11 @@ public class LoginCommandHandler(
         if (user is null)
         {
             Password.VerifyAgainstDummy(cmd.Password);
-            return Result.Fail<LoginDto>(Errors.General.UnspecifiedError("Invalid Credentials"));
+            return Result.Fail<LoginDto>(Errors.General.Unauthorized());
         }
 
         var pwResult = user.Password.Verify(cmd.Password);
-        if (!pwResult) return Result.Fail<LoginDto>(Errors.General.UnspecifiedError("Invalid Credentials"));
+        if (!pwResult) return Result.Fail<LoginDto>(Errors.General.Unauthorized());
 
         await rateLimiter.ResetAsync(passwordAttemptKey, ct);
 

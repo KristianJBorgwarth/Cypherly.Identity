@@ -6,6 +6,7 @@ using Identity.Application.Contracts.RateLimiting;
 using Identity.Application.Contracts.Repository;
 using Identity.Application.Features.Authentication.Commands.Login;
 using Identity.Domain.Aggregates;
+using Identity.Domain.Common;
 using Identity.Domain.Services.User;
 using Identity.Domain.ValueObjects;
 using Microsoft.Extensions.Logging;
@@ -51,7 +52,7 @@ public class LoginCommandHandlerTest
 
         // Assert
         result.Success.Should().BeFalse();
-        result.Error.Description.Should().Contain("Invalid Credentials");
+        result.Error.Should().BeEquivalentTo(Errors.General.Unauthorized());
         A.CallTo(() => _fakeUserRepository.GetSinleAsync(A<UserByEmailSpec>._, A<CancellationToken>._)).MustHaveHappenedOnceExactly();
         A.CallTo(() => _fakeAuthService.GenerateLoginVerificationCode(A<User>._)).MustNotHaveHappened();
         A.CallTo(() => _fakeUnitOfWork.SaveChangesAsync(CancellationToken.None)).MustNotHaveHappened();
@@ -76,7 +77,7 @@ public class LoginCommandHandlerTest
 
         // Assert
         result.Success.Should().BeFalse();
-        result.Error.Description.Should().Contain("Invalid Credentials");
+        result.Error.Should().BeEquivalentTo(Errors.General.Unauthorized());
         A.CallTo(() => _fakeUserRepository.GetSinleAsync(A<UserByEmailSpec>._, A<CancellationToken>._)).MustHaveHappenedOnceExactly();
         A.CallTo(() => _fakeAuthService.GenerateLoginVerificationCode(A<User>._)).MustNotHaveHappened();
 

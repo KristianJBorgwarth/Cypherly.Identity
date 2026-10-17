@@ -37,7 +37,7 @@ public class LoginEndpointTest(IntegrationTestFactory<Program, IdentityDbContext
     }
 
     [Fact]
-    public async Task Given_Invalid_Login_Request_Should_Return_400()
+    public async Task Given_Wrong_Password_Should_Return_401()
     {
         // Arrange
         var user = new User(Guid.NewGuid(), Email.Create("test@mail.dk"), Password.Create("TestPassword?123"), true);
@@ -55,6 +55,6 @@ public class LoginEndpointTest(IntegrationTestFactory<Program, IdentityDbContext
         var response = await Client.PostAsJsonAsync("/api/authentication/login", command);
 
         // Assert
-        response.StatusCode.Should().Be(HttpStatusCode.BadRequest);
+        response.StatusCode.Should().Be(HttpStatusCode.Unauthorized);
     }
 }

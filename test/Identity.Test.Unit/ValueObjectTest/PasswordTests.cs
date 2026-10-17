@@ -9,6 +9,11 @@ public class PasswordTests
     [Theory]
     [InlineData("ValidPassword123!")]
     [InlineData("AnotherValid1@")]
+    [InlineData("nouppercase1!")]
+    [InlineData("NOLOWERCASE1!")]
+    [InlineData("NoSpecialChar1")]
+    [InlineData("NoNumbers!")]
+    [InlineData("correct horse battery staple")]
     public void GivenValidPassword_Should_Hash_Correctly(string plainPassword)
     {
         // Act
@@ -22,10 +27,7 @@ public class PasswordTests
 
     [Theory]
     [InlineData("short")]
-    [InlineData("nouppercase1!")]
-    [InlineData("NOLOWERCASE1!")]
-    [InlineData("NoSpecialChar1")]
-    [InlineData("NoNumbers!")]
+    [InlineData("1234567")]
     public void GivenInvalidPassword_Should_ReturnFailureResult(string plainPassword)
     {
         // Act
@@ -33,7 +35,21 @@ public class PasswordTests
 
         // Assert
         result.Success.Should().BeFalse();
-        result.Error.Description.Should().Be("Incorrect password: Must be between 8 and 36 characters, contain one uppercase letter, one lowercase letter, one special character, and no spaces.");
+        result.Error.Description.Should().Be("Incorrect password: Must be at least 8 characters and at most 72 bytes.");
+    }
+
+    [Theory]
+    [InlineData('a', 72, true)]
+    [InlineData('a', 73, false)]
+    [InlineData('é', 36, true)]
+    [InlineData('é', 37, false)]
+    public void Password_Should_Be_Limited_To_72_Utf8_Bytes(char character, int count, bool expectedValid)
+    {
+        // Act
+        var result = Password.Create(new string(character, count));
+
+        // Assert
+        result.Success.Should().Be(expectedValid);
     }
 
     [Theory]

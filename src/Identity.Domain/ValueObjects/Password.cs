@@ -1,4 +1,4 @@
-﻿using System.Text.RegularExpressions;
+﻿using System.Text;
 using Cypherly.Domain.Common;
 using Identity.Domain.Common;
 
@@ -6,6 +6,8 @@ namespace Identity.Domain.ValueObjects
 {
     public class Password : ValueObject
     {
+        private const int MinLength = 8;
+        private const int MaxBytes = 72;
         private static readonly string DummyHash = BCrypt.Net.BCrypt.HashPassword(Guid.NewGuid().ToString());
 
         public string HashedPassword { get; private set; } = string.Empty;
@@ -50,22 +52,12 @@ namespace Identity.Domain.ValueObjects
             BCrypt.Net.BCrypt.Verify(plainPassword, DummyHash);
         }
 
-        /// <summary>
-        /// Validates the password format:
-        /// Must be between 8 and 36 characters.
-        /// Must contain at least one uppercase letter
-        /// Must contain at least one lowercase letter
-        /// Must contain at least one special character
-        /// Must not contain any spaces
-        /// </summary>
-        /// <param name="pw">the password being validated</param>
-        /// <returns>boolean value representing the validity of password</returns>
         private static void IsPasswordValidFormat(string pw)
         {
-            if (!Regex.IsMatch(pw, @"^(?=.*?[A-Z])(?=.*?[a-z])(?=.*?[0-9])(?=.*?[\W_]).{8,36}$"))
+            if (pw.Length < MinLength || Encoding.UTF8.GetByteCount(pw) > MaxBytes)
             {
                 throw new ArgumentException(
-                    "Incorrect password: Must be between 8 and 36 characters, contain one uppercase letter, one lowercase letter, one special character, and no spaces.");
+                    $"Incorrect password: Must be at least {MinLength} characters and at most {MaxBytes} bytes.");
             }
         }
 

@@ -17,7 +17,7 @@ internal class JwtService(
     IOptions<JwtSettings> jwtSettings)
     : IJwtService
 {
-    public async Task<AccessToken> GenerateTokenAsync(Guid userId, Guid deviceId, CancellationToken ct = default)
+    public async Task<AccessToken> GenerateTokenAsync(Guid userId, Guid deviceId, Guid connectionId, CancellationToken ct = default)
     {
         var now = timeProvider.GetUtcNow().UtcDateTime;
         var expiresAt = now.AddMinutes(jwtSettings.Value.TokenLifeTimeInMinutes);
@@ -27,6 +27,7 @@ internal class JwtService(
         {
             new(ClaimTypes.NameIdentifier, userId.ToString()),
             new("device_id", deviceId.ToString()),
+            new("connection_id", connectionId.ToString()),
             new("jti", Guid.NewGuid().ToString()),
         };
 

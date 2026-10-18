@@ -48,7 +48,7 @@ public class VerifyNonceCommandHandler(
             return Result.Fail<VerifyNonceDto>(Errors.General.Unauthorized());
         }
 
-        var token = await jwtService.GenerateTokenAsync(user.Id, cmd.DeviceId);
+        var token = await jwtService.GenerateTokenAsync(user.Id, cmd.DeviceId, device.ConnectionId);
 
         if (cmd.Announce)
             user.AddDomainEvent(new UserLoggedInEvent(user.Id, device.Id, device.ConnectionId));

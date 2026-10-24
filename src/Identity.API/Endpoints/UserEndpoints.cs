@@ -1,7 +1,6 @@
 using Identity.API.Common;
 using Identity.Application.Features.Device.Commands.Create;
 using Identity.Application.Features.Device.Queries.GetConnectionIdByUser;
-using Identity.Application.Features.Device.Queries.GetConnectionIdsByUsers;
 using Identity.Application.Features.Device.Queries.GetDevices;
 using Identity.Application.Features.User.Commands.Create;
 using Identity.Application.Features.User.Commands.Delete;
@@ -93,15 +92,5 @@ internal sealed class UserEndpoints : IEndpoint
             .ProducesProblem(StatusCodes.Status400BadRequest)
             .ProducesProblem(StatusCodes.Status401Unauthorized)
             .ProducesProblem(StatusCodes.Status404NotFound);
-
-        group.MapPost("/devices/connectionids", async ([FromBody] GetConnectionIdsByUsersQuery query, ISender sender) =>
-            {
-                var result = await sender.Send(query);
-                return result.Success ? Results.Ok(result.Value) : result.ToProblemDetails();
-            })
-            .RequireAuthorization()
-            .Produces<GetConnectionIdsByUsersDto>()
-            .ProducesProblem(StatusCodes.Status400BadRequest)
-            .ProducesProblem(StatusCodes.Status401Unauthorized);
     }
 }

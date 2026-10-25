@@ -1,5 +1,6 @@
 using Identity.API.Common;
 using Identity.Application.Features.Device.Commands.Create;
+using Identity.Application.Features.Device.Commands.Delete;
 using Identity.Application.Features.Device.Queries.GetConnectionIdByUser;
 using Identity.Application.Features.Device.Queries.GetDevices;
 using Identity.Application.Features.User.Commands.Create;
@@ -75,6 +76,17 @@ internal sealed class UserEndpoints : IEndpoint
             })
             .RequireAuthorization()
             .Produces<GetDevicesDto>()
+            .ProducesProblem(StatusCodes.Status400BadRequest)
+            .ProducesProblem(StatusCodes.Status401Unauthorized)
+            .ProducesProblem(StatusCodes.Status404NotFound);
+
+        group.MapDelete("/device/{targetDeviceId}", async (Guid targetDeviceId, ISender sender, HttpContext ctx) =>
+            {
+                var result = await sender.Send(new DeleteDeviceCommand { TargetDeviceId = targetDeviceId, UserId = ctx.User.GetUserId() });
+                return result.Success ? Results.Ok() : result.ToProblemDetails();
+            })
+            .RequireAuthorization()
+            .Produces(StatusCodes.Status200OK)
             .ProducesProblem(StatusCodes.Status400BadRequest)
             .ProducesProblem(StatusCodes.Status401Unauthorized)
             .ProducesProblem(StatusCodes.Status404NotFound);

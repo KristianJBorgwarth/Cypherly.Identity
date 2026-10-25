@@ -82,7 +82,7 @@ internal sealed class UserEndpoints : IEndpoint
 
         group.MapDelete("/device/{targetDeviceId}", async (Guid targetDeviceId, ISender sender, HttpContext ctx) =>
             {
-                var result = await sender.Send(new DeleteDeviceCommand { DeviceId = targetDeviceId, UserId = ctx.User.GetUserId() });
+                var result = await sender.Send(new DeleteDeviceCommand { TargetDeviceId = targetDeviceId, UserId = ctx.User.GetUserId() });
                 return result.Success ? Results.Ok() : result.ToProblemDetails();
             })
             .RequireAuthorization()

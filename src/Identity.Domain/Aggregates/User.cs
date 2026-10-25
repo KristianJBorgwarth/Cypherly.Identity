@@ -143,4 +143,5 @@ public class User : AggregateRoot
 
         return Devices.FirstOrDefault(d => d.Id == deviceId && d.Deleted is null) ?? throw new InvalidOperationException("Device not found");
     }
+
 }

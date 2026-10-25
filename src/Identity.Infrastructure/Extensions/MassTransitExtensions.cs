@@ -9,6 +9,7 @@ using Identity.Infrastructure.Settings;
 using MassTransit;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Options;
+using Cypherly.Message.Contracts.Messages.Device;
 
 namespace Identity.Infrastructure.Extensions;
 
@@ -34,6 +35,7 @@ public static class MassTransitExtensions
         services.AddProducer<OperationSucceededMessage>();
         services.AddProducer<UserLogoutMessage>();
         services.AddProducer<UserLoginMessage>();
+        services.AddProducer<DeviceDeletedMessage>();
     }
 
     /// <summary>

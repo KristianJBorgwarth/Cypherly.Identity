@@ -6,8 +6,10 @@ public sealed class DeleteDeviceCommandValidator : AbstractValidator<DeleteDevic
 {
     public DeleteDeviceCommandValidator()
     {
-        RuleFor(x => x.DeviceId)
-            .NotEmpty().WithMessage("DeviceId is required")
-            .MaximumLength(100).WithMessage("DeviceId must not exceed 100 characters");
+        RuleFor(x => x.TargetDeviceId)
+            .NotEmpty();
+
+        RuleFor(x => x.UserId)
+            .NotEmpty();
     }
 }

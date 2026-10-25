@@ -10,20 +10,20 @@ namespace Identity.Application.Features.Device.Commands.Delete;
 public sealed class DeleteDeviceCommandHandler(
         IUserRepository userRepository,
         ILogger<DeleteDeviceCommandHandler> logger,
-        IUnitOfWork unitOfWork) 
+        IUnitOfWork unitOfWork)
         : ICommandHandler<DeleteDeviceCommand>
 {
     public async ValueTask<Result> Handle(DeleteDeviceCommand cmd, CancellationToken ct)
     {
         var user = await userRepository.GetSinleAsync(new UserWithDevicesSpec(cmd.UserId), ct);
-        if(user is null)
+        if (user is null)
         {
             logger.LogError("User with id {UserId} not found", cmd.UserId);
             return Result.Fail(Errors.General.NotFound(cmd.UserId));
         }
 
         var device = user.GetDevice(cmd.TargetDeviceId, true);
-        if(device is null)
+        if (device is null)
         {
             logger.LogError("Device with id {DeviceId} not found for user {UserId}", cmd.TargetDeviceId, cmd.UserId);
             return Result.Fail(Errors.General.NotFound(cmd.TargetDeviceId));

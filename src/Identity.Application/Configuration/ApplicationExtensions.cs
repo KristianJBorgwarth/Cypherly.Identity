@@ -21,6 +21,7 @@ public static class ApplicationExtensions
             options.PipelineBehaviors = [typeof(ValidationBehavior<,>), typeof(ExceptionBehavior<,>)];
         });
         services.AddScoped<IJwtService, JwtService>();
+        services.AddScoped<ITokenIssuer, TokenIssuer>();
         services.AddScoped<IVerifyNonceService, VerifyNonceService>();
     }
 }

@@ -1,4 +1,5 @@
 ﻿using Cypherly.Domain.Common;
+using Identity.Application.Services;
 using Identity.Domain.Common;
 using FluentValidation;
 
@@ -17,5 +18,9 @@ public class VerifyNonceCommandValidator : AbstractValidator<VerifyNonceCommand>
         RuleFor(x => x.Nonce)
             .NotEmpty()
             .WithMessage(Errors.General.ValueIsEmpty(nameof(VerifyNonceCommand.Nonce)).Description);
+        RuleFor(x => x.TokenRequests)
+            .NotNull()
+            .Must(requests => requests.Count <= TokenIssuer.MaxTokenRequests)
+            .WithMessage($"At most {TokenIssuer.MaxTokenRequests} token requests can be sent at once.");
     }
 }

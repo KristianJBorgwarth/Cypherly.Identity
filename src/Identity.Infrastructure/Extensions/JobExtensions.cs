@@ -29,6 +29,13 @@ internal static class JobExtensions
                     .StartNow()
                     .WithSimpleSchedule(schedule => schedule.WithIntervalInMinutes(1).RepeatForever()));
 
+            var tokenIssuerKeyJobKey = new JobKey($"{nameof(EnsureTokenIssuerKeyJob)}-{assembly.GetName()}");
+
+            configure.AddJob<EnsureTokenIssuerKeyJob>(tokenIssuerKeyJobKey)
+                .AddTrigger(trigger => trigger.ForJob(tokenIssuerKeyJobKey)
+                    .StartNow()
+                    .WithSimpleSchedule(schedule => schedule.WithIntervalInMinutes(10).RepeatForever()));
+
             configure.UsePersistentStore(store =>
             {
                 store.UsePostgres(options =>

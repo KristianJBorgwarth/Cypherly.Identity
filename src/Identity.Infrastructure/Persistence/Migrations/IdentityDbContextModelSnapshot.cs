@@ -106,6 +106,48 @@ namespace Identity.Infrastructure.Persistence.Migrations
                     b.ToTable("signing_key", (string)null);
                 });
 
+            modelBuilder.Entity("Identity.Domain.Aggregates.TokenIssuerKey", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .HasColumnType("uuid")
+                        .HasColumnName("id");
+
+                    b.Property<DateTime>("Created")
+                        .HasColumnType("timestamp with time zone")
+                        .HasColumnName("created");
+
+                    b.Property<DateTime?>("Deleted")
+                        .HasColumnType("timestamp with time zone")
+                        .HasColumnName("deleted");
+
+                    b.Property<bool>("IsCurrent")
+                        .HasColumnType("boolean")
+                        .HasColumnName("is_current");
+
+                    b.Property<byte[]>("PrivateKey")
+                        .IsRequired()
+                        .HasColumnType("bytea")
+                        .HasColumnName("private_key");
+
+                    b.Property<byte[]>("PublicKey")
+                        .IsRequired()
+                        .HasColumnType("bytea")
+                        .HasColumnName("public_key");
+
+                    b.Property<DateTime>("Updated")
+                        .HasColumnType("timestamp with time zone")
+                        .HasColumnName("updated");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("IsCurrent")
+                        .IsUnique()
+                        .HasDatabaseName("idx_token_issuer_key_is_current")
+                        .HasFilter("is_current");
+
+                    b.ToTable("token_issuer_key", (string)null);
+                });
+
             modelBuilder.Entity("Identity.Domain.Aggregates.User", b =>
                 {
                     b.Property<Guid>("Id")

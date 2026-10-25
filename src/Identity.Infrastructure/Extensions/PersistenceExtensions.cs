@@ -32,5 +32,6 @@ internal static class PersistenceExtensions
         services.AddScoped<IUnitOfWork, UnitOfWork>();
         services.AddScoped<IOutboxRepository, OutboxRepository>();
         services.AddScoped<ISigningKeyRepository, SigningKeyRepository>();
+        services.AddScoped<ITokenIssuerKeyRepository, TokenIssuerKeyRepository>();
     }
 }

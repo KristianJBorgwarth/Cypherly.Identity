@@ -13,14 +13,15 @@ public class VerifyNonceCommandHandler(
     IUserRepository userRepository,
     INonceCacheService nonceCacheService,
     IJwtService jwtService,
+    ITokenIssuer tokenIssuer,
     IVerifyNonceService verifyNonceService,
     IUnitOfWork unitOfWork,
     ILogger<VerifyNonceCommandHandler> logger)
     : ICommandHandler<VerifyNonceCommand, VerifyNonceDto>
 {
-    public async ValueTask<Result<VerifyNonceDto>> Handle(VerifyNonceCommand cmd, CancellationToken cancellationToken)
+    public async ValueTask<Result<VerifyNonceDto>> Handle(VerifyNonceCommand cmd, CancellationToken ct)
     {
-        var nonce = await nonceCacheService.GetNonceAsync(cmd.NonceId, cancellationToken);
+        var nonce = await nonceCacheService.GetNonceAsync(cmd.NonceId, ct);
 
         if (nonce is null || !nonce.IsValidFor(cmd.UserId, cmd.DeviceId))
         {
@@ -28,7 +29,7 @@ public class VerifyNonceCommandHandler(
             return Result.Fail<VerifyNonceDto>(Errors.General.Unauthorized());
         }
 
-        var user = await userRepository.GetSinleAsync(new UserWithDevicesSpec(cmd.UserId, excludeDeleted: true), cancellationToken);
+        var user = await userRepository.GetSinleAsync(new UserWithDevicesSpec(cmd.UserId, excludeDeleted: true), ct);
         var device = user?.GetDevices().FirstOrDefault(d => d.Id == cmd.DeviceId);
 
         if (user is null || device is null)
@@ -42,7 +43,7 @@ public class VerifyNonceCommandHandler(
         if (!isNonceValid)
             return Result.Fail<VerifyNonceDto>(Errors.General.Unauthorized());
 
-        if (await nonceCacheService.TryClaimNonceAsync(cmd.NonceId, cancellationToken) is false)
+        if (await nonceCacheService.TryClaimNonceAsync(cmd.NonceId, ct) is false)
         {
             logger.LogWarning("Nonce {NonceId} for user {UserId} was already used", cmd.NonceId, cmd.UserId);
             return Result.Fail<VerifyNonceDto>(Errors.General.Unauthorized());
@@ -53,10 +54,12 @@ public class VerifyNonceCommandHandler(
         if (cmd.Announce)
             user.AddDomainEvent(new UserLoggedInEvent(user.Id, device.Id, device.ConnectionId));
 
-        await unitOfWork.SaveChangesAsync(cancellationToken);
+        await unitOfWork.SaveChangesAsync(ct);
 
-        await nonceCacheService.DeleteNonceAsync(cmd.NonceId, cancellationToken);
+        await nonceCacheService.DeleteNonceAsync(cmd.NonceId, ct);
 
-        return Result.Ok(new VerifyNonceDto(token.Token, token.ExpiresAt));
+        var tokenResponses = await tokenIssuer.IssueAsync(user.Id, cmd.TokenRequests, ct);
+
+        return Result.Ok(new VerifyNonceDto(token.Token, token.ExpiresAt, tokenResponses));
     }
 }

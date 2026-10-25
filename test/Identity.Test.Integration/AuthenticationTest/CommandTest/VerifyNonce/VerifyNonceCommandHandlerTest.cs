@@ -26,11 +26,12 @@ public class VerifyNonceCommandHandlerTest : IntegrationTestBase
         var repo = scope.ServiceProvider.GetRequiredService<IUserRepository>();
         var nonceCache = scope.ServiceProvider.GetRequiredService<INonceCacheService>();
         var jwtService = scope.ServiceProvider.GetRequiredService<IJwtService>();
+        var tokenIssuer = scope.ServiceProvider.GetRequiredService<ITokenIssuer>();
         var verifyNonceService = scope.ServiceProvider.GetRequiredService<IVerifyNonceService>();
         var uow = scope.ServiceProvider.GetRequiredService<IUnitOfWork>();
         var logger = scope.ServiceProvider.GetRequiredService<ILogger<VerifyNonceCommandHandler>>();
 
-        _sut = new VerifyNonceCommandHandler(repo, nonceCache, jwtService, verifyNonceService, uow, logger);
+        _sut = new VerifyNonceCommandHandler(repo, nonceCache, jwtService, tokenIssuer, verifyNonceService, uow, logger);
     }
 
     [Fact]

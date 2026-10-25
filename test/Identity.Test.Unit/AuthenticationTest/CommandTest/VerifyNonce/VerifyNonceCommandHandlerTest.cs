@@ -21,6 +21,7 @@ public class VerifyNonceCommandHandlerTest
     private readonly IUserRepository _fakeRepo;
     private readonly INonceCacheService _fakeCachce;
     private readonly IJwtService _fakeJwt;
+    private readonly ITokenIssuer _fakeIssuer;
     private readonly IVerifyNonceService _fakeVerify;
     private readonly IUnitOfWork _fakeUnit;
 
@@ -30,12 +31,13 @@ public class VerifyNonceCommandHandlerTest
     {
         _fakeCachce = A.Fake<INonceCacheService>();
         _fakeJwt = A.Fake<IJwtService>();
+        _fakeIssuer = A.Fake<ITokenIssuer>();
         _fakeRepo = A.Fake<IUserRepository>();
         _fakeVerify = A.Fake<IVerifyNonceService>();
         _fakeUnit = A.Fake<IUnitOfWork>();
         var fakeLogger = A.Fake<ILogger<VerifyNonceCommandHandler>>();
 
-        _sut = new(_fakeRepo, _fakeCachce, _fakeJwt, _fakeVerify, _fakeUnit, fakeLogger);
+        _sut = new(_fakeRepo, _fakeCachce, _fakeJwt, _fakeIssuer, _fakeVerify, _fakeUnit, fakeLogger);
     }
 
     private static (User user, Device device) CreateUserWithDevice()
@@ -241,5 +243,52 @@ public class VerifyNonceCommandHandlerTest
         user.DomainEvents.OfType<UserLoggedInEvent>().Should().HaveCount(announce ? 1 : 0);
         A.CallTo(() => _fakeUnit.SaveChangesAsync(A<CancellationToken>._)).MustHaveHappenedOnceExactly();
         A.CallTo(() => _fakeCachce.DeleteNonceAsync(cmd.NonceId, A<CancellationToken>._)).MustHaveHappenedOnceExactly();
+    }
+
+    [Fact]
+    public async Task Handle_When_Nonce_Valid_Should_Return_Token_Responses_From_The_Issuer()
+    {
+        // Arrange
+        var (user, device) = CreateUserWithDevice();
+        var nonce = Nonce.Create(user.Id, device.Id);
+        var cmd = new VerifyNonceCommand
+        {
+            UserId = user.Id,
+            DeviceId = device.Id,
+            NonceId = nonce.Id,
+            Nonce = "signature",
+            TokenRequests = ["request-1", "request-2"],
+        };
+
+        A.CallTo(() => _fakeCachce.GetNonceAsync(cmd.NonceId, A<CancellationToken>._)).Returns(nonce);
+        A.CallTo(() => _fakeRepo.GetSinleAsync(A<UserWithDevicesSpec>._, A<CancellationToken>._)).Returns(user);
+        A.CallTo(() => _fakeVerify.VerifyNonce(nonce.NonceValue, cmd.Nonce, device.PublicKey)).Returns(true);
+        A.CallTo(() => _fakeCachce.TryClaimNonceAsync(cmd.NonceId, A<CancellationToken>._)).Returns(true);
+        A.CallTo(() => _fakeJwt.GenerateTokenAsync(user.Id, device.Id, device.ConnectionId, A<CancellationToken>._))
+            .Returns(new AccessToken("jwt", DateTime.UtcNow.AddMinutes(15)));
+        A.CallTo(() => _fakeIssuer.IssueAsync(user.Id, cmd.TokenRequests, A<CancellationToken>._))
+            .Returns(["response-1", "response-2"]);
+
+        // Act
+        var result = await _sut.Handle(cmd, CancellationToken.None);
+
+        // Assert
+        result.Success.Should().BeTrue();
+        result.Value.Jwt.Should().Be("jwt");
+        result.Value.TokenResponses.Should().Equal("response-1", "response-2");
+    }
+
+    [Fact]
+    public async Task Handle_When_Nonce_Invalid_Should_Not_Issue_Tokens()
+    {
+        // Arrange
+        var cmd = CreateCommand(Guid.NewGuid(), Guid.NewGuid(), Guid.NewGuid());
+        A.CallTo(() => _fakeCachce.GetNonceAsync(cmd.NonceId, A<CancellationToken>._)).Returns((Nonce)null!);
+
+        // Act
+        await _sut.Handle(cmd, CancellationToken.None);
+
+        // Assert
+        A.CallTo(() => _fakeIssuer.IssueAsync(A<Guid>._, A<IReadOnlyList<string>>._, A<CancellationToken>._)).MustNotHaveHappened();
     }
 }

@@ -74,4 +74,41 @@ public class VerifyNonceCommandValidatorTest
         result.IsValid.Should().BeFalse();
         result.Errors.Should().Contain(x => x.PropertyName == nameof(VerifyNonceCommand.Nonce));
     }
+
+    [Theory]
+    [InlineData(0)]
+    [InlineData(3)]
+    public void VerifyNonceCommandValidator_WhenTokenRequestsAreWithinTheLimit_ShouldBeValid(int count)
+    {
+        var command = new VerifyNonceCommand
+        {
+            UserId = Guid.NewGuid(),
+            NonceId = Guid.NewGuid(),
+            DeviceId = Guid.NewGuid(),
+            Nonce = "nonce",
+            TokenRequests = [.. Enumerable.Repeat("request", count)],
+        };
+
+        var result = _validator.Validate(command);
+
+        result.IsValid.Should().BeTrue();
+    }
+
+    [Fact]
+    public void VerifyNonceCommandValidator_WhenTooManyTokenRequests_ShouldHaveError()
+    {
+        var command = new VerifyNonceCommand
+        {
+            UserId = Guid.NewGuid(),
+            NonceId = Guid.NewGuid(),
+            DeviceId = Guid.NewGuid(),
+            Nonce = "nonce",
+            TokenRequests = ["1", "2", "3", "4"],
+        };
+
+        var result = _validator.Validate(command);
+
+        result.IsValid.Should().BeFalse();
+        result.Errors.Should().Contain(x => x.PropertyName == nameof(VerifyNonceCommand.TokenRequests));
+    }
 }

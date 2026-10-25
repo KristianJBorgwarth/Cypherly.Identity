@@ -13,6 +13,7 @@ public class VerifyNonceCommandHandler(
     IUserRepository userRepository,
     INonceCacheService nonceCacheService,
     IJwtService jwtService,
+    ITokenIssuer tokenIssuer,
     IVerifyNonceService verifyNonceService,
     IUnitOfWork unitOfWork,
     ILogger<VerifyNonceCommandHandler> logger)
@@ -57,6 +58,8 @@ public class VerifyNonceCommandHandler(
 
         await nonceCacheService.DeleteNonceAsync(cmd.NonceId, cancellationToken);
 
-        return Result.Ok(new VerifyNonceDto(token.Token, token.ExpiresAt));
+        var tokenResponses = await tokenIssuer.IssueAsync(user.Id, cmd.TokenRequests, cancellationToken);
+
+        return Result.Ok(new VerifyNonceDto(token.Token, token.ExpiresAt, tokenResponses));
     }
 }

@@ -68,7 +68,7 @@ public class CreateDeviceCommandHandlerTest : IntegrationTestBase
         result.Value.DeviceId.Should().NotBeEmpty();
         result.Value.DeviceConnectionId.Should().NotBeEmpty();
         Db.Device.Count().Should().Be(1);
-        Harness.Published.Select<CreateClientMessage>().Where(cr => cr.Context.Message.DeviceId == Db.Device.FirstOrDefault()!.Id).Should().HaveCount(1);
+        Harness.Published.Select<CreateClientMessage>().Where(cr => cr.Context.Message.DeviceId == Db.Device.FirstOrDefault()!.Id && cr.Context.Message.UserId == Db.Device.FirstOrDefault()!.UserId).Should().HaveCount(1);
         var device = Db.Device.First();
         device.UserId.Should().Be(user.Id);
     }

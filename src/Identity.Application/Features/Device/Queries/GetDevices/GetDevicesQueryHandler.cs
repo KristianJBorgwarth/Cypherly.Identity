@@ -21,10 +21,10 @@ public class GetDevicesQueryHandler(
             return Result.Fail<GetDevicesDto>(Errors.General.NotFound(q.UserId));
         }
 
-        var devices = user.GetDevices();
+        var devices = user.GetDevices()
+            .Select(d => new DeviceDto(d.Id, d.Name, d.Type.ToString(), d.Platform.ToString(), d.LastSeen))
+            .ToList();
 
-        var dto = GetDevicesDto.Map(devices);
-
-        return Result.Ok(dto);
+        return Result.Ok(new GetDevicesDto(devices));
     }
 }

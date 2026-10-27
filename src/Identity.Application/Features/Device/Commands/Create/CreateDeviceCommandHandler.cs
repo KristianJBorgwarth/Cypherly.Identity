@@ -46,7 +46,7 @@ public class CreateDeviceCommandHandler(
 
         var device = deviceService.RegisterDevice(user, cmd.Base64DevicePublicKey, cmd.DeviceAppVersion, cmd.DeviceType, cmd.DevicePlatform);
 
-        var createClientResult = await CreateClient(device.Id, device.ConnectionId);
+        var createClientResult = await CreateClient(device.Id, device.ConnectionId, device.UserId);
 
         if (createClientResult.Success is false)
         {
@@ -64,13 +64,14 @@ public class CreateDeviceCommandHandler(
         return Result.Ok(dto);
     }
 
-    private async ValueTask<Result> CreateClient(Guid deviceId, Guid connectionId)
+    private async ValueTask<Result> CreateClient(Guid deviceId, Guid connectionId, Guid userId)
     {
         var response = await requestClient.GetResponse<CreateClientResponse>(new CreateClientMessage
         {
             CorrelationId = Guid.NewGuid(),
             DeviceId = deviceId,
-            ConnectionId = connectionId
+            ConnectionId = connectionId,
+            UserId = userId
         });
 
         if (response.Message.IsSuccess)

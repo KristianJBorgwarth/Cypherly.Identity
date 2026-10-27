@@ -57,6 +57,38 @@ public class GetDevicesQueryHandlerTest : IntegrationTestBase
     }
 
     [Fact]
+    public async Task Handle_Given_Valid_Query_Should_Return_LastSeen_And_Exclude_Deleted_Devices()
+    {
+        // Arrange
+        var user = new User(Guid.NewGuid(), Email.Create("test@mail.dk"), Password.Create("testPw=??kkl89"), true);
+
+        var seenDevice = new Device(Guid.NewGuid(), "someKey", "1.0", DeviceType.Desktop, DevicePlatform.Linux, user.Id);
+        seenDevice.SetLastSeen();
+
+        var neverSeenDevice = new Device(Guid.NewGuid(), "someKey", "1.0", DeviceType.Desktop, DevicePlatform.Windows, user.Id);
+
+        var deletedDevice = new Device(Guid.NewGuid(), "someKey", "1.0", DeviceType.Desktop, DevicePlatform.Windows, user.Id);
+        deletedDevice.SetDelete();
+
+        user.AddDevice(seenDevice);
+        user.AddDevice(neverSeenDevice);
+        user.AddDevice(deletedDevice);
+
+        await Db.AddAsync(user);
+        await Db.SaveChangesAsync();
+
+        // Act
+        var result = await _sut.Handle(new GetDevicesQuery { UserId = user.Id }, CancellationToken.None);
+
+        // Assert
+        result.Success.Should().BeTrue();
+        result.Value!.Devices.Should().HaveCount(2);
+        result.Value.Devices.Single(d => d.Id == seenDevice.Id).LastSeen.Should().NotBeNull();
+        result.Value.Devices.Single(d => d.Id == neverSeenDevice.Id).LastSeen.Should().BeNull();
+        result.Value.Devices.Should().NotContain(d => d.Id == deletedDevice.Id);
+    }
+
+    [Fact]
     public async Task Handle_Given_Invalid_Query_Should_Return_Error()
     {
         // Arrange

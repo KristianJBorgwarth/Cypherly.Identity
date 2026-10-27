@@ -16,6 +16,7 @@ public sealed class GetDevicesDto
                 Name = d.Name,
                 Type = d.Type.ToString(),
                 Platform = d.Platform.ToString(),
+                LastSeen = d.LastSeen,
             }).ToList(),
         };
     }
@@ -27,4 +28,5 @@ public sealed record DeviceDto()
     public required string Name { get; init; }
     public required string Type { get; init; }
     public required string Platform { get; init; }
+    public DateTime? LastSeen { get; init; }
 }

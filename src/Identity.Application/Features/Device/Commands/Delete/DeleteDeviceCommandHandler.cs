@@ -3,12 +3,14 @@ using Identity.Application.Abstractions;
 using Identity.Application.Contracts.Repository;
 using Identity.Domain.Common;
 using Identity.Domain.Events.Device;
+using Identity.Domain.Services.User;
 using Microsoft.Extensions.Logging;
 
 namespace Identity.Application.Features.Device.Commands.Delete;
 
 public sealed class DeleteDeviceCommandHandler(
         IUserRepository userRepository,
+        IAuthenticationService authenticationService,
         ILogger<DeleteDeviceCommandHandler> logger,
         IUnitOfWork unitOfWork)
         : ICommandHandler<DeleteDeviceCommand>
@@ -22,16 +24,16 @@ public sealed class DeleteDeviceCommandHandler(
             return Result.Fail(Errors.General.NotFound(cmd.UserId));
         }
 
-        var device = user.GetDevice(cmd.TargetDeviceId, true);
+        var device = user.GetDevices().FirstOrDefault(d => d.Id == cmd.TargetDeviceId);
         if (device is null)
         {
             logger.LogError("Device with id {DeviceId} not found for user {UserId}", cmd.TargetDeviceId, cmd.UserId);
             return Result.Fail(Errors.General.NotFound(cmd.TargetDeviceId));
         }
 
-        device.SetDelete();
+        authenticationService.Logout(user, device.Id);
 
-        user.AddDomainEvent(new DeviceDeletedEvent(cmd.UserId, cmd.TargetDeviceId));
+        user.AddDomainEvent(new DeviceDeletedEvent(cmd.UserId, device.Id));
 
         await unitOfWork.SaveChangesAsync(ct);
 

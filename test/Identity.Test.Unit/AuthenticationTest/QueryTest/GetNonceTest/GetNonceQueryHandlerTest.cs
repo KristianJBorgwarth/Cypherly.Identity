@@ -97,7 +97,7 @@ public class GetNonceQueryHandlerTest
     }
 
     [Fact]
-    public async Task Handle_Given_Deleted_Device_Should_Return_Unauthorized()
+    public async Task Handle_Given_Deleted_Device_Should_Still_Issue_Nonce()
     {
         // Arrange
         var user = new User(Guid.NewGuid(), Email.Create("test@mail.dk"), Password.Create("test123KJ??L"), true);
@@ -116,8 +116,8 @@ public class GetNonceQueryHandlerTest
         var result = await _sut.Handle(query, CancellationToken.None);
 
         // Assert
-        result.Success.Should().BeFalse();
-        result.Error.Should().BeEquivalentTo(Errors.General.Unauthorized());
-        A.CallTo(() => _fakeCache.AddNonceAsync(A<Nonce>._, A<CancellationToken>._)).MustNotHaveHappened();
+        result.Success.Should().BeTrue();
+        result.Value.Should().NotBeNull();
+        A.CallTo(() => _fakeCache.AddNonceAsync(A<Nonce>._, A<CancellationToken>._)).MustHaveHappenedOnceExactly();
     }
 }

@@ -333,4 +333,72 @@ public class VerifyNonceCommandHandlerTest : IntegrationTestBase
         second.Error.Should().BeEquivalentTo(Errors.General.Unauthorized());
         Db.OutboxMessage.Count().Should().Be(1);
     }
+
+    [Fact]
+    public async Task Handle_Given_Deleted_Device_With_Valid_Signature_Should_Return_DeviceRevoked()
+    {
+        // Arrange
+        const string publicKey = "VlmK9Smh3RVtT7CHaHW5rbrYAWeM9ImVdP6WhmnMqK0=";
+        const string privateKey = "mR6AP1dNY1eEp7Z7bn6q0gPiOvcDl3FX4th65LY3Zwg=";
+
+        var user = new User(Guid.NewGuid(), Email.Create("test@mail.dk"), Password.Create("test=?lk293K"), true);
+        var device = new Device(Guid.NewGuid(), publicKey, "1.0", DeviceType.Desktop, DevicePlatform.Windows, user.Id);
+        device.SetDelete();
+        user.AddDevice(device);
+
+        var nonce = Nonce.Create(user.Id, device.Id);
+        await Cache.SetAsync(nonce.Id.ToString(), nonce, CancellationToken.None, TimeSpan.FromMinutes(10));
+
+        Db.User.Add(user);
+        await Db.SaveChangesAsync();
+
+        var cmd = new VerifyNonceCommand
+        {
+            UserId = user.Id,
+            DeviceId = device.Id,
+            NonceId = nonce.Id,
+            Nonce = Ed25519Helper.SignNonce(nonce.NonceValue, privateKey),
+        };
+
+        // Act
+        var result = await _sut.Handle(cmd, CancellationToken.None);
+
+        // Assert
+        result.Success.Should().BeFalse();
+        result.Error.Should().BeEquivalentTo(Errors.General.DeviceRevoked());
+        Db.OutboxMessage.Count().Should().Be(0);
+    }
+
+    [Fact]
+    public async Task Handle_Given_Deleted_Device_With_Invalid_Signature_Should_Return_Unauthorized()
+    {
+        // Arrange
+        const string publicKey = "VlmK9Smh3RVtT7CHaHW5rbrYAWeM9ImVdP6WhmnMqK0=";
+
+        var user = new User(Guid.NewGuid(), Email.Create("test@mail.dk"), Password.Create("test=?lk293K"), true);
+        var device = new Device(Guid.NewGuid(), publicKey, "1.0", DeviceType.Desktop, DevicePlatform.Windows, user.Id);
+        device.SetDelete();
+        user.AddDevice(device);
+
+        var nonce = Nonce.Create(user.Id, device.Id);
+        await Cache.SetAsync(nonce.Id.ToString(), nonce, CancellationToken.None, TimeSpan.FromMinutes(10));
+
+        Db.User.Add(user);
+        await Db.SaveChangesAsync();
+
+        var cmd = new VerifyNonceCommand
+        {
+            UserId = user.Id,
+            DeviceId = device.Id,
+            NonceId = nonce.Id,
+            Nonce = "",
+        };
+
+        // Act
+        var result = await _sut.Handle(cmd, CancellationToken.None);
+
+        // Assert
+        result.Success.Should().BeFalse();
+        result.Error.Should().BeEquivalentTo(Errors.General.Unauthorized());
+    }
 }

@@ -125,4 +125,23 @@ public class GetNonceQueryHandlerTest : IntegrationTestBase
         result.Success.Should().BeFalse();
         result.Error.Should().BeEquivalentTo(Errors.General.Unauthorized());
     }
+
+    [Fact]
+    public async Task Handle_WhenDeviceDeleted_Should_Still_Issue_Nonce()
+    {
+        // Arrange
+        var user = new User(Guid.NewGuid(), Email.Create("test@mail.dk"), Password.Create("kjsidlæ??238Ja"), true);
+        var device = new Device(Guid.NewGuid(), "SomeKey", "1.0", DeviceType.Desktop, DevicePlatform.Windows, user.Id);
+        device.SetDelete();
+        user.AddDevice(device);
+        Db.User.Add(user);
+        await Db.SaveChangesAsync();
+
+        // Act
+        var result = await _sut.Handle(new GetNonceQuery { UserId = user.Id, DeviceId = device.Id }, CancellationToken.None);
+
+        // Assert
+        result.Success.Should().BeTrue();
+        result.Value.Should().NotBeNull();
+    }
 }

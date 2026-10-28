@@ -30,11 +30,11 @@ public class VerifyNonceCommandHandler(
         }
 
         var user = await userRepository.GetSinleAsync(new UserWithDevicesSpec(cmd.UserId, excludeDeleted: true), ct);
-        var device = user?.GetDevices().FirstOrDefault(d => d.Id == cmd.DeviceId);
+        var device = user?.GetDevices(excludeDeleted: false).FirstOrDefault(d => d.Id == cmd.DeviceId);
 
         if (user is null || device is null)
         {
-            logger.LogWarning("User {UserId} or device {DeviceId} not found or deleted for nonce {NonceId}", cmd.UserId, cmd.DeviceId, cmd.NonceId);
+            logger.LogWarning("User {UserId} or device {DeviceId} not found for nonce {NonceId}", cmd.UserId, cmd.DeviceId, cmd.NonceId);
             return Result.Fail<VerifyNonceDto>(Errors.General.Unauthorized());
         }
 
@@ -47,6 +47,13 @@ public class VerifyNonceCommandHandler(
         {
             logger.LogWarning("Nonce {NonceId} for user {UserId} was already used", cmd.NonceId, cmd.UserId);
             return Result.Fail<VerifyNonceDto>(Errors.General.Unauthorized());
+        }
+
+        if (device.Deleted is not null)
+        {
+            logger.LogWarning("Revoked device {DeviceId} for user {UserId} attempted to authenticate", cmd.DeviceId, cmd.UserId);
+            await nonceCacheService.DeleteNonceAsync(cmd.NonceId, ct);
+            return Result.Fail<VerifyNonceDto>(Errors.General.DeviceRevoked());
         }
 
         var token = await jwtService.GenerateTokenAsync(user.Id, cmd.DeviceId, device.ConnectionId);

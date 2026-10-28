@@ -13,6 +13,7 @@ public class Errors
         public static Error ValueTooLarge(string valueName, int maxValue) => new("value.too.large", ErrorType.Validation, $"Value '{valueName}' should not exceed {maxValue}.");
         public static Error UnexpectedValue(string value) => new("unexpected.value", ErrorType.Validation, $"Value '{value}' is not valid in this context");
         public static Error Unauthorized() => new("unauthorized", ErrorType.Unauthorized, "Could not authorize access to entity");
+        public static Error DeviceRevoked() => new("device.revoked", ErrorType.Forbidden, "This device has been removed from the account.");
         public static Error ValueIsEmpty(string value) => new("value.empty", ErrorType.Validation, $"The value cannot be empty: {value} ");
 
         public static Error ValueOutOfRange(string valueName, int minValue, int maxValue) =>

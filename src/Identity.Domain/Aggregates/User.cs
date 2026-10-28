@@ -121,13 +121,13 @@ public class User : AggregateRoot
     }
 
     /// <summary>
-    /// Returns list of all active devices.
+    /// Returns list of all active devices, or all devices when excludeDeleted is false.
     /// Devices where DeletedAt value is null <see cref="Entity.Deleted"/>
     /// </summary>
     /// <returns></returns>
-    public List<Device> GetDevices()
+    public List<Device> GetDevices(bool excludeDeleted = true)
     {
-        return [.. Devices.Where(x => x.Deleted is null)];
+        return [.. Devices.Where(x => !excludeDeleted || x.Deleted is null)];
     }
 
     /// <summary>

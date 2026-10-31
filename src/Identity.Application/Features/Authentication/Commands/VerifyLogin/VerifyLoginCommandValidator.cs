@@ -1,4 +1,4 @@
-﻿using Cypherly.Domain.Common;
+﻿using Cendrite.Domain.Common;
 using Identity.Domain.Common;
 using FluentValidation;
 using Identity.Application.Features.User.Commands.Update.Verify;

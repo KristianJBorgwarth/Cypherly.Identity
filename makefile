@@ -1,5 +1,5 @@
 
-SLN := Cypherly.Identity.sln
+SLN := Cendrite.Identity.sln
 
 .PHONY: restore build test clean
 

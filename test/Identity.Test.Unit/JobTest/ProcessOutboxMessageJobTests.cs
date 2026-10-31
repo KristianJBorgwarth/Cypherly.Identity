@@ -11,7 +11,7 @@ using Microsoft.Extensions.Logging;
 using Newtonsoft.Json;
 using Quartz;
 
-namespace Cypherly.Authentication.Test.Unit.JobTest;
+namespace Cendrite.Authentication.Test.Unit.JobTest;
 
 public class ProcessOutboxMessageJobTests
 {

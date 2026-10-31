@@ -2,7 +2,7 @@
 using Identity.Application.Contracts.Cache;
 using Identity.Application.Contracts.Repository;
 using Identity.Application.Features.Device.Commands.Create;
-using Cypherly.Message.Contracts.Messages.Client;
+using Cendrite.Message.Contracts.Messages.Client;
 using FakeItEasy;
 using FluentAssertions;
 using Identity.Domain.Aggregates;
@@ -12,7 +12,7 @@ using Identity.Domain.Services.User;
 using MassTransit;
 using Microsoft.Extensions.Logging;
 
-namespace Cypherly.Authentication.Test.Unit.DeviceTest.CreateTest;
+namespace Cendrite.Authentication.Test.Unit.DeviceTest.CreateTest;
 
 public class CreateDeviceCommandHandlerTest
 {

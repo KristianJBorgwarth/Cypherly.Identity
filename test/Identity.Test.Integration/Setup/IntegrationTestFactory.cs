@@ -1,7 +1,7 @@
-﻿using Cypherly.Message.Contracts.Messages.Client;
-using Cypherly.Message.Contracts.Messages.Profile;
-using Cypherly.Message.Contracts.Responses.Client;
-using Cypherly.Message.Contracts.Responses.Profile;
+﻿using Cendrite.Message.Contracts.Messages.Client;
+using Cendrite.Message.Contracts.Messages.Profile;
+using Cendrite.Message.Contracts.Responses.Client;
+using Cendrite.Message.Contracts.Responses.Profile;
 using DotNet.Testcontainers.Builders;
 using DotNet.Testcontainers.Containers;
 using Identity.Application.Settings;
@@ -101,7 +101,7 @@ public class IntegrationTestFactory<TProgram, TDbContext> : WebApplicationFactor
             var inMemorySettings = new Dictionary<string, string>()
             {
                 { "Jwt:Secret", "SuperSecretJwtKeyForTestingOnly!@1234567890" },
-                { "Jwt:Issuer", "Cypherly.Authentication.Test" },
+                { "Jwt:Issuer", "Cendrite.Authentication.Test" },
                 { "Jwt:Audience", "Test" },
                 { "Jwt:TokenLifeTimeInMinutes", "20" }
             };

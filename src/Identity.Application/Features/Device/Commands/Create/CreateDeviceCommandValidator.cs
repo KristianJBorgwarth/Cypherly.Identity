@@ -1,5 +1,5 @@
 ﻿using System.Text.RegularExpressions;
-using Cypherly.Domain.Common;
+using Cendrite.Domain.Common;
 using Identity.Domain.Common;
 using FluentValidation;
 

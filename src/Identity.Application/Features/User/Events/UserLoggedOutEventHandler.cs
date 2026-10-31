@@ -1,5 +1,5 @@
-using Cypherly.Message.Contracts.Abstractions;
-using Cypherly.Message.Contracts.Messages.User;
+using Cendrite.Message.Contracts.Abstractions;
+using Cendrite.Message.Contracts.Messages.User;
 using Identity.Application.Abstractions;
 using Identity.Application.Contracts.Repository;
 using Identity.Domain.Events.User;

@@ -5,7 +5,7 @@ using Identity.Domain.Events.User;
 using Identity.Domain.Services.User;
 using Identity.Domain.ValueObjects;
 
-namespace Cypherly.Authentication.Test.Unit.ServiceTest
+namespace Cendrite.Authentication.Test.Unit.ServiceTest
 {
     public class UserLifeCycleServicesTests
     {

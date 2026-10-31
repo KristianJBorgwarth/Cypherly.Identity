@@ -1,15 +1,15 @@
 ﻿using System.Reflection;
 using Identity.Application.Features.User.Consumers;
-using Cypherly.Message.Contracts.Abstractions;
-using Cypherly.Message.Contracts.Messages.Common;
-using Cypherly.Message.Contracts.Messages.Email;
-using Cypherly.Message.Contracts.Messages.User;
+using Cendrite.Message.Contracts.Abstractions;
+using Cendrite.Message.Contracts.Messages.Common;
+using Cendrite.Message.Contracts.Messages.Email;
+using Cendrite.Message.Contracts.Messages.User;
 using Identity.Infrastructure.Messaging;
 using Identity.Infrastructure.Settings;
 using MassTransit;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Options;
-using Cypherly.Message.Contracts.Messages.Device;
+using Cendrite.Message.Contracts.Messages.Device;
 
 namespace Identity.Infrastructure.Extensions;
 

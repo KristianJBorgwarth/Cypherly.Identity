@@ -1,4 +1,4 @@
-﻿namespace Cypherly.Domain.Common;
+﻿namespace Cendrite.Domain.Common;
 
 public abstract class ValueObject
 {

@@ -1,4 +1,4 @@
-﻿using Cypherly.Message.Contracts.Messages.Profile;
+﻿using Cendrite.Message.Contracts.Messages.Profile;
 using FluentAssertions;
 using Identity.Application.Contracts.Repository;
 using Identity.Application.Features.User.Commands.Create;

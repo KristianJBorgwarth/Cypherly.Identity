@@ -13,9 +13,9 @@ public class ApplicationTest
     {
         var result = Types.InAssembly(typeof(CreateUserCommandHandler).Assembly)
             .That()
-            .ResideInNamespace("Cypherly.ChatUser.Application")
+            .ResideInNamespace("Cendrite.ChatUser.Application")
             .ShouldNot()
-            .HaveDependencyOn("Cypherly.ChatUser.Infrastructure")
+            .HaveDependencyOn("Cendrite.ChatUser.Infrastructure")
             .GetResult();
 
         result.ShouldBeSuccessful("Application project should not reference Infrastructure project");
@@ -26,9 +26,9 @@ public class ApplicationTest
     {
         var result = Types.InAssembly(typeof(CreateUserCommandHandler).Assembly)
             .That()
-            .ResideInNamespace("Cypherly.ChatUser.Application")
+            .ResideInNamespace("Cendrite.ChatUser.Application")
             .ShouldNot()
-            .HaveDependencyOn("Cypherly.ChatUser.API")
+            .HaveDependencyOn("Cendrite.ChatUser.API")
             .GetResult();
 
         result.ShouldBeSuccessful("Application project should not reference Presentation project");

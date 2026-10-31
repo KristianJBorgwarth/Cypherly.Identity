@@ -1,7 +1,7 @@
 ﻿using Identity.Domain.Enums;
 using Identity.Domain.Events.User;
-using Cypherly.Message.Contracts.Abstractions;
-using Cypherly.Message.Contracts.Messages.Email;
+using Cendrite.Message.Contracts.Abstractions;
+using Cendrite.Message.Contracts.Messages.Email;
 using Identity.Application.Abstractions;
 using Identity.Application.Contracts.Repository;
 using Microsoft.Extensions.Logging;
@@ -34,8 +34,8 @@ public sealed class UserCreatedEventHandler(
         {
             CorrelationId = Guid.NewGuid(),
             To = user.Email.Address,
-            Subject = "Welcome to Cypherly",
-            Body = "Welcome to Cypherly! Here is your verification code: " + verificationCode.Code.Value,
+            Subject = "Welcome to Cendrite",
+            Body = "Welcome to Cendrite! Here is your verification code: " + verificationCode.Code.Value,
             CausationId = null,
         };
 

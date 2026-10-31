@@ -1,4 +1,4 @@
-﻿using Cypherly.Message.Contracts.Messages.Client;
+﻿using Cendrite.Message.Contracts.Messages.Client;
 using FluentAssertions;
 using Identity.Application.Caching.LoginNonce;
 using Identity.Application.Contracts.Cache;

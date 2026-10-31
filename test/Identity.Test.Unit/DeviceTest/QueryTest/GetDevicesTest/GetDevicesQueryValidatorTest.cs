@@ -1,7 +1,7 @@
 using Identity.Application.Features.Device.Queries.GetDevices;
 using FluentAssertions;
 
-namespace Cypherly.Authentication.Test.Unit.DeviceTest.QueryTest.GetDevicesTest;
+namespace Cendrite.Authentication.Test.Unit.DeviceTest.QueryTest.GetDevicesTest;
 
 public class GetDevicesQueryValidatorTest
 {

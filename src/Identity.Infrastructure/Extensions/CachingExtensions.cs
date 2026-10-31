@@ -20,7 +20,7 @@ internal static class CachingExtensions
 
             // Construct the connection string from ValkeySettings
             options.Configuration = $"{valkeySettings.Host}:{valkeySettings.Port}";
-            options.InstanceName = "Cypherly.Authentication.API_";
+            options.InstanceName = "Cendrite.Identity.API_";
         });
 
         services.AddSingleton<IConnectionMultiplexer>(sp =>

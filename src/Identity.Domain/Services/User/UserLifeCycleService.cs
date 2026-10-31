@@ -1,4 +1,4 @@
-﻿using Cypherly.Domain.Common;
+﻿using Cendrite.Domain.Common;
 using Identity.Domain.Enums;
 using Identity.Domain.Events.User;
 using Identity.Domain.ValueObjects;

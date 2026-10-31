@@ -1,4 +1,4 @@
-using Cypherly.Domain.Common;
+using Cendrite.Domain.Common;
 
 namespace Identity.API.Common;
 

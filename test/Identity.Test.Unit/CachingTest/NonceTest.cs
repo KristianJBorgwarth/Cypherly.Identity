@@ -1,7 +1,7 @@
 ﻿using Identity.Application.Caching;
 using FluentAssertions;
 
-namespace Cypherly.Authentication.Test.Unit.CachingTest;
+namespace Cendrite.Authentication.Test.Unit.CachingTest;
 
 public class NonceTest
 {

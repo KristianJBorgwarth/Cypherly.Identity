@@ -1,7 +1,7 @@
 ﻿using Identity.Domain.Enums;
 using Identity.Domain.Events.User;
-using Cypherly.Message.Contracts.Abstractions;
-using Cypherly.Message.Contracts.Messages.Email;
+using Cendrite.Message.Contracts.Abstractions;
+using Cendrite.Message.Contracts.Messages.Email;
 using Identity.Application.Abstractions;
 using Identity.Application.Contracts.Repository;
 using Microsoft.Extensions.Logging;
@@ -43,7 +43,7 @@ public class VerificationCodeGeneratedEventHandler(
         {
             CorrelationId = Guid.NewGuid(),
             To = user.Email.Address,
-            Subject = "Cypherly Verification",
+            Subject = "Cendrite Verification",
             Body = message + verificationCode.Code.Value,
             CausationId = null,
         };

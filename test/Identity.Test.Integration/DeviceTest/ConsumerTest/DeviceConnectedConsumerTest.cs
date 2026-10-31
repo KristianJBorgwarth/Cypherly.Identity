@@ -1,5 +1,5 @@
 ﻿using AutoFixture;
-using Cypherly.Message.Contracts.Messages.Client;
+using Cendrite.Message.Contracts.Messages.Client;
 using FakeItEasy;
 using FluentAssertions;
 using Identity.Application.Contracts.Repository;

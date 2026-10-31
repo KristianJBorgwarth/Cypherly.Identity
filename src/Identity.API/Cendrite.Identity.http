@@ -1,0 +1,6 @@
+@Cendrite.Identity_HostAddress = http://localhost:5226
+
+GET {{Cendrite.Identity_HostAddress}}/weatherforecast/
+Accept: application/json
+
+###

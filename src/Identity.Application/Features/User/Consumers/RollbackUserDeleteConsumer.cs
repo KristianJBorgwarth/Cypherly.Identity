@@ -1,6 +1,6 @@
 ﻿using Identity.Domain.Services.User;
-using Cypherly.Message.Contracts.Enums;
-using Cypherly.Message.Contracts.Messages.User;
+using Cendrite.Message.Contracts.Enums;
+using Cendrite.Message.Contracts.Messages.User;
 using Identity.Application.Contracts.Repository;
 using MassTransit;
 using Microsoft.Extensions.Logging;

@@ -1,6 +1,6 @@
 ﻿using Identity.Domain.Common;
 
-namespace Cypherly.Domain.Common;
+namespace Cendrite.Domain.Common;
 
 public class Result
 {

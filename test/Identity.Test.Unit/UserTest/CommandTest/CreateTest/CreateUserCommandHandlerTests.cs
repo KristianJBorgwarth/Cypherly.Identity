@@ -1,7 +1,7 @@
 ﻿using AutoFixture;
-using Cypherly.Domain.Common;
-using Cypherly.Message.Contracts.Messages.Profile;
-using Cypherly.Message.Contracts.Responses.Profile;
+using Cendrite.Domain.Common;
+using Cendrite.Message.Contracts.Messages.Profile;
+using Cendrite.Message.Contracts.Responses.Profile;
 using FakeItEasy;
 using FluentAssertions;
 using Identity.Application.Contracts.Repository;

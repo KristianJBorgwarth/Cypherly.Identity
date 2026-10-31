@@ -1,5 +1,5 @@
-﻿using Cypherly.Message.Contracts.Abstractions;
-using Cypherly.Message.Contracts.Messages.Email;
+﻿using Cendrite.Message.Contracts.Abstractions;
+using Cendrite.Message.Contracts.Messages.Email;
 using FakeItEasy;
 using FluentAssertions;
 using Identity.Application.Contracts.Repository;

@@ -1,9 +1,9 @@
-﻿using Cypherly.Domain.Common;
+﻿using Cendrite.Domain.Common;
 using Identity.Application.Caching.LoginNonce;
 using Identity.Domain.Common;
 using Identity.Domain.Services.User;
-using Cypherly.Message.Contracts.Messages.Client;
-using Cypherly.Message.Contracts.Responses.Client;
+using Cendrite.Message.Contracts.Messages.Client;
+using Cendrite.Message.Contracts.Responses.Client;
 using Identity.Application.Abstractions;
 using Identity.Application.Contracts.Cache;
 using Identity.Application.Contracts.Repository;

@@ -12,7 +12,7 @@ public class PersistenceTest
     {
         var result = Types.InAssembly(typeof(IdentityDbContext).Assembly)
             .That()
-            .ResideInNamespace("Cypherly.Identity.Persistence")
+            .ResideInNamespace("Cendrite.Identity.Persistence")
             .ShouldNot()
             .HaveDependencyOn("Identity.API")
             .GetResult();
@@ -25,11 +25,11 @@ public class PersistenceTest
     {
         var result = Types.InAssembly(typeof(IdentityDbContext).Assembly)
             .That()
-            .ResideInNamespace("Cypherly.Identity.Persistence")
+            .ResideInNamespace("Cendrite.Identity.Persistence")
             .And()
-            .DoNotResideInNamespace("Cypherly.Identity.Persistence.Extensions")
+            .DoNotResideInNamespace("Cendrite.Identity.Persistence.Extensions")
             .And()
-            .DoNotResideInNamespace("Cypherly.Identity.Persistence.Repositories")
+            .DoNotResideInNamespace("Cendrite.Identity.Persistence.Repositories")
             .ShouldNot()
             .HaveDependencyOn("Identity.Application")
             .GetResult();
@@ -68,7 +68,7 @@ public class PersistenceTest
     }
 
     [Fact]
-    public void All_Contexts_Should_Inherit_From_CypherlyDbContext()
+    public void All_Contexts_Should_Inherit_From_CendriteDbContext()
     {
         var result = Types.InAssembly(typeof(IdentityDbContext).Assembly)
             .That()
@@ -78,7 +78,7 @@ public class PersistenceTest
             .Inherit(typeof(DbContext))
             .GetResult();
 
-        result.ShouldBeSuccessful("All contexts should inherit from CypherlyBaseDbContext");
+        result.ShouldBeSuccessful("All contexts should inherit from CendriteBaseDbContext");
     }
 
     [Fact]
@@ -88,7 +88,7 @@ public class PersistenceTest
             .That()
             .AreClasses()
             .And()
-            .ResideInNamespace("Cypherly.Identity.Persistence.ModelConfigurations")
+            .ResideInNamespace("Cendrite.Identity.Persistence.ModelConfigurations")
             .Should()
             .ImplementInterface(typeof(IEntityTypeConfiguration<>))
             .GetResult();

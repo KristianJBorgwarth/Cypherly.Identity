@@ -1,4 +1,4 @@
-﻿using Cypherly.Domain.Common;
+﻿using Cendrite.Domain.Common;
 using Identity.Application.Abstractions;
 using Identity.Application.Contracts.Repository;
 using Identity.Domain.Common;

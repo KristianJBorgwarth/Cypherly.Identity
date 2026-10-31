@@ -1,7 +1,7 @@
 ﻿using Identity.Application.Features.Device.Queries.GetConnectionIdByUser;
 using FluentAssertions;
 
-namespace Cypherly.Authentication.Test.Unit.DeviceTest.QueryTest.GetConnectionIdsByUserTest;
+namespace Cendrite.Authentication.Test.Unit.DeviceTest.QueryTest.GetConnectionIdsByUserTest;
 
 public class GetConnectionIdsByUserQueryValidatorTest
 {

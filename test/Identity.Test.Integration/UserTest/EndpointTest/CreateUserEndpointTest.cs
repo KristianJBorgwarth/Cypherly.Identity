@@ -1,6 +1,6 @@
 ﻿using System.Net;
 using System.Net.Http.Json;
-using Cypherly.Message.Contracts.Messages.Profile;
+using Cendrite.Message.Contracts.Messages.Profile;
 using FluentAssertions;
 using Identity.Application.Features.User.Commands.Create;
 using Identity.Infrastructure.Persistence.Context;

@@ -2,7 +2,7 @@
 using FluentAssertions;
 using Identity.Domain.Enums;
 
-namespace Cypherly.Authentication.Test.Unit.DeviceTest.CreateTest;
+namespace Cendrite.Authentication.Test.Unit.DeviceTest.CreateTest;
 
 public class CreateDeviceCommandValidatorTest
 {

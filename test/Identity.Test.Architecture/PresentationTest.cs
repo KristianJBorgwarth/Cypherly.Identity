@@ -14,7 +14,7 @@ public class PresentationTest
             .That()
             .ResideInNamespace(EndpointsNamespace)
             .ShouldNot()
-            .HaveDependencyOn("Cypherly.Identity.Persistence")
+            .HaveDependencyOn("Cendrite.Identity.Persistence")
             .GetResult();
 
         result.ShouldBeSuccessful("API project should not reference Infrastructure project");

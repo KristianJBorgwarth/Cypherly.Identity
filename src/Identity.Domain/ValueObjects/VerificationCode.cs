@@ -1,5 +1,5 @@
 ﻿using System.Security.Cryptography;
-using Cypherly.Domain.Common;
+using Cendrite.Domain.Common;
 using Identity.Domain.Common;
 
 namespace Identity.Domain.ValueObjects;

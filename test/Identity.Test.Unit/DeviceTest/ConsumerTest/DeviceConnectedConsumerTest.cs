@@ -1,7 +1,7 @@
 ﻿using AutoFixture;
 using Identity.Application.Contracts.Repository;
 using Identity.Application.Features.Device.Consumers;
-using Cypherly.Message.Contracts.Messages.Client;
+using Cendrite.Message.Contracts.Messages.Client;
 using FakeItEasy;
 using FluentAssertions;
 using Identity.Domain.Aggregates;
@@ -9,7 +9,7 @@ using Identity.Domain.Entities;
 using MassTransit;
 using Microsoft.Extensions.Logging;
 
-namespace Cypherly.Authentication.Test.Unit.DeviceTest.ConsumerTest;
+namespace Cendrite.Authentication.Test.Unit.DeviceTest.ConsumerTest;
 
 public class DeviceConnectedConsumerTest
 {
